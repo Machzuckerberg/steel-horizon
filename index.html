@@ -5595,7 +5595,7 @@ const Lobby = {
     const sel = Save.data.selected;
     const era = TANKS[sel] ? TANKS[sel].era : 1;
     this.state = {
-      players: { 0: { pid: 0, name: this.myName(), tank: sel, tanks: this.myTanks(), ready: true, host: true } },
+      players: { 0: { pid: 0, name: this.myName(), tank: sel, tanks: this.myTanks(), ready: false, host: true } },
       slots: [[0, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1]],
       settings: { ai: true, diff: Save.data.settings.difficulty || 'regular', era }, inBattle: false,
     };
@@ -5711,13 +5711,14 @@ const Lobby = {
     if (!slotted.has(0)) { UI.toast('Put yourself in a slot first', true); return; }
     if (!S.settings.ai && (!S.slots[0].some(p => p >= 0) || !S.slots[1].some(p => p >= 0))) { UI.toast('With AI off, both teams need at least one player', true); return; }
     S.inBattle = true;
-    for (const P of Object.values(S.players)) { P.waiting = !slotted.has(P.pid); if (P.pid !== 0) P.ready = false; }
+    for (const P of Object.values(S.players)) { P.waiting = !slotted.has(P.pid); P.ready = false; }
     S.players[0].tank = this.pickAllowed(S.players[0].tank, S.settings.era);
     const players = {};
     for (const P of Object.values(S.players)) if (slotted.has(P.pid)) players[P.pid] = { name: P.name, tank: P.tank, tanks: P.tanks };
     const mp = { slots: S.slots.map(s => s.slice()), players, settings: Object.assign({}, S.settings) };
     const team0 = S.slots[0].includes(0) ? 0 : 1;
     NET.ev = [];
+    UI.hideAll();
     App.startBattle({ mode: 'team', tank: S.players[0].tank, diff: S.settings.diff, mp, net: 'host', localPid: 0, myTeam: team0, name: S.players[0].name }, () => {
       for (const [pid, l] of Object.entries(this.links)) {
         const P = S.players[pid];
@@ -5869,7 +5870,6 @@ const Lobby = {
       previewInto(el.querySelector('canvas'), d, { w: 150, h: 44 });
     }
     const rb = $('lbReady');
-    rb.style.display = host ? 'none' : '';
     rb.textContent = me && me.ready ? 'Ready ✓' : 'Ready up';
     rb.classList.toggle('primary', !!(me && me.ready));
   },
@@ -5883,7 +5883,8 @@ const Lobby = {
     if (this.isHost) { this.state.players[0].name = n; this.broadcast(); } else Net.toHost({ t: 'name', name: n });
   },
   toggleReady() {
-    if (this.isHost || !this.state) return;
+    if (!this.state) return;
+    if (this.isHost) { const me = this.state.players[0]; me.ready = !me.ready; this.broadcast(); this.render(); return; }
     const me = this.state.players[this.myPid]; if (!me) return;
     me.ready = !me.ready; Net.toHost({ t: 'ready', r: me.ready }); this.render();
   },
