@@ -3107,7 +3107,7 @@ class Battle {
         for (const a of this.vehicles) {
           if (!a.alive || a.team !== team) continue;
           const d = dist(a.x, a.y, e.x, e.y);
-          let range = a.spotRange() * (a.ai ? a.ai.D.spot : 1.1);
+          let range = a.spotRange() * (a.ai ? a.ai.D.spot : 1.2);
           if (inForest && e.revealT <= 0) range = Math.min(range, 170);
           if (e.revealT > 0) range *= 1.4;
           if (inSmoke) range = Math.min(range, 25);
@@ -3115,11 +3115,14 @@ class Battle {
           if (d > range) continue;
           if (map.los(a.x, a.y, e.x, e.y, this.smokes) > 0.25) { seen = true; break; }
         }
+        // once spotted, a target stays tracked while anyone on the team still has a line of sight to it
+        // (spotting range / forest limits only apply to the first detection) — no popping out mid-fight
+        if (!seen && e.seenBy[team]) seen = this.vehicles.some(a => a.alive && a.team === team && dist(a.x, a.y, e.x, e.y) < 1300 && map.los(a.x, a.y, e.x, e.y, this.smokes) > 0.08);
         // a gun firing within ~900 m gives itself away (flash, dust, sound) even from cover
         if (!seen && e.flashT > 0) seen = this.vehicles.some(a => a.alive && a.team === team && dist(a.x, a.y, e.x, e.y) < 900);
         // keep a contact on screen briefly after line of sight breaks, instead of popping out
         e.seenLinger = e.seenLinger || [0, 0];
-        if (seen) e.seenLinger[team] = this.time + 1.5;
+        if (seen) e.seenLinger[team] = this.time + 3;
         else if (this.time < e.seenLinger[team]) seen = true;
         e.seenBy[team] = seen;
         if (seen) { e.lastSeen = e.lastSeen || [0, 0]; e.lastSeen[team] = this.time; }
@@ -3222,7 +3225,13 @@ class Battle {
     else ctx.out.push({ k: 'dmg', a: r3(a), pen });
     if (ev.result === 'ricochet') this.msgTo(ctx, 'Incoming shell ricocheted', '#9fd18a');
     else if (ev.result === 'nonpen') this.msgTo(ctx, 'Armor held', '#9fd18a');
-    else if (pen) this.msgTo(ctx, `Penetrated by ${p.owner ? (p.owner.human != null && this.mp ? p.owner.name : p.owner.def.name) : 'enemy'}`, '#ff6b6b');
+    else if (pen || ev.result === 'module' || ev.result === 'splash') {
+      const parts = [];
+      for (const m of ev.mods) if (m.kind !== 'ammo' || m.hp <= 0) parts.push(`${MOD_INFO[m.kind].name} ${m.hp <= 0 ? 'destroyed' : 'damaged'}`);
+      for (const c of ev.crewKilled) parts.push(`${ROLE_INFO[c.role].name} knocked out`);
+      if (parts.length) this.msgTo(ctx, parts.slice(0, 3).join(' · '), pen ? '#ff6b6b' : '#ffb35c');
+      else if (pen) this.msgTo(ctx, 'Armor penetrated — no critical damage', '#ff6b6b');
+    }
     if (ev.notes.some(n => /ERA/.test(n))) this.msgTo(ctx, 'ERA block detonated', '#ffd166');
   }
   end(result) {
@@ -4155,23 +4164,45 @@ const Render = {
     c.closePath(); c.fill(); c.strokeStyle = 'rgba(30,28,24,0.6)'; c.lineWidth = 0.12; c.stroke();
     c.restore();
   },
+  tankIcon(c, x, y, col) { // small top-down tank silhouette, barrel up
+    c.save(); c.translate(x, y); c.scale(1.35, 1.35); c.fillStyle = col; c.strokeStyle = 'rgba(0,0,0,0.6)'; c.lineWidth = 1;
+    c.beginPath(); c.rect(-6, -4, 12, 11); c.stroke(); c.fill();           // hull
+    c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(-6, -4, 2.2, 11); c.fillRect(3.8, -4, 2.2, 11); // tracks
+    c.fillStyle = col; c.beginPath(); c.arc(0, 1.5, 3.4, 0, TAU); c.stroke(); c.fill(); // turret
+    c.fillRect(-0.9, -9, 1.8, 8); c.strokeRect(-0.9, -9, 1.8, 6);         // barrel
+    c.restore();
+  },
   drawMarkers(c, vis) {
     if (B.demo) return;
     const z = B.cam.zoom, p = B.player;
     c.textAlign = 'center';
+    const flash = 0.55 + 0.45 * Math.abs(Math.sin(B.time * 3.2));
     for (const v of vis) {
       if (!v.alive || v.isPlayer) continue;
       const enemy = v.team !== B.myTeam;
-      const y = v.y - Math.max(v.def.L, v.def.W) / 2 - 18 / z;
+      const col = enemy ? '255,70,60' : '95,175,255', light = enemy ? '#ffc2bd' : '#d4ebff';
+      const y = v.y - Math.max(v.def.L, v.def.W) / 2 - 10 / z;
       c.save(); c.translate(v.x, y); c.scale(1 / z, 1 / z);
-      c.fillStyle = enemy ? 'rgba(255,80,70,0.95)' : 'rgba(110,190,255,0.95)';
-      c.beginPath(); c.moveTo(-6, -4); c.lineTo(6, -4); c.lineTo(0, 4); c.closePath(); c.fill();
-      c.font = '600 11px "Barlow Condensed", Arial, sans-serif';
-      c.fillStyle = 'rgba(0,0,0,0.6)';
-      const label = enemy ? `${v.def.name}${p && p.alive ? '  ' + Math.round(dist(p.x, p.y, v.x, v.y)) + ' m' : ''}` : v.def.name;
-      c.fillText(label, 1, -8 + 1);
-      c.fillStyle = enemy ? '#ffb4ae' : '#cfe6ff'; c.fillText(label, 0, -8);
-      if (v.fire) { c.fillStyle = '#ff9f43'; c.fillText('🔥', 0, 16); }
+      // arrow pointing down at the tank
+      c.fillStyle = `rgba(${col},0.95)`; c.strokeStyle = 'rgba(0,0,0,0.55)'; c.lineWidth = 1.2;
+      c.beginPath(); c.moveTo(-6, -7); c.lineTo(6, -7); c.lineTo(0, 2); c.closePath(); c.stroke(); c.fill();
+      // distance
+      let ty = -11;
+      if (p && p.alive) {
+        c.font = '600 11px "Barlow Condensed", Arial, sans-serif';
+        const d = `${Math.round(dist(p.x, p.y, v.x, v.y))} m`;
+        c.fillStyle = 'rgba(0,0,0,0.65)'; c.fillText(d, 1, ty + 1); c.fillStyle = light; c.fillText(d, 0, ty);
+        ty -= 13;
+      }
+      if (v.human != null && v.human >= 0 && B.mp) {
+        // human player: username
+        c.font = '700 13px "Barlow Condensed", Arial, sans-serif';
+        c.fillStyle = 'rgba(0,0,0,0.7)'; c.fillText(v.name, 1, ty + 1); c.fillStyle = `rgb(${col})`; c.fillText(v.name, 0, ty);
+      } else {
+        // AI: flashing tank icon
+        c.globalAlpha = flash; this.tankIcon(c, 0, ty - 5, `rgb(${col})`); c.globalAlpha = 1;
+      }
+      if (v.fire) { c.font = '12px Arial'; c.fillText('🔥', 0, 18); }
       c.restore();
     }
     // player: subtle ring
@@ -5709,6 +5740,8 @@ const Lobby = {
     const S = this.state;
     const slotted = new Set(S.slots.flat().filter(p => p >= 0));
     if (!slotted.has(0)) { UI.toast('Put yourself in a slot first', true); return; }
+    const notReady = [...slotted].map(pid => S.players[pid]).filter(P => P && !P.ready);
+    if (notReady.length) { UI.toast(`Everyone must ready up first — waiting for ${notReady.map(P => P.pid === 0 ? 'you' : P.name).join(', ')}`, true); return; }
     if (!S.settings.ai && (!S.slots[0].some(p => p >= 0) || !S.slots[1].some(p => p >= 0))) { UI.toast('With AI off, both teams need at least one player', true); return; }
     S.inBattle = true;
     for (const P of Object.values(S.players)) { P.waiting = !slotted.has(P.pid); P.ready = false; }
@@ -5807,6 +5840,8 @@ const Lobby = {
     go.style.display = host ? '' : 'none';
     if (!S) { $('lbT0').innerHTML = $('lbT1').innerHTML = ''; $('lbSettings').innerHTML = ''; $('lbTanks').innerHTML = ''; $('lbWait').innerHTML = ''; $('lbHint').textContent = ''; return; }
     go.disabled = S.inBattle || !Net.room;
+    { const sl = S.slots.flat().filter(p => p >= 0 && S.players[p]), nr = sl.filter(p => S.players[p].ready).length;
+      go.textContent = nr === sl.length ? 'Start battle ▶' : `Waiting for ready (${nr}/${sl.length})`; go.classList.toggle('primary', nr === sl.length); }
     const P = S.players, me = P[this.myPid];
     const count = Object.keys(P).length;
     $('lbCount').textContent = `${count} / ${MAX_PLAYERS} players`;
