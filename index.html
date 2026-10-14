@@ -369,6 +369,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 //  Single-file HTML5 Canvas tank game. Units: meters, seconds, radians.
 //  World: +x east, +y south. Vehicle local frame: +x forward, +y right.
 // =====================================================================
+const CAP_SLOW = 2.8;           // capture-time multiplier (higher = slower captures)
 const DEBUG = false;            // debug/test flag — keep false for release
 const VERSION = '1.0';
 
@@ -2692,6 +2693,8 @@ function finishEvent(ev, p) {
   const crit = ev.mods.size > 0 || ev.crewKilled.length > 0;
   const killed = ev.wasAlive && !v.alive;
   if (att && att !== v && att.team !== v.team) {
+    // whoever shoots at you is revealed to your team for a while (and the killer stays visible after a kill)
+    att.exposeT = att.exposeT || [0, 0]; att.exposeT[v.team] = Math.max(att.exposeT[v.team], B.time + (killed ? 15 : 8));
     if (ev.result === 'pen' || ev.result === 'module' || ev.result === 'splash') att.dmgDealt += ev.crewKilled.length * 2 + ev.mods.size;
   }
   if (att && att.human != null && B.humans[att.human]) B.onHumanHitResult(B.humans[att.human], ev, crit, killed);
@@ -3113,13 +3116,14 @@ class Battle {
           if (inForest && e.revealT <= 0) range = Math.min(range, 170);
           if (e.revealT > 0) range *= 1.4;
           if (inSmoke) range = Math.min(range, 25);
-          if (d < 55 && !inSmoke) { seen = true; break; }
+          if (d < 150 && !inSmoke) { seen = true; break; } // nothing sneaks up unseen at close range
           if (d > range) continue;
-          if (map.los(a.x, a.y, e.x, e.y, this.smokes) > 0.25) { seen = true; break; }
+          if (map.los(a.x, a.y, e.x, e.y, this.smokes) > 0.12) { seen = true; break; }
         }
         // once spotted, a target stays tracked while anyone on the team still has a line of sight to it
         // (spotting range / forest limits only apply to the first detection) — no popping out mid-fight
         if (!seen && e.seenBy[team]) seen = this.vehicles.some(a => a.alive && a.team === team && dist(a.x, a.y, e.x, e.y) < 1300 && map.los(a.x, a.y, e.x, e.y, this.smokes) > 0.08);
+        if (!seen && e.exposeT && this.time < e.exposeT[team]) seen = true;
         // a gun firing within ~900 m gives itself away (flash, dust, sound) even from cover
         if (!seen && e.flashT > 0) seen = this.vehicles.some(a => a.alive && a.team === team && dist(a.x, a.y, e.x, e.y) < 900);
         // keep a contact on screen briefly after line of sight breaks, instead of popping out
@@ -3131,7 +3135,7 @@ class Battle {
       }
     }
   }
-  updatePoints(dt) {
+  updatePoints(dt) { // capture is deliberately slow: holding a point should take commitment
     for (const p of this.map.points) {
       if (p.noCap) continue;
       const n = [0, 0];
@@ -3139,7 +3143,7 @@ class Battle {
       p.contested = n[0] > 0 && n[1] > 0;
       if (p.contested || (!n[0] && !n[1])) continue;
       const team = n[0] ? 0 : 1, sgn = team === 0 ? 1 : -1;
-      const rate = (1 / (p.capTime || 14)) * Math.min(3, n[team]) * (p.rateK || 1);
+      const rate = (1 / ((p.capTime || 14) * CAP_SLOW)) * Math.min(2, 1 + 0.5 * (n[team] - 1)) * (p.rateK || 1); // ~40 s alone, ~27 s with 2+ tanks
       const before = p.prog;
       p.prog = clamp(p.prog + sgn * rate * dt, -1, 1);
       if (p.owner !== -1 && p.owner !== team && Math.sign(p.prog) !== Math.sign(before) && before !== 0) { const was = p.owner; p.owner = -1; this.onPointLost(p, was); }
@@ -3255,19 +3259,31 @@ class Battle {
     }
   }
   // safe spawn positions for non-team modes
+  // positions are chosen once and kept stable (re-checked for safety each call) so the spawn map doesn't jump around
   safeSpots(prefer, minEnemy = 320) {
-    const out = [], map = this.map, enemies = this.vehicles.filter(v => v.alive && v.team === 1);
+    const map = this.map, enemies = this.vehicles.filter(v => v.alive && v.team === 1);
+    const safe = (x, y) => {
+      for (const e of enemies) { const d = dist(x, y, e.x, e.y); if (d < minEnemy || (d < 750 && map.los(e.x, e.y, x, y, this.smokes) > 0.25)) return false; }
+      return true;
+    };
+    const C = this._safe;
+    const open = typeof document !== 'undefined' && document.getElementById('spawn').classList.contains('on');
+    if (C && (this.time - C.t < 45 || open)) {
+      for (const o of C.list) o.ok = safe(o.x, o.y);
+      if (C.list.some(o => o.ok)) return C.list;
+    }
     const cands = [];
     for (let y = 60; y < map.H - 60; y += 55) for (let x = 60; x < map.W - 60; x += 55) {
       if (!map.navFree(x, y) || map.collidesStatic(x, y, 8) || map.groundAt(x, y) === G_FOREST) continue;
-      let dmin = Infinity, seen = false;
-      for (const e of enemies) { const d = dist(x, y, e.x, e.y); dmin = Math.min(dmin, d); if (d < 750 && map.los(e.x, e.y, x, y, this.smokes) > 0.25) seen = true; }
-      if (dmin < minEnemy || seen) continue;
+      if (!safe(x, y)) continue;
       cands.push({ x, y, s: dist(x, y, prefer[0], prefer[1]) });
     }
     cands.sort((a, b) => a.s - b.s);
+    const out = [];
     for (const c of cands) { if (out.every(o => dist(o.x, o.y, c.x, c.y) > 140)) out.push(c); if (out.length >= 5) break; }
-    return out.map((c, i) => ({ x: c.x, y: c.y, a: Math.atan2(prefer[1] - c.y, prefer[0] - c.x), name: `Safe zone ${String.fromCharCode(65 + i)}`, ok: true }));
+    const list = out.map((c, i) => ({ x: c.x, y: c.y, a: Math.atan2(prefer[1] - c.y, prefer[0] - c.x), name: `Safe zone ${String.fromCharCode(65 + i)}`, ok: true }));
+    this._safe = { t: this.time, list };
+    return list;
   }
 }
 // local-player view fields live on the local player's context
@@ -4727,7 +4743,7 @@ const UI = {
     $('pQuit').onclick = () => { App.setPause(false); this.leaveBattle(); };
     $('pHow').onclick = () => this.show('howto');
     $('resMenu').onclick = () => { if (B && (B.mp || B.net)) Lobby.backToLobby(); else App.quitToMenu(); };
-    $('resAgain').onclick = () => { const cfg = Object.assign({}, App.lastCfg); this.hideAll(); App.startBattle(cfg); };
+    $('resAgain').onclick = () => { const mode = (App.lastCfg && App.lastCfg.mode) || 'team'; App.quitToMenu(); this.openSetup(mode); }; // back to that mode's setup screen
     $('sClose').onclick = () => this.hide('settings');
     $('sReset').onclick = () => { if (confirm('Reset all research and progress?')) { Save.data = Save.defaults(); Save.save(); this.refreshMenu(); this.toast('Progress reset'); } };
     const vol = v => { Save.data.settings.volume = +v; Sfx.setVolume(+v); Save.save(); };
@@ -5129,14 +5145,15 @@ function rtcWaitIce(pc, ms = 5000) {
 // Messages are sent over several free public services at once and de-duplicated,
 // so the game still works when one of them is down or blocked.
 const qp = k => { const m = location.search.match(new RegExp('[?&]' + k + '=([^&]+)')); return m ? decodeURIComponent(m[1]) : null; };
-const SIG_ROUTES = (() => {
+const sigRoutes = () => {
+  if (location.protocol === 'file:' || /(^|[#&])local\b/.test(location.hash)) return [{ kind: 'bc', name: 'local' }];
   const only = qp('routes'); // test override, e.g. routes=pj,mqtt
   const r = [];
   r.push({ kind: 'pj', name: 'PeerJS', url: SIG_URL });
   for (const u of (qp('mqtt') ? [qp('mqtt')] : ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'])) r.push({ kind: 'mqtt', name: u.replace(/^wss?:\/\/(broker\.)?/, '').split(/[.:/]/)[0], url: u });
   r.push({ kind: 'ntfy', name: 'ntfy', url: qp('ntfy') || 'https://ntfy.sh' });
   return only ? r.filter(x => only.split(',').includes(x.kind)) : r;
-})();
+};
 const SIG_TOPIC = 'steelhorizon_v1_';
 class PjRoute { // PeerJS cloud server protocol
   constructor(cfg, id, cb) {
@@ -5217,16 +5234,27 @@ class NtfyRoute { // ntfy.sh publish/subscribe over plain HTTP (works where WebS
   }
   close() { try { this.es.close(); } catch (e) { } }
 }
-const ROUTE_CLS = { pj: PjRoute, mqtt: MqttRoute, ntfy: NtfyRoute };
+class BcRoute { // same-browser tabs (file:// testing)
+  constructor(cfg, id, cb) { this.bc = new BroadcastChannel('shz-sig'); this.bc.onmessage = e => { const p = e.data; if (p && p.dst === id) cb.msg(JSON.parse(JSON.stringify(p))); }; this.ok = true; setTimeout(() => cb.open(), 0); }
+  send(p) { try { this.bc.postMessage(p); } catch (e) { } }
+  close() { try { this.bc.close(); } catch (e) { } }
+}
+const ROUTE_CLS = { pj: PjRoute, mqtt: MqttRoute, ntfy: NtfyRoute, bc: BcRoute };
+const RELAY_KINDS = ['mqtt', 'bc']; // routes fast enough to carry game traffic when a direct connection is blocked
 class Signal { // sends every message over all routes; first copy to arrive wins
-  constructor(id, h, routes = SIG_ROUTES) {
+  constructor(id, h, routes = sigRoutes()) {
     this.id = id; this.h = h; this.open = false; this.seen = new Set(); this.routes = []; this.failed = 0;
     for (const cfg of routes) {
       const r = { cfg, ok: false, dead: false, q: [] };
       const cb = {
         open: () => { r.ok = true; for (const p of r.q) r.obj.send(p); r.q = []; if (!this.open) { this.open = true; h.open && h.open(); } },
         fail: e => { if (r.dead) return; r.dead = true; r.ok = false; r.q = []; if (e === 'taken') { h.error && h.error('taken'); return; } if (++this.failed === this.routes.length && !this.open) h.error && h.error('signal'); },
-        msg: p => { if (!p || !p.mid || this.seen.has(p.mid)) return; this.seen.add(p.mid); p.via = cfg.name; h.msg && h.msg(p); },
+        msg: p => {
+          if (!p) return;
+          p.via = cfg.name;
+          if (p.type !== 'D') { if (!p.mid || this.seen.has(p.mid)) return; this.seen.add(p.mid); if (this.seen.size > 3000) this.seen.clear(); }
+          h.msg && h.msg(p);
+        },
       };
       this.routes.push(r);
       try { r.obj = new ROUTE_CLS[cfg.kind](cfg, id, cb); } catch (e) { cb.fail('signal'); }
@@ -5236,6 +5264,14 @@ class Signal { // sends every message over all routes; first copy to arrive wins
     const p = { type, dst, src: this.id, payload, mid: Math.random().toString(36).slice(2) + Date.now().toString(36) };
     for (const r of this.routes) { if (r.dead) continue; if (r.ok) r.obj.send(p); else r.q.push(p); }
   }
+  // game traffic over one relay-capable route (prefer the one the other side last used)
+  sendVia(via, type, dst, payload) {
+    const ok = this.routes.filter(r => r.ok && RELAY_KINDS.includes(r.cfg.kind));
+    const r = ok.find(x => x.cfg.name === via) || ok[0];
+    if (r) r.obj.send({ type, dst, src: this.id, payload });
+    return r ? r.cfg.name : null;
+  }
+  relayRoute(via) { const ok = this.routes.filter(r => r.ok && RELAY_KINDS.includes(r.cfg.kind)); return (ok.find(x => x.cfg.name === via) || ok[0] || {}).cfg; }
   routeState() { return this.routes.map(r => [r.cfg.name, r.ok ? 'ok' : r.dead ? 'bad' : 'wait']); }
   close() { for (const r of this.routes) try { r.obj && r.obj.close(); } catch (e) { } }
 }
@@ -5259,16 +5295,16 @@ class RtcLink extends Link {
   drop() { if (!this.alive) return; this.alive = false; try { this.pc.close(); } catch (e) { } this.onclose && this.onclose(); }
   close() { this.send({ t: '__bye' }); setTimeout(() => this.drop(), 50); }
 }
-class LocalBus { // same-browser transport (tabs) — used for file:// testing
-  constructor(room, myId, onPacket) { this.my = myId; this.bc = new BroadcastChannel('shz-' + room); this.bc.onmessage = e => { const m = e.data; if (m && m.to === myId) onPacket(m.from, m.d); }; }
-  post(to, d) { try { this.bc.postMessage({ to, from: this.my, d }); } catch (e) { } }
-  close() { try { this.bc.close(); } catch (e) { } }
-}
-class LocalLink extends Link {
-  constructor(id, bus) { super(id); this.bus = bus; }
-  send(o) { if (this.alive) this.bus.post(this.id, o); }
+class RelayLink extends Link { // game traffic through the matchmaking (MQTT) servers when a direct link is blocked
+  constructor(id, sig, via) { super(id); this.sig = sig; this.via = via; this.lastFast = 0; this.relay = true; }
+  send(o, fast) {
+    if (!this.alive || !this.sig) return;
+    const now = performance.now();
+    if (fast) { if (now - this.lastFast < 70) return; this.lastFast = now; } // ~14 msgs/s cap on unreliable traffic
+    this.sig.sendVia(this.via, 'D', this.id, o);
+  }
   drop() { if (!this.alive) return; this.alive = false; this.onclose && this.onclose(); }
-  close() { this.send({ t: '__bye' }); this.drop(); }
+  close() { this.send({ t: '__bye' }); setTimeout(() => this.drop(), 50); }
 }
 
 // ---------------------------------------------------------------- Net
@@ -5278,35 +5314,38 @@ const Net = {
   useLocal() { return location.protocol === 'file:' || /(^|[#&])local\b/.test(location.hash); },
   newCode() { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 6; i++) s += A[Math.floor(Math.random() * A.length)]; return s; },
   inviteLink() { return location.href.split('#')[0] + '#join=' + this.room + (this.local ? '&local' : ''); },
+  iceServers() { return this.local ? [] : ICE; },
   host(onReady, onError, onLink) {
-    this.shutdown(); this.role = 'host'; this.room = this.newCode(); this.local = this.useLocal(); this.links = [];
-    const reg = link => { this.links.push(link); const oc = link.onclose; onLink(link); };
-    if (this.local) {
-      this.bus = new LocalBus(this.room, 'host', (from, d) => {
-        let link = this.links.find(l => l.id === from && l.alive);
-        if (d.t === '__hello') { if (!link) { link = new LocalLink(from, this.bus); link.send({ t: '__ok' }); reg(link); } else link.send({ t: '__ok' }); return; }
-        if (link) link.recv(d);
-      });
-      setTimeout(onReady, 0);
-      return;
-    }
+    this.shutdown(); this.role = 'host'; this.room = this.newCode(); this.local = this.useLocal(); this.links = []; this.relays = {};
+    const reg = link => { this.links.push(link); onLink(link); };
     const start = () => {
       this.sig = new Signal(ROOM_PREFIX + this.room, {
         open: onReady,
         error: e => { if (e === 'taken') { this.room = this.newCode(); this.sig.close(); start(); } else onError(e); },
-        msg: m => { if (m.type === 'OFFER') { Lobby.note('A player is connecting…'); this.acceptOffer(m, reg); } },
+        msg: m => {
+          if (m.type === 'OFFER') { if (Lobby.approved.has(m.src)) this.acceptOffer(m, reg); return; }
+          if (m.type === 'D') {
+            let l = this.relays[m.src];
+            if (!l || !l.alive) {
+              if (!Lobby.approved.has(m.src)) return;
+              l = this.relays[m.src] = new RelayLink(m.src, this.sig, m.via); reg(l);
+            }
+            l.via = m.via; l.recv(m.payload); return;
+          }
+          Lobby.hostSig(m);
+        },
       });
     };
     start();
   },
   async acceptOffer(m, reg) {
     if (typeof RTCPeerConnection === 'undefined') return;
-    const pc = new RTCPeerConnection({ iceServers: ICE });
+    const pc = new RTCPeerConnection({ iceServers: this.iceServers() });
     const link = new RtcLink(m.src, pc);
     let up = false;
     const tryUp = () => { if (!up && link.rel && link.rel.readyState === 'open') { up = true; reg(link); } };
     pc.ondatachannel = e => { link.attach(e.channel); e.channel.onopen = tryUp; tryUp(); };
-    pc.onconnectionstatechange = () => { if (pc.connectionState === 'failed' || pc.connectionState === 'closed') { if (!up) Lobby.note('A player could not connect (network blocked the connection)'); link.drop(); } };
+    pc.onconnectionstatechange = () => { if (pc.connectionState === 'failed' || pc.connectionState === 'closed') link.drop(); };
     try {
       await pc.setRemoteDescription(m.payload.sdp);
       await pc.setLocalDescription(await pc.createAnswer());
@@ -5314,55 +5353,66 @@ const Net = {
       this.sig.send('ANSWER', m.src, { sdp: pc.localDescription });
     } catch (e) { link.drop(); }
   },
-  join(code, onUp, onError) {
+  // client step 1: reach the host through the matchmaking servers only (no connection yet)
+  find(code, h) {
     this.shutdown(); this.role = 'client'; this.room = code; this.local = this.useLocal();
-    let done = false; this.stage = 'signal';
-    const fail = e => { if (done) return; done = true; clearTimeout(to); if (e === 'timeout') e = { signal: 'signal', offer: 'noanswer', answer: 'p2p', checking: 'p2p' }[this.stage] || 'timeout'; onError(e); };
-    const ok = link => { if (done) return; done = true; clearTimeout(to); this.hostLink = link; onUp(link); };
-    const to = setTimeout(() => fail('timeout'), this.local ? 5000 : 40000);
-    if (this.local) {
-      const me = 'c' + Math.random().toString(36).slice(2, 9);
-      let link = null;
-      this.bus = new LocalBus(code, me, (from, d) => {
-        if (from !== 'host') return;
-        if (d.t === '__ok') { if (!link) { link = new LocalLink('host', this.bus); ok(link); } return; }
-        if (link) link.recv(d);
-      });
-      this.bus.post('host', { t: '__hello' });
-      return;
-    }
-    if (typeof RTCPeerConnection === 'undefined') { fail('nortc'); return; }
-    const myId = ROOM_PREFIX + 'c-' + Math.random().toString(36).slice(2, 10);
-    const hostId = ROOM_PREFIX + code;
-    this.sig = new Signal(myId, {
-      open: async () => {
-        const pc = new RTCPeerConnection({ iceServers: ICE });
-        this.pendingPc = pc;
-        const link = new RtcLink(hostId, pc);
-        const rel = pc.createDataChannel('rel', { ordered: true });
-        const fast = pc.createDataChannel('fast', { ordered: false, maxRetransmits: 0 });
-        link.attach(rel); link.attach(fast);
-        rel.onopen = () => ok(link);
-        pc.onconnectionstatechange = () => { if (pc.connectionState === 'connecting') this.stage = 'checking'; if (pc.connectionState === 'failed') { if (!done) fail('p2p'); else link.drop(); } };
-        Lobby.note('Contacting the host…');
-        try {
-          await pc.setLocalDescription(await pc.createOffer());
-          await rtcWaitIce(pc);
-          this.sig.send('OFFER', hostId, { sdp: pc.localDescription }); this.stage = 'offer';
-        } catch (e) { fail('p2p'); }
+    this.myId = ROOM_PREFIX + 'c-' + Math.random().toString(36).slice(2, 10);
+    this.hostId = ROOM_PREFIX + code; this.hostVia = null;
+    let found = false, tries = 0;
+    const peek = () => { if (found || !this.sig) return; if (++tries > 12) { h.error('noanswer'); return; } this.sig.send('PEEK', this.hostId, {}); this.peekT = setTimeout(peek, 3000); };
+    this.sig = new Signal(this.myId, {
+      open: () => peek(),
+      error: e => h.error(e),
+      msg: m => {
+        if (m.type === 'D') { if (this.hostLink && this.hostLink.relay) { this.hostLink.via = m.via; this.hostLink.recv(m.payload); } return; }
+        if (m.type === 'ANSWER') { this.onAnswer && this.onAnswer(m); return; }
+        if (m.src !== this.hostId) return;
+        { const r = this.sig.routes.find(x => x.cfg.name === m.via); if (r && RELAY_KINDS.includes(r.cfg.kind)) this.hostVia = m.via; }
+        if (m.type === 'PREVIEW') { found = true; clearTimeout(this.peekT); }
+        h.msg(m);
       },
-      msg: async m => {
-        if (m.type === 'ANSWER' && this.pendingPc) { this.stage = 'answer'; Lobby.note('Found the host — connecting directly…'); try { await this.pendingPc.setRemoteDescription(m.payload.sdp); } catch (e) { fail('p2p'); } }
-      },
-      error: e => fail(e),
     });
+  },
+  toHostSig(type, payload) { if (this.sig) this.sig.send(type, this.hostId, payload); },
+  // client step 2 (after the host accepted): open the game connection — direct if possible, relay otherwise
+  connect(onUp, onError) {
+    let done = false;
+    const up = link => { if (done) { link.close && link !== this.hostLink && link.close(); return; } done = true; clearTimeout(to); this.hostLink = link; onUp(link); };
+    const relay = () => {
+      if (done) return;
+      if (this.pendingPc) try { this.pendingPc.close(); } catch (e) { }
+      this.pendingPc = null;
+      const r = this.sig && this.sig.relayRoute(this.hostVia);
+      if (!r) { done = true; onError('p2p'); return; }
+      Lobby.note('Direct connection blocked — connecting through the relay server…');
+      up(new RelayLink(this.hostId, this.sig, r.name));
+    };
+    const to = setTimeout(relay, this.local ? 6000 : 13000);
+    if (typeof RTCPeerConnection === 'undefined' || /[?&]forcerelay\b/.test(location.search)) { clearTimeout(to); relay(); return; }
+    const pc = new RTCPeerConnection({ iceServers: this.iceServers() });
+    this.pendingPc = pc;
+    const link = new RtcLink(this.hostId, pc);
+    const rel = pc.createDataChannel('rel', { ordered: true });
+    const fast = pc.createDataChannel('fast', { ordered: false, maxRetransmits: 0 });
+    link.attach(rel); link.attach(fast);
+    rel.onopen = () => up(link);
+    pc.onconnectionstatechange = () => { if (pc.connectionState === 'failed') { if (!done) { clearTimeout(to); relay(); } else if (this.hostLink === link) link.drop(); } };
+    this.onAnswer = async m => { if (this.pendingPc !== pc) return; try { await pc.setRemoteDescription(m.payload.sdp); } catch (e) { clearTimeout(to); relay(); } };
+    (async () => {
+      try {
+        await pc.setLocalDescription(await pc.createOffer());
+        await rtcWaitIce(pc, this.local ? 1500 : 5000);
+        this.sig.send('OFFER', this.hostId, { sdp: pc.localDescription });
+      } catch (e) { clearTimeout(to); relay(); }
+    })();
   },
   toHost(o, fast) { if (this.hostLink && this.hostLink.alive) this.hostLink.send(o, fast); },
   shutdown() {
     for (const l of this.links) try { l.close(); } catch (e) { }
     if (this.hostLink) try { this.hostLink.close(); } catch (e) { }
-    if (this.sig) this.sig.close(); if (this.bus) setTimeout(((b) => () => b.close())(this.bus), 100);
-    this.sig = null; this.bus = null; this.hostLink = null; this.links = []; this.role = null; this.pendingPc = null;
+    clearTimeout(this.peekT);
+    const sg = this.sig; if (sg) setTimeout(() => sg.close(), 150); // let the goodbye messages go out
+    this.sig = null; this.hostLink = null; this.links = []; this.relays = {}; this.role = null; this.pendingPc = null; this.onAnswer = null;
   },
   // ------------------------------------------------------------- per-frame
   tick(dt) {
@@ -5615,6 +5665,7 @@ Object.assign(Battle.prototype, {
 const SLOTS = 6;
 const Lobby = {
   isHost: false, myPid: -1, state: null, sel: null, nextPid: 1, links: {}, status: '', joined: false, inBattleWait: false,
+  approved: new Set(), asks: {},
   note(t) { if (!this.state || !this.isHost || /Room open/.test(this.status) || /connect/i.test(t)) { this.status = t; if (this.isHost) setTimeout(() => { if (this.status === t) { this.status = 'Room open — share the link'; this.render(); } }, 6000); this.render(); } },
   myName() { if (!Save.data.name) { Save.data.name = 'Commander' + rndi(10, 99); Save.save(); } return Save.data.name; },
   myTanks() { return Save.data.unlocked.filter(id => TANKS[id] && TANKS[id].rp >= 0); },
@@ -5625,7 +5676,7 @@ const Lobby = {
   },
   // ------------------------------------------------------------ host
   hostRoom() {
-    this.isHost = true; this.myPid = 0; this.nextPid = 1; this.links = {}; this.sel = null; this.joined = true;
+    this.isHost = true; this.myPid = 0; this.nextPid = 1; this.links = {}; this.sel = null; this.joined = true; this.approved = new Set(); this.asks = {};
     const sel = Save.data.selected;
     const era = TANKS[sel] ? TANKS[sel].era : 1;
     const hostTanks = this.myTanks(); // everyone in this room picks from the host's unlocked tanks
@@ -5650,28 +5701,43 @@ const Lobby = {
   onLinkUp(link) {
     link.onmsg = m => this.hostMsg(link, m);
     link.onclose = () => this.dropLink(link);
-    this.sendPreview(link);
   },
   // what a not-yet-admitted player sees: the tanks they may pick and the match settings
-  sendPreview(link) { const S = this.state; if (S) link.send({ t: 'preview', tanks: S.hostTanks, settings: S.settings, host: S.players[0].name, count: this.humanCount() }); },
+  previewData() { const S = this.state; return { tanks: S.hostTanks, settings: S.settings, host: S.players[0].name, count: this.humanCount() }; },
+  // messages from players who are not connected yet (they only talk through the matchmaking servers)
+  hostSig(m) {
+    const S = this.state; if (!S || !Net.sig) return;
+    const id = m.src, A = this.asks[id] || (this.asks[id] = { last: -1e9, pending: false, item: null });
+    A.seen = performance.now();
+    if (m.type === 'PEEK') Net.sig.send('PREVIEW', id, this.previewData());
+    else if (m.type === 'BYE') { if (A.item) A.item.finish(false, 'gone'); delete this.asks[id]; this.approved.delete(id); }
+    else if (m.type === 'ASK') {
+      if (A.pending || this.approved.has(id)) return;
+      const now = performance.now();
+      if (now - A.last < 4800) { Net.sig.send('SLOW', id, {}); return; } // one request per 5 s
+      A.last = now;
+      if (this.humanCount() >= MAX_PLAYERS) { Net.sig.send('FULL', id, {}); return; }
+      A.pending = true;
+      A.item = JoinReq.ask(id, m.payload || {}, (ok, why) => {
+        A.pending = false; A.item = null;
+        if (why === 'gone' || !Net.sig) return;
+        if (!ok) { Net.sig.send('DECLINE', id, { why }); return; }
+        if (this.humanCount() >= MAX_PLAYERS) { Net.sig.send('FULL', id, {}); return; }
+        this.approved.add(id); A.req = m.payload || {};
+        Net.sig.send('ACCEPT', id, {});
+        this.note(`${cleanName((m.payload || {}).name)} is connecting…`);
+      });
+    }
+  },
   humanCount() { return Object.keys(this.state.players).length; },
   hostMsg(link, m) {
     const S = this.state;
     if (m.t === 'hello') {
-      if (link.pid >= 0 || link.pendingReq) return;
-      const now = performance.now();
-      if (now - (link.lastAsk || -1e9) < 4800) { link.send({ t: 'slow' }); return; } // one request per 5 s
-      link.lastAsk = now;
+      if (link.pid >= 0 || !this.approved.has(link.id)) return; // only players the host accepted
       if (this.humanCount() >= MAX_PLAYERS) { link.send({ t: 'full' }); setTimeout(() => link.close(), 200); return; }
-      link.pendingReq = true;
-      link.send({ t: 'pending' });
-      JoinReq.ask(link, m, (ok, why) => {
-        link.pendingReq = false;
-        if (!link.alive) return;
-        if (!ok) { link.send({ t: 'declined', why }); return; }
-        if (this.humanCount() >= MAX_PLAYERS) { link.send({ t: 'full' }); setTimeout(() => link.close(), 200); return; }
-        this.admit(link, m);
-      });
+      this.approved.delete(link.id);
+      const req = (this.asks[link.id] || {}).req || {};
+      this.admit(link, { name: m.name || req.name, tank: m.tank || req.tank });
       return;
     }
     const pid = link.pid, P = S.players[pid]; if (!P) return;
@@ -5711,7 +5777,6 @@ const Lobby = {
     }
   },
   dropLink(link) {
-    JoinReq.cancel(link);
     const pid = link.pid; if (pid < 0 || !this.state) return;
     delete this.links[pid];
     const P = this.state.players[pid]; if (!P) return;
@@ -5744,7 +5809,7 @@ const Lobby = {
     if (!this.isHost) return;
     this.state.settings[k] = v;
     if (k === 'era') for (const P of Object.values(this.state.players)) P.tank = this.pickAllowed(P.tank, v, this.state.hostTanks);
-    for (const l of Net.links) if (l.alive && !(l.pid >= 0)) this.sendPreview(l);
+    if (Net.sig) for (const [id, A] of Object.entries(this.asks)) if (performance.now() - A.seen < 120000) Net.sig.send('PREVIEW', id, this.previewData());
     if (k === 'diff') { Save.data.settings.difficulty = v; Save.save(); }
     this.broadcast();
   },
@@ -5781,16 +5846,41 @@ const Lobby = {
   // ------------------------------------------------------------ client
   joinRoom(code) {
     this.isHost = false; this.myPid = -1; this.state = null; this.joined = false; this.inBattleWait = false; this.declined = false; this.joinCode = code;
-    this.preview = null; this.pending = false; this.lastAsk = -1e9; this.preTank = null; this.connected = false;
-    this.status = 'Connecting to host…';
+    this.preview = null; this.pending = false; this.lastAsk = -1e9; this.preTank = null; this.connected = false; this.accepted = false;
+    this.status = 'Looking for the room…';
     UI.showLobby(); this.render();
-    Net.join(code, link => {
-      link.onmsg = m => this.clientMsg(m);
-      link.onclose = () => this.hostGone();
-      this.connected = true; setTimeout(() => link.flush(), 0);
-      this.status = 'Connected — pick your name and tank, then press Ask to join';
-      this.render();
-    }, e => { this.status = `Could not connect (${netErrText(e)})`; this.render(); });
+    // only the matchmaking servers are used until the host accepts — no game connection yet
+    Net.find(code, { msg: m => this.sigMsg(m), error: e => { this.status = `Could not reach the room (${netErrText(e)})`; this.render(); } });
+  },
+  sigMsg(m) {
+    switch (m.type) {
+      case 'PREVIEW': {
+        const first = !this.preview; this.preview = m.payload; this.connected = true;
+        if (!this.preTank || !this.preview.tanks.includes(this.preTank)) this.preTank = this.pickAllowed(Save.data.selected, this.preview.settings.era, this.preview.tanks);
+        if (first) this.status = 'Room found — pick your name and tank, then press Ask to join';
+        this.render(); break; }
+      case 'SLOW': this.pending = false; UI.toast('Wait a few seconds before asking again', true); this.render(); break;
+      case 'FULL': this.pending = false; this.status = 'This room is full (12 players)'; this.render(); break;
+      case 'DECLINE': {
+        if (!this.pending) break;
+        this.pending = false;
+        this.status = m.payload.why === 'timeout' ? 'The host did not answer — you can ask again' : 'The host declined your request — you can ask again';
+        UI.toast(m.payload.why === 'timeout' ? 'The host did not answer your request' : 'The host declined your request to join', true);
+        this.render(); const tick = () => { if (!this.joined && this.askCooldown() > 0) { this.render(); setTimeout(tick, 500); } else this.render(); }; setTimeout(tick, 500);
+        break; }
+      case 'ACCEPT': {
+        if (!this.pending || this.accepted) break;
+        this.accepted = true; this.status = 'Accepted! Connecting to the game…'; this.render();
+        Net.connect(link => {
+          link.onmsg = mm => this.clientMsg(mm);
+          link.onclose = () => this.hostGone();
+          setTimeout(() => link.flush(), 0);
+          link.send({ t: 'hello', name: this.reqName, tank: this.preTank, v: NET_VER });
+          if (link.relay) this.status = 'Connected through the relay server (direct connection was blocked)';
+          this.render();
+        }, e => { this.accepted = false; this.pending = false; this.status = `Could not connect (${netErrText(e)})`; this.render(); });
+        break; }
+    }
   },
   askCooldown() { return Math.max(0, 5000 - (performance.now() - this.lastAsk)); },
   askJoin() {
@@ -5798,23 +5888,16 @@ const Lobby = {
     const cd = this.askCooldown();
     if (cd > 0) { UI.toast(`You can ask again in ${Math.ceil(cd / 1000)} s`, true); return; }
     const name = cleanName($('lbName').value); Save.data.name = name; Save.save();
-    this.lastAsk = performance.now(); this.pending = true;
+    this.reqName = name; this.lastAsk = performance.now(); this.pending = true;
     this.status = 'Request sent — waiting for the host to let you in…';
-    Net.toHost({ t: 'hello', name, tank: this.preTank, v: NET_VER });
+    Net.toHostSig('ASK', { name, tank: this.preTank, v: NET_VER });
+    // no answer at all (host gone / message lost) → let them try again
+    clearTimeout(this._askTo); this._askTo = setTimeout(() => { if (this.pending && !this.accepted) { this.pending = false; this.status = 'No answer from the host — you can ask again'; this.render(); } }, 65000);
     this.render();
   },
   clientMsg(m) {
     switch (m.t) {
-      case 'preview': this.preview = m; if (!this.preTank || !m.tanks.includes(this.preTank)) this.preTank = this.pickAllowed(Save.data.selected, m.settings.era, m.tanks); this.render(); break;
-      case 'welcome': this.myPid = m.pid; this.joined = true; this.pending = false; this.status = 'You are in! Ready up when you are set'; this.render(); break;
-      case 'pending': this.status = 'Request sent — waiting for the host to let you in…'; this.render(); break;
-      case 'slow': this.pending = false; UI.toast('Wait a few seconds before asking again', true); this.render(); break;
-      case 'declined': {
-        this.pending = false;
-        this.status = m.why === 'timeout' ? 'The host did not answer — you can ask again' : 'The host declined your request — you can ask again';
-        UI.toast(m.why === 'timeout' ? 'The host did not answer your request' : 'The host declined your request to join', true);
-        this.render(); const tick = () => { if (!this.joined && this.askCooldown() > 0) { this.render(); setTimeout(tick, 500); } else this.render(); }; setTimeout(tick, 500);
-        break; }
+      case 'welcome': this.myPid = m.pid; this.joined = true; this.pending = false; this.status = Net.hostLink && Net.hostLink.relay ? 'You are in (via relay server)! Ready up when you are set' : 'You are in! Ready up when you are set'; this.render(); break;
       case 'full': this.status = 'This room is full (12 players)'; this.render(); Net.shutdown(); break;
       case 'inprogress': this.inBattleWait = true; this.status = 'A battle is in progress — you will join the next round'; this.render(); break;
       case 'lobby': {
@@ -5838,8 +5921,10 @@ const Lobby = {
     history.replaceState(null, '', location.href.split('#')[0]);
   },
   leave() {
-    if (this.isHost) { for (const l of Object.values(this.links)) l.send({ t: 'hostleft' }); }
-    else Net.toHost({ t: 'bye' });
+    if (this.isHost) { for (const l of Object.values(this.links)) l.send({ t: 'hostleft' }); JoinReq.clear(); }
+    else if (this.joined) Net.toHost({ t: 'bye' });
+    else Net.toHostSig('BYE', {});
+    clearTimeout(this._askTo);
     setTimeout(() => Net.shutdown(), 80);
     this.state = null; this.isHost = false; this.joined = false;
     history.replaceState(null, '', location.href.split('#')[0]);
@@ -5962,7 +6047,7 @@ const Lobby = {
     const rb = $('lbReady'), cd = this.askCooldown();
     rb.style.display = this.connected ? '' : 'none';
     rb.disabled = !pv || this.pending || cd > 0;
-    rb.textContent = this.pending ? 'Request sent…' : cd > 0 ? `Ask again in ${Math.ceil(cd / 1000)} s` : 'Ask to join';
+    rb.textContent = this.accepted ? 'Connecting…' : this.pending ? 'Request sent…' : cd > 0 ? `Ask again in ${Math.ceil(cd / 1000)} s` : 'Ask to join';
     rb.classList.toggle('primary', !rb.disabled);
   },
   nameInput(v) { clearTimeout(this._nt); this._nt = setTimeout(() => this.setName(v), 450); },
@@ -5987,7 +6072,7 @@ const Lobby = {
 function cleanName(n) { n = String(n || '').replace(/[<>&"]/g, '').trim().slice(0, 16); return n || 'Commander'; }
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function netErrText(e) {
-  return { noanswer: 'the host did not answer — make sure the host still has the lobby open and you used the newest link', timeout: 'the host did not answer — is the room still open?', nohost: 'room not found', signal: 'cannot reach the matchmaking server', server: 'matchmaking server error', p2p: 'found the host, but the two networks blocked the connection — try another network (e.g. not a phone hotspot or school/office Wi-Fi)', nortc: 'this browser does not support WebRTC', taken: 'room code clash' }[e] || e;
+  return { noanswer: 'room not found — check the code and make sure the host still has the lobby open', timeout: 'the host did not answer — is the room still open?', nohost: 'room not found', signal: 'cannot reach the matchmaking server', server: 'matchmaking server error', p2p: 'found the host, but the two networks blocked the connection — try another network (e.g. not a phone hotspot or school/office Wi-Fi)', nortc: 'this browser does not support WebRTC', taken: 'room code clash' }[e] || e;
 }
 function copyText(t) {
   const done = () => UI.toast('Link copied — paste it in your chat app');
@@ -6009,13 +6094,13 @@ function hostPlayerLeft(pid, name) {
 // ---------------------------------------------------------------- host: join requests (accept / decline)
 const JoinReq = {
   list: [],
-  ask(link, m, cb) {
+  ask(id, m, cb) {
     const el = document.createElement('div');
     el.className = 'jr';
     const tank = TANKS[m.tank] ? TANKS[m.tank].name : 'a tank';
     el.innerHTML = `<div class="jr-t">Join request</div><div class="jr-n">${esc(cleanName(m.name))}</div><div class="jr-s">wants to join · ${esc(tank)}</div>
       <div class="jr-b"><button class="btn small" data-snd="exit">Decline</button><button class="btn small primary">Accept</button></div><div class="jr-bar"><i></i></div>`;
-    const item = { link, el, cb, done: false };
+    const item = { id, el, cb, done: false };
     const finish = (ok, why) => { if (item.done) return; item.done = true; clearTimeout(item.to); this.out(el); this.list = this.list.filter(x => x !== item); cb(ok, why); };
     el.querySelectorAll('button')[0].onclick = () => finish(false);
     el.querySelectorAll('button')[1].onclick = () => finish(true);
@@ -6024,9 +6109,11 @@ const JoinReq = {
     $('joinReqs').prepend(el); this.list.push(item); // newest on top, older ones stack below
     uiSnd('purchase');
     if (document.hidden) try { document.title = '(!) Join request — Steel Horizon'; setTimeout(() => document.title = 'Steel Horizon — Armored Warfare', 8000); } catch (e) { }
+    return item;
   },
   out(el) { el.classList.add('out'); setTimeout(() => el.remove(), 380); }, // slide out
-  cancel(link) { for (const it of this.list.slice()) if (it.link === link) { it.done = true; clearTimeout(it.to); this.out(it.el); this.list = this.list.filter(x => x !== it); } },
+  clear() { for (const it of this.list.slice()) { it.done = true; clearTimeout(it.to); this.out(it.el); } this.list = []; },
+  cancel(id) { for (const it of this.list.slice()) if (it.id === id) { it.done = true; clearTimeout(it.to); this.out(it.el); this.list = this.list.filter(x => x !== it); } },
 };
 
 // ---------------------------------------------------------------- connection test
@@ -6064,7 +6151,7 @@ const NetTest = {
       sa = new Signal(idA, { open: go, error: () => fin('unreachable') }, [cfg]);
       sb = new Signal(idB, { open: go, error: () => fin('unreachable'), msg: m => { if (m.payload && m.payload.test) fin('ok'); } }, [cfg]);
     });
-    const res = await Promise.all(SIG_ROUTES.map(async cfg => { const l = step(cfg.name); const r = await testRoute(cfg); l(r === 'ok' ? 'ok' : 'info', `${cfg.name}: ${r === 'ok' ? 'works' : r === 'nopass' ? 'reachable but did not pass messages' : 'unreachable (down or blocked)'}`); return r === 'ok'; }));
+    const res = await Promise.all(sigRoutes().map(async cfg => { const l = step(cfg.name); const r = await testRoute(cfg); l(r === 'ok' ? 'ok' : 'info', `${cfg.name}: ${r === 'ok' ? 'works' : r === 'nopass' ? 'reachable but did not pass messages' : 'unreachable (down or blocked)'}`); return r === 'ok'; }));
     const nOk = res.filter(Boolean).length;
     s(nOk ? 'ok' : 'bad', nOk ? `Matchmaking: ${nOk} of ${res.length} servers work — enough to connect` : 'Matchmaking: no server works — an ad-blocker, VPN or network filter may be blocking them');
     // what kinds of routes this network offers
