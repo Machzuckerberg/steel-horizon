@@ -198,6 +198,15 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 .hs-new{text-align:center;font-weight:800;letter-spacing:.3em;color:var(--amber2);font-size:20px;margin:6px 0 4px;animation:hsGlow 1.2s ease-in-out infinite alternate}.hs-new.small{font-size:14px;letter-spacing:.2em;animation:none}@keyframes hsGlow{from{text-shadow:0 0 6px rgba(242,179,61,.3)}to{text-shadow:0 0 22px rgba(242,179,61,.9)}}
 #resBoard{max-width:620px;margin:0 auto 6px}
 .lb-spin{display:inline-block;width:12px;height:12px;margin-left:8px;vertical-align:-1px;border:2px solid rgba(242,179,61,.25);border-top-color:var(--amber);border-radius:50%;animation:lbSpin .8s linear infinite}@keyframes lbSpin{to{transform:rotate(360deg)}}
+.tut-banner{display:flex;gap:16px;align-items:center;border:1px solid var(--amber);background:rgba(242,179,61,.08);padding:14px 16px;margin-bottom:14px}.tut-banner div{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--dim)}.tut-banner b{color:#fff;font-size:17px;letter-spacing:.04em}
+#tutPanel{position:fixed;left:16px;top:96px;width:340px;z-index:40;background:rgba(14,15,11,.9);border:1px solid rgba(242,179,61,.55);box-shadow:0 10px 40px rgba(0,0,0,.5);padding:14px 16px;display:none;animation:jrIn .35s}
+#tutPanel.on{display:block}#tutPanel .tp-part{font-size:11px;letter-spacing:.32em;color:var(--amber);text-transform:uppercase}
+#tutPanel .tp-title{display:flex;justify-content:space-between;align-items:baseline;font-size:21px;font-weight:800;margin:4px 0 8px}#tutPanel .tp-n{font-size:12px;color:var(--dim);font-weight:600;letter-spacing:.1em}
+#tutPanel .tp-bar{height:3px;background:rgba(255,255,255,.1);margin-bottom:10px}#tutPanel .tp-bar i{display:block;height:100%;background:var(--amber);transition:width .4s}
+#tutPanel .tp-text{font-size:15px;line-height:1.45;color:#eee6cc}#tutPanel .tp-hint{font-size:12.5px;color:var(--dim);margin-top:8px;padding-left:10px;border-left:2px solid rgba(242,179,61,.4)}
+#tutPanel kbd{display:inline-block;min-width:20px;padding:1px 6px;border:1px solid rgba(255,255,255,.35);border-bottom-width:3px;border-radius:3px;font-family:var(--font);font-size:12px;font-weight:700;text-align:center;background:rgba(255,255,255,.06);color:#fff}
+#tutPanel .tp-ok{display:none;margin-top:10px;color:var(--green);font-weight:800;letter-spacing:.3em}#tutPanel.done .tp-ok{display:block;animation:jrIn .3s}#tutPanel.done{border-color:var(--green)}
+#tutPanel .tp-b{display:flex;justify-content:space-between;margin-top:12px}
 .slot.grab{cursor:grab}.slot.dragging{opacity:.35}.slot.drop,.lb-wait.drop{border-color:var(--amber)!important;background:rgba(242,179,61,.14)!important;box-shadow:inset 0 0 0 1px var(--amber)}
 .lb-wait.zone{min-height:44px;border:1px dashed rgba(233,226,200,.15);padding:4px}
 .slot.acting{grid-template-columns:22px 1fr auto!important}.slot.acting .tk{display:none}#lbWait .slot.acting{grid-template-columns:1fr auto!important}.slot-acts{display:flex;gap:4px;margin-left:auto}.slot-acts .btn{padding:3px 8px;font-size:11px}
@@ -319,7 +328,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 
 <div id="howto" class="screen overlay"><div class="win">
   <h2>How to play</h2>
-  <div class="body"><div class="howto">
+  <div class="body"><div class="tut-banner"><div><b>New to Steel Horizon?</b><span>Learn the controls step by step on a practice range, then finish with an easy practice battle. About 10 minutes.</span></div><button class="btn primary" id="howTut">Start tutorial ▶</button></div><div class="lbl" style="margin:4px 0 8px">Controls reference</div><div class="howto">
     <h4>Driving &amp; gunnery</h4>
     <p><kbd>W</kbd> <kbd>S</kbd> throttle / reverse, <kbd>A</kbd> <kbd>D</kbd> turn the hull, <kbd>Space</kbd> brake. The turret follows your mouse at the tank's real traverse speed — a Tiger turns its turret painfully slowly, an Abrams almost instantly.</p>
     <p><kbd>LMB</kbd> fire. <kbd>RMB</kbd> toggles the gunner's sight on/off — scroll to change magnification. Mouse wheel zooms the normal view. Hold <kbd>C</kbd> to look around without moving the turret.</p>
@@ -383,6 +392,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 <div id="loading">PREPARING BATTLEFIELD…</div>
 <div id="toast"></div>
 <div id="joinReqs"></div>
+<div id="tutPanel"><div class="tp-part" id="tpPart"></div><div class="tp-title"><span id="tpTitle"></span><span class="tp-n" id="tpN"></span></div><div class="tp-bar"><i id="tpBar"></i></div><div class="tp-text" id="tpText"></div><div class="tp-hint" id="tpHint"></div><div class="tp-ok" id="tpOk">✓ DONE</div><div class="tp-b"><button class="btn small" id="tpExit" data-snd="exit">Exit tutorial</button><button class="btn small" id="tpSkip">Skip step</button></div></div>
 <div id="netTest" class="screen overlay"><div class="win" style="width:640px">
   <h2>Connection test</h2>
   <div class="body"><div class="dim" style="margin-bottom:10px">Checks each step multiplayer needs. Run it on both computers and send a screenshot if something is red.</div><div id="ntOut"></div></div>
@@ -3764,7 +3774,7 @@ class Battle {
     this.playerDef = cfg.tank ? TANKS[cfg.tank] : null;
     this.over = false; this.result = null; this.silent = cfg.mode === 'demo'; this.demo = cfg.mode === 'demo';
     this.respawnQueue = []; this.spotT = 0;
-    this.mode = cfg.mode === 'waves' ? new WaveMode(cfg) : cfg.mode === 'mission' ? new MissionMode(cfg) : cfg.mode === 'mpclient' ? new MPClientMode(cfg) : new TeamMode(cfg);
+    this.mode = cfg.mode === 'tutorial' ? new TutorialMode(cfg) : cfg.mode === 'waves' ? new WaveMode(cfg) : cfg.mode === 'mission' ? new MissionMode(cfg) : cfg.mode === 'mpclient' ? new MPClientMode(cfg) : new TeamMode(cfg);
     this.mapCfg = this.mode.mapCfg();
     this.map = new GameMap(this.mapCfg);
     this.cam = { x: this.map.W / 2, y: this.map.H / 2, zoom: 5, base: 5, sight: false, shake: 0 };
@@ -3995,6 +4005,7 @@ class Battle {
   }
   onHumanHitResult(ctx, ev, crit, killed) {
     const v = ev.victim;
+    if (ctx.local && this.mode.onPlayerHit) this.mode.onPlayerHit(ev, killed);
     if (v.team === ctx.team) { this.msgTo(ctx, 'Friendly fire!', '#ff6b6b'); return; }
     if (ev.result === 'pen' || ev.result === 'module') ctx.stats.pens++;
     if (ev.result !== 'none') ctx.stats.hits++;
@@ -4493,6 +4504,166 @@ class MissionMode {
 }
 
 // =====================================================================
+//  TUTORIAL — a guided practice range: basic controls step by step,
+//  then armor & damage control, battle skills and a very easy practice duel
+// =====================================================================
+const TUT_START = { x: 100, y: 450, a: 0 };
+class TutorialMode {
+  constructor(cfg) {
+    this.cfg = cfg; this.name = 'Tutorial'; this.i = -1; this.t = 0; this.f = {}; this.doneT = 0; this.dummies = {};
+    this.era = 1;
+  }
+  mapCfg() {
+    return {
+      w: 720, h: 600, seed: 4242, biome: 'europe', forest: 9, fields: 3, rocks: 3,
+      forests: [{ x: 120, y: 125, r: 62 }],
+      roads: [{ pts: [[0, 452], [260, 446], [480, 452], [720, 440]], w: 7, treeLine: false }, { pts: [[500, 0], [500, 170], [470, 452], [460, 600]], w: 6 }],
+      points: [{ name: 'A', x: 500, y: 175, r: 28, capTime: 3, berms: 2 }],
+      buildings: [{ x: 560, y: 240, a: 0.1, w: 12, h: 9 }],
+      clear: [{ x: 100, y: 450, r: 70 }, { x: 318, y: 402, r: 22 }, { x: 480, y: 262, r: 24 }, { x: 330, y: 300, r: 24 }, { x: 640, y: 300, r: 40 }, { x: 240, y: 360, r: 30 }, { x: 280, y: 380, r: 40 }],
+    };
+  }
+  init() {
+    B.freeSpawn = true; B.sp = 9999;
+    B.spawnPlayer(this.cfg.tank || 'm4a1', TUT_START);
+    this.steps = TUT_STEPS;
+    UI.tutShow(true);
+    this.next();
+  }
+  // static target tanks that never move or shoot
+  dummy(key, def, x, y, a) {
+    const old = this.dummies[key];
+    if (old && old.alive) return old;
+    if (old) { old.hidden = true; B.vehicles = B.vehicles.filter(v => v !== old); }
+    const v = B.addVehicle(def, 1, x, y, a, {}); v.name = 'Target';
+    v.ammo.forEach(m => m.n = 0); v.loaded = -1;
+    this.dummies[key] = v; return v;
+  }
+  next() {
+    this.i++; this.t = 0; this.f = {}; this.doneT = 0;
+    const s = this.steps[this.i];
+    if (!s) { this.finish(); return; }
+    if (s.setup) s.setup(this);
+    UI.tutRender(this);
+    if (this.i > 0) uiSnd('purchase');
+  }
+  skip() { if (this.steps[this.i]) this.next(); }
+  finish() { if (this.finished) return; this.finished = true; UI.tutShow(false); B.end('win'); }
+  update(dt) {
+    const s = this.steps[this.i], p = B.player;
+    B.sp = 9999; if (!p || !p.alive) B.me.freeSpawn = true;
+    if (!s) return;
+    this.t += dt;
+    if (p && p.alive) { if (B.cam.sight) this.f.sight = true; if (p.loaded >= 0) this.f.loaded = p.loaded; if (p.vel < -1.5) this.f.rev = true; }
+    if (this.doneT > 0) { this.doneT -= dt; if (this.doneT <= 0) this.next(); return; }
+    if (s.check(this, p, dt)) { this.doneT = 1.3; UI.tutDone(this); }
+  }
+  onPlayerHit(ev, killed) { this.f.hits = this.f.hits || []; this.f.hits.push({ v: ev.victim, part: ev.part, result: ev.result, shell: this.f.loaded, killed, sight: !!B.cam.sight }); }
+  attackGoal(v) { const p = B.player; return p && p.alive ? [p.x, p.y, 70] : [TUT_START.x + 120, TUT_START.y, 60]; }
+  spawnPoints() {
+    const out = [{ x: TUT_START.x, y: TUT_START.y, a: 0, name: 'Start area', ok: true }];
+    const pt = B.map.points[0];
+    out.push({ x: pt.x - 22, y: pt.y + 10, a: 0, name: 'Point A', ok: pt.owner === 0, reason: pt.owner === 0 ? '' : 'Not captured' });
+    return out;
+  }
+  checkEnd() { return null; }
+  objective() { const s = this.steps[this.i]; return s ? `Tutorial · step ${this.i + 1} of ${this.steps.length} — ${s.title}` : 'Tutorial complete'; }
+  reward(r) { return Save.data.tutorialDone ? 0 : 430; } // ×0.7 recruit multiplier → 300 RP the first time
+  onEnd() { Save.data.tutorialDone = true; }
+  // world markers for the current step
+  drawWorld(c, z) {
+    const s = this.steps[this.i]; if (!s || !s.marker || this.doneT > 0) return;
+    const m = typeof s.marker === 'function' ? s.marker(this) : s.marker; if (!m) return;
+    const pulse = 0.5 + 0.5 * Math.sin(B.time * 4), col = m.col || '255,209,102';
+    c.save(); c.translate(m.x, m.y);
+    c.strokeStyle = `rgba(${col},${0.55 + pulse * 0.4})`; c.lineWidth = 2.5 / z; c.setLineDash([8 / z, 6 / z]);
+    c.beginPath(); c.arc(0, 0, m.r, 0, TAU); c.stroke(); c.setLineDash([]);
+    c.fillStyle = `rgba(${col},0.12)`; c.beginPath(); c.arc(0, 0, m.r, 0, TAU); c.fill();
+    c.scale(1 / z, 1 / z);
+    const yy = -m.r * z - 18 - pulse * 8;
+    c.fillStyle = `rgb(${col})`; c.beginPath(); c.moveTo(-9, yy - 12); c.lineTo(9, yy - 12); c.lineTo(0, yy); c.closePath(); c.fill();
+    c.restore();
+    // off-screen: an arrow at the screen edge points the way
+    const [sx, sy] = Render.worldToScreen(m.x, m.y), W = Render.W, H = Render.H;
+    if (sx < 0 || sy < 0 || sx > W || sy > H) {
+      const a = Math.atan2(sy - H / 2, sx - W / 2), ex = clamp(W / 2 + Math.cos(a) * W, 40, W - 40), ey = clamp(H / 2 + Math.sin(a) * H, 90, H - 120);
+      const [wx, wy] = Render.screenToWorld(ex, ey);
+      c.save(); c.translate(wx, wy); c.scale(1 / z, 1 / z); c.rotate(a);
+      c.fillStyle = `rgba(${col},${0.7 + pulse * 0.3})`; c.beginPath(); c.moveTo(16, 0); c.lineTo(-8, -12); c.lineTo(-3, 0); c.lineTo(-8, 12); c.closePath(); c.fill();
+      c.restore();
+    }
+    c.save(); c.translate(m.x, m.y); c.scale(1 / z, 1 / z);
+    if (m.label) { c.font = '700 13px "Barlow Condensed", Arial, sans-serif'; c.textAlign = 'center'; c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillText(m.label, 1, yy - 17); c.fillStyle = `rgb(${col})`; c.fillText(m.label, 0, yy - 18); }
+    c.restore();
+  }
+}
+const near = (p, x, y, r) => p && p.alive && dist(p.x, p.y, x, y) < r;
+const hitOn = (T, test) => (T.f.hits || []).some(test);
+const D1 = [318, 402, Math.PI / 2], D2 = [480, 262, Math.PI / 2], D3 = [330, 300, 0.55];
+const TUT_STEPS = [
+  // ---------------------------------------------------------- PART 1 · BASIC CONTROLS
+  { part: 'Basic controls', title: 'Drive forward', text: 'Hold <kbd>W</kbd> to drive forward to the yellow marker. Let go and the tank rolls to a stop.',
+    hint: 'Tanks take a moment to get moving — heavier ones accelerate slower.', marker: { x: 195, y: 450, r: 8, label: 'DRIVE HERE' },
+    check: (T, p) => near(p, 195, 450, 9) },
+  { part: 'Basic controls', title: 'Steer', text: 'Use <kbd>A</kbd> and <kbd>D</kbd> to turn the hull while driving, and reach the next marker.',
+    hint: 'Tracked tanks can also turn on the spot: hold A or D without W.', marker: { x: 240, y: 360, r: 8, label: 'DRIVE HERE' },
+    check: (T, p) => near(p, 240, 360, 9) },
+  { part: 'Basic controls', title: 'Reverse and brake', text: 'Hold <kbd>S</kbd> to reverse a few metres, then press <kbd>Space</kbd> to brake to a stop.',
+    hint: 'Reversing out of a fight keeps your thick front armor pointed at the enemy.',
+    check: (T, p) => p && T.f.rev && Input.keys.Space && Math.abs(p.vel) < 0.6 },
+  { part: 'Basic controls', title: 'Aim the turret', text: 'Move your mouse over the <b>target tank</b>. The turret turns toward the cursor at its real speed — heavy tanks turn their turrets slowly.',
+    hint: 'Hold C to look around without moving the turret.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' },
+    check: (T, p, dt) => { const d = T.dummies.d1; if (!p || !d) return false; const [tx, ty] = p.turretPos(); const ok = Math.abs(angDiff(p.turretWorldAng(), Math.atan2(d.y - ty, d.x - tx))) < 0.035; T.f.aimT = ok ? (T.f.aimT || 0) + dt : 0; return T.f.aimT > 0.6; } },
+  { part: 'Basic controls', title: 'Fire!', text: '<b>Left-click</b> to fire at the target. After each shot your loader needs time to reload — watch the shell cards at the bottom of the screen.',
+    hint: 'The small ring shows where the gun really points. Moving opens it up; stop for accurate shots.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' },
+    check: T => hitOn(T, h => h.v === T.dummies.d1) },
+  { part: 'Basic controls', title: 'Change shells', text: 'Press <kbd>2</kbd> to choose a different shell, wait for it to load, then fire it at the target. Each card shows that shell’s penetration.',
+    hint: 'Pressing the same number twice unloads the current round and loads the new one straight away.', setup: T => T.dummy('d1', 'pz4f2', ...D1),
+    check: () => false,
+    marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' } },
+  { part: 'Basic controls', title: 'Gunner’s sight', text: 'Scroll the mouse wheel <b>out</b> until you can see the distant target, then <b>right-click</b> to open the gunner’s sight (scroll to zoom it) and hit the target through the sight.',
+    hint: 'Right-click again to close the sight. Far targets need you to stay still and let the aim settle.', setup: T => T.dummy('d2', 'm4a1', ...D2), marker: { x: D2[0], y: D2[1], r: 7, label: 'FAR TARGET', col: '255,120,100' },
+    check: T => hitOn(T, h => h.v === T.dummies.d2 && h.sight) },
+  { part: 'Basic controls', title: 'Aim high or low', text: 'Where your cursor sits decides the shot height. Put it on the target’s <b>turret</b> — the readout says <b>TURRET</b> — and hit it there.',
+    hint: 'Low shots (hull) can be stopped by walls, berms and logs; turret shots fly over them.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'HIT THE TURRET', col: '255,120,100' },
+    check: T => hitOn(T, h => h.part === 'turret') },
+  // ---------------------------------------------------------- PART 2 · ARMOR & DAMAGE CONTROL
+  { part: 'Armor & damage control', title: 'Find the weak spot', text: 'Hover over the angled target. The readout shows <b>your penetration vs. its armor</b> — green goes through, red bounces. Aim at its <b>side</b> and knock it out.',
+    hint: 'Sloped and angled plates are much thicker in effect. Sides and rear are always weaker than the front.', setup: T => T.dummy('d3', 'pz4f2', ...D3), marker: { x: D3[0], y: D3[1], r: 7, label: 'KNOCK OUT', col: '255,120,100' },
+    check: T => T.dummies.d3 && !T.dummies.d3.alive },
+  { part: 'Armor & damage control', title: 'Fight a fire', text: 'Your engine has caught fire! Press <kbd>F</kbd> to use the extinguisher before the fire spreads and hurts your crew.',
+    hint: 'You carry a limited number of extinguishers, and a crew can only fight fires while enough of them are alive.',
+    setup: T => { const p = B.player; if (p && p.alive) { p.ext = Math.max(p.ext, 2); p.startFire(p.mod('engine')); } },
+    check: (T, p) => p && p.alive && !p.fire },
+  { part: 'Armor & damage control', title: 'Repair', text: 'A shell just broke your <b>left track</b> — you can’t drive. Press <kbd>R</kbd> to start repairs and wait until they finish.',
+    hint: 'You can’t move while repairing. The crew/module panel (bottom left) shows what’s damaged.',
+    setup: T => { const p = B.player; if (p && p.alive) { p.mod('trackL').hp = 0; B.fxTrackBreak && B.fxTrackBreak(p, p.mod('trackL')); } },
+    check: (T, p) => p && p.alive && p.tracksOK() && p.repairT <= 0 },
+  { part: 'Armor & damage control', title: 'Smoke screen', text: 'Press <kbd>G</kbd> to fire smoke grenades in front of your turret. Smoke blocks enemy sight — use it to escape or cross open ground.',
+    hint: 'Only some tanks carry smoke launchers, and only a few grenades.', setup: T => { const p = B.player; if (p) p.smoke = Math.max(p.smoke, 2); },
+    check: () => B.smokes.length > 0 },
+  // ---------------------------------------------------------- PART 3 · BATTLE SKILLS
+  { part: 'Battle skills', title: 'Hide in the woods', text: 'Drive deep into the forest and stay there for <b>3 seconds</b>. In heavy woods enemies can’t spot you unless they come close — or you fire.',
+    hint: 'Tanks can push down thin trees; fallen thick trunks block the way. Enemies hidden in woods show no name tag.', marker: { x: 120, y: 125, r: 26, label: 'HIDE HERE', col: '143,209,122' },
+    check: (T, p, dt) => { const ok = p && p.alive && B.map.heavyWoods(p.x, p.y); T.f.woodsT = ok ? (T.f.woodsT || 0) + dt : 0; return T.f.woodsT > 3; } },
+  { part: 'Battle skills', title: 'Capture a point', text: 'Drive into the circle at <b>point A</b> and stay until it turns blue. In battles, the team holding the most points when the clock runs out wins.',
+    hint: 'More tanks capture faster. Enemy tanks in the circle stop the capture.', marker: () => { const p = B.map.points[0]; return { x: p.x, y: p.y, r: p.r + 4, label: 'CAPTURE', col: '95,175,255' }; },
+    check: () => B.map.points[0].owner === 0 },
+  { part: 'Battle skills', title: 'Redeploy', text: 'Your tank has been knocked out. On the <b>spawn screen</b>, pick a spawn point — your start area or a point you hold — choose a tank and press <b>Deploy</b>.',
+    hint: 'In real battles each redeploy costs spawn points (SP), earned by fighting and capturing.',
+    setup: T => { const p = B.player; if (p && p.alive) p.destroy('fire', null); T.f.dead = true; },
+    check: (T, p) => T.t > 1 && p && p.alive },
+  // ---------------------------------------------------------- PART 4 · PRACTICE ROUND
+  { part: 'Practice round', title: 'Practice battle', text: 'A <b>Recruit</b> enemy crew is coming for you. Find it, keep your front toward it, and destroy it. If you get knocked out, just redeploy.',
+    hint: 'Stop before you shoot, aim at its side if you can, and remember R, F and G.',
+    setup: T => { const e = B.addVehicle('pz4f2', 1, 650, 250, Math.PI, { ai: true, diff: 'recruit', role: 'attack' }); e.ai.diffKey = 'recruit'; e.skill = 1.6; T.enemy = e; },
+    marker: T => T.enemy && T.enemy.alive && T.enemy.seenBy[0] ? { x: T.enemy.x, y: T.enemy.y, r: 6, label: 'ENEMY', col: '255,90,80' } : null,
+    check: T => T.enemy && !T.enemy.alive },
+];
+// count shots of the non-default shell for the "Change shells" step
+TUT_STEPS[5].check = (T, p) => { if (!p) return false; const s = B.me.stats.shots; if (T.f.s0 === undefined) T.f.s0 = s; if (s > T.f.s0) { if (T.f.lastFireShell > 0) return true; T.f.s0 = s; } if (p.loaded >= 0) T.f.lastFireShell = p.loaded; return false; };
+
+// =====================================================================
 //  FX + WORLD RENDERING
 // =====================================================================
 function makeBlob(r, g, b, hard = 0.0) {
@@ -4852,6 +5023,7 @@ const Render = {
     this.emitFires(dt);
     FX.draw(c, true);
     // markers
+    if (B.mode.drawWorld) B.mode.drawWorld(c, B.cam.zoom);
     this.drawMarkers(c, vis);
     // screen space
     c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
@@ -5748,6 +5920,9 @@ const UI = {
     $('bHow').onclick = () => { Sfx.init(); this.show('howto'); };
     $('bSet').onclick = () => { Sfx.init(); this.openSettings(); };
     $('howClose').onclick = () => this.hide('howto');
+    $('howTut').onclick = () => this.startTutorial();
+    $('tpSkip').onclick = () => { if (B && B.mode instanceof TutorialMode) B.mode.skip(); };
+    $('tpExit').onclick = () => this.leaveBattle();
     $('chOffline').onclick = () => { this.hide('mpChoice'); this.openMapSelect(k => this.openSetup('team', k)); };
     $('mapBack').onclick = () => { this.hide('mapSel'); if (this.mapBackTo) this.mapBackTo(); };
     $('chOnline').onclick = () => { this.hide('mpChoice'); Lobby.hostRoom(); };
@@ -5772,6 +5947,7 @@ const UI = {
     $('resMenu').onclick = () => { if (B && (B.mp || B.net)) Lobby.backToLobby(); else App.quitToMenu(); };
     $('resAgain').onclick = () => {
       const mode = (App.lastCfg && App.lastCfg.mode) || 'team'; App.quitToMenu();
+      if (mode === 'tutorial') { this.startTutorial(); return; }
       if (mode === 'team') { $('loading').classList.add('on'); setTimeout(() => { $('loading').classList.remove('on'); this.openMapSelect(k => this.openSetup('team', k)); }, 650); }
       else this.openSetup(mode);
     };
@@ -5792,7 +5968,7 @@ const UI = {
   updateBlocking() { this.blocking = ['setup', 'tree', 'spawn', 'pause', 'settings', 'results', 'howto', 'mpChoice', 'lobby', 'netTest', 'mapSel'].some(id => $(id).classList.contains('on')); },
   hideAll() { ['menu', 'setup', 'tree', 'spawn', 'pause', 'settings', 'results', 'howto', 'mpChoice', 'lobby', 'mapSel', 'netTest'].forEach(id => $(id).classList.remove('on')); $('spectate').classList.remove('on'); this.updateBlocking(); if (this.spawnTimer) { clearInterval(this.spawnTimer); this.spawnTimer = null; } },
   toast(msg, bad) { if (bad) uiSnd('denied'); const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(this._tt); this._tt = setTimeout(() => t.style.display = 'none', 2600); },
-  showMenu() { this.hideAll(); this.show('menu'); this.refreshMenu(); requestAnimationFrame(() => this.drawArts()); },
+  showMenu() { $('tutPanel').classList.remove('on'); this.hideAll(); this.show('menu'); this.refreshMenu(); requestAnimationFrame(() => this.drawArts()); },
   drawArts() { document.querySelectorAll('canvas[data-art]').forEach(cv => drawCardArt(cv, cv.dataset.art)); },
   refreshMenu() {
     const d = Save.data;
@@ -6028,14 +6204,27 @@ const UI = {
   },
   showSpectate(on) { $('spectate').classList.toggle('on', on); },
   showLobby() { this.hideAll(); this.show('lobby'); Lobby.render(); },
+  startTutorial() { this.hideAll(); App.startBattle({ mode: 'tutorial', tank: 'm4a1', diff: 'recruit' }); },
+  tutShow(on) { $('tutPanel').classList.toggle('on', on); },
+  tutRender(T) {
+    const s = T.steps[T.i]; if (!s) return;
+    $('tutPanel').classList.remove('done');
+    $('tpPart').textContent = `Part ${['Basic controls', 'Armor & damage control', 'Battle skills', 'Practice round'].indexOf(s.part) + 1} · ${s.part}`;
+    $('tpTitle').textContent = s.title; $('tpN').textContent = `${T.i + 1} / ${T.steps.length}`;
+    $('tpBar').style.width = `${T.i / T.steps.length * 100}%`;
+    $('tpText').innerHTML = s.text; $('tpHint').textContent = s.hint || '';
+  },
+  tutDone(T) { $('tutPanel').classList.add('done'); $('tpBar').style.width = `${(T.i + 1) / T.steps.length * 100}%`; uiSnd('click'); },
   // leaving mid-battle returns you to where you started: the setup screen offline, the lobby online
   leaveBattle() {
     if (B && B.net === 'client') { if (B.over) { Lobby.backToLobby(); return; } Lobby.clientLeaveBattle(); return; }
     if (B && B.net === 'host') { if (B.over) { Lobby.backToLobby(); return; } Lobby.hostLeaveBattle(); return; }
     if (!B || B.over) { App.quitToMenu(); return; }
-    if (!confirm('Leave this battle? It will not count as a win or a loss.')) return;
     const cfg = App.lastCfg || {};
+    if (!confirm(cfg.mode === 'tutorial' ? 'Leave the tutorial? You can restart it any time from How to Play.' : 'Leave this battle? It will not count as a win or a loss.')) return;
+    this.tutShow(false);
     App.quitToMenu();
+    if (cfg.mode === 'tutorial') return;
     if (cfg.mode) this.openSetup(cfg.mode, cfg.map);
   },
   // ------------------------------------------------------------- pause / results
@@ -6043,7 +6232,7 @@ const UI = {
   showResults(sum) {
     this.hideAll();
     const win = sum.result === 'win';
-    const draw = sum.result === 'draw';
+    const draw = sum.result === 'draw', tut = sum.mode instanceof TutorialMode;
     const t = $('resTitle'); t.textContent = sum.mode instanceof WaveMode ? 'BATTLE OVER' : draw ? 'DRAW' : win ? 'VICTORY' : 'DEFEAT';
     t.style.color = sum.mode instanceof WaveMode || draw ? '#f2b33d' : win ? '#8fd17a' : '#e0574a';
     $('resSub').textContent = sum.mode instanceof WaveMode ? `SURVIVED ${Math.max(0, sum.mode.wave - (sum.mode.state === 'fight' ? 1 : 0))} WAVES` : (sum.mode.name || '').toUpperCase();
@@ -6057,6 +6246,7 @@ const UI = {
     const mp = !!(B && (B.mp || B.net));
     $('resAgain').style.display = mp ? 'none' : '';
     $('resMenu').textContent = mp ? 'Back to lobby' : 'Back to main menu';
+    if (tut) { $('resTitle').textContent = 'TUTORIAL COMPLETE'; $('resTitle').style.color = '#8fd17a'; $('resSub').textContent = 'YOU ARE READY FOR BATTLE'; $('resAgain').textContent = 'Replay tutorial'; } else $('resAgain').textContent = 'Play again';
     if (sum.mode instanceof TeamMode) { const h = sum.mode.held ? sum.mode.held() : null; const sc = sum.mode.tickets || [0, 0]; const T0 = B ? B.myTeam : 0; if (h) $('resSub').textContent = `${sum.mode.name.toUpperCase()}  ·  POINTS HELD ${h[T0]} – ${h[1 - T0]}  ·  CONTROL ${Math.round(sc[T0])} – ${Math.round(sc[1 - T0])}`; }
     this.show('results');
     if (!win || sum.mode instanceof WaveMode) Music.gameOver();
