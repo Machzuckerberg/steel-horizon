@@ -193,11 +193,13 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 #joinReqs{position:fixed;top:80px;right:18px;z-index:70;display:flex;flex-direction:column;gap:10px;width:330px}
 .jr{background:rgba(18,19,14,.97);border:1px solid var(--amber);box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 30px -10px var(--amber);padding:14px 16px;animation:jrIn .35s cubic-bezier(.2,.8,.2,1)}
 @keyframes jrIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.jr.out{animation:jrOut .38s cubic-bezier(.5,0,.8,.4) forwards;pointer-events:none}@keyframes jrOut{to{transform:translateX(380px);opacity:0}}
+#joinReqs{max-height:calc(100vh - 100px);overflow:hidden}
 .jr-t{font-size:11px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase}.jr-n{font-size:22px;font-weight:800;margin:4px 0 2px}.jr-s{font-size:12px;color:var(--dim)}
 .jr-b{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}.jr-bar{height:2px;background:rgba(255,255,255,.1);margin-top:10px}.jr-bar i{display:block;height:100%;background:var(--amber);animation:jrT 60s linear forwards}
 @keyframes jrT{from{width:100%}to{width:0}}
 .join-code{display:flex;gap:8px;align-items:center;color:var(--dim);font-size:14px}.join-code input{background:#0d0e0b;border:1px solid var(--line);color:#fff;font-family:var(--font);font-size:16px;letter-spacing:.3em;padding:9px 10px;width:150px;text-transform:uppercase}
-.nt-row{padding:8px 0;border-bottom:1px solid rgba(233,226,200,.07);font-size:14px;display:flex;gap:10px}.nt-row span{width:18px;font-weight:800}.nt-ok{color:var(--green)}.nt-bad{color:var(--red)}.nt-wait{color:var(--amber)}
+.nt-row{padding:8px 0;border-bottom:1px solid rgba(233,226,200,.07);font-size:14px;display:flex;gap:10px}.nt-row span{width:18px;font-weight:800}.nt-ok{color:var(--green)}.nt-bad{color:var(--red)}.nt-wait{color:var(--amber)}.nt-info{color:var(--dim)}
 #loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:50;background:rgba(8,9,7,.92);font-size:16px;letter-spacing:.4em;color:var(--dim)}
 #loading.on{display:flex}
 #spectate{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:6;display:none;gap:10px;align-items:center}
@@ -4714,7 +4716,7 @@ const UI = {
     $('lbLeave').onclick = () => { Lobby.leave(); this.hide('lobby'); this.showMenu(); };
     $('lbStart').onclick = () => { Lobby.start(); };
     $('lbReady').onclick = () => Lobby.toggleReady();
-    $('lbName').onchange = e => Lobby.setName(e.target.value);
+    $('lbName').onchange = e => Lobby.setName(e.target.value); $('lbName').oninput = e => Lobby.nameInput(e.target.value);
     $('setupBack').onclick = () => { this.hide('setup'); };
     $('setupGo').onclick = () => { this.launch(); };
     $('treeBack').onclick = () => { this.hide('tree'); this.refreshMenu(); };
@@ -5024,7 +5026,7 @@ const App = {
     UI.hideAll();
     Sfx.init();
     new Battle({ mode: 'mpclient', net: 'client', mapCfg: m.mapCfg, mpView: { settings: m.settings }, mp: { settings: m.settings }, localPid: m.pid, myTeam: m.team, name: Lobby.myName(), diff: m.settings.diff });
-    B.me.pref = m.tank;
+    B.me.pref = m.tank; if (m.tanks) B.me.tanks = m.tanks; if (m.name) B.me.name = m.name;
     this.state = 'battle'; this.paused = false; Music.setContext('battle'); Music.resume();
   },
   toLobby() {
@@ -5239,7 +5241,8 @@ class Signal { // sends every message over all routes; first copy to arrive wins
 }
 class Link {
   constructor(id) { this.id = id; this.pid = -1; this.onmsg = null; this.onclose = null; this.alive = true; this.lastRx = performance.now(); }
-  recv(m) { this.lastRx = performance.now(); if (m.t === '__bye') { this.drop(); return; } this.onmsg && this.onmsg(m); }
+  recv(m) { this.lastRx = performance.now(); if (m.t === '__bye') { this.drop(); return; } if (this.onmsg) this.onmsg(m); else (this.q = this.q || []).push(m); }
+  flush() { const q = this.q || []; this.q = null; for (const m of q) this.onmsg(m); }
 }
 class RtcLink extends Link {
   constructor(id, pc) { super(id); this.pc = pc; this.rel = null; this.fast = null; }
@@ -5281,7 +5284,7 @@ const Net = {
     if (this.local) {
       this.bus = new LocalBus(this.room, 'host', (from, d) => {
         let link = this.links.find(l => l.id === from && l.alive);
-        if (d.t === '__hello') { if (!link) { link = new LocalLink(from, this.bus); reg(link); } link.send({ t: '__ok' }); return; }
+        if (d.t === '__hello') { if (!link) { link = new LocalLink(from, this.bus); link.send({ t: '__ok' }); reg(link); } else link.send({ t: '__ok' }); return; }
         if (link) link.recv(d);
       });
       setTimeout(onReady, 0);
@@ -5615,8 +5618,8 @@ const Lobby = {
   note(t) { if (!this.state || !this.isHost || /Room open/.test(this.status) || /connect/i.test(t)) { this.status = t; if (this.isHost) setTimeout(() => { if (this.status === t) { this.status = 'Room open — share the link'; this.render(); } }, 6000); this.render(); } },
   myName() { if (!Save.data.name) { Save.data.name = 'Commander' + rndi(10, 99); Save.save(); } return Save.data.name; },
   myTanks() { return Save.data.unlocked.filter(id => TANKS[id] && TANKS[id].rp >= 0); },
-  pickAllowed(tank, era) {
-    const ok = this.myTanks().filter(id => TANKS[id].era <= era);
+  pickAllowed(tank, era, list) {
+    const ok = (list || this.myTanks()).filter(id => TANKS[id] && TANKS[id].era <= era);
     if (ok.includes(tank)) return tank;
     return ok.sort((a, b) => TANKS[b].era - TANKS[a].era)[0] || 'm4a1';
   },
@@ -5625,8 +5628,10 @@ const Lobby = {
     this.isHost = true; this.myPid = 0; this.nextPid = 1; this.links = {}; this.sel = null; this.joined = true;
     const sel = Save.data.selected;
     const era = TANKS[sel] ? TANKS[sel].era : 1;
+    const hostTanks = this.myTanks(); // everyone in this room picks from the host's unlocked tanks
     this.state = {
-      players: { 0: { pid: 0, name: this.myName(), tank: sel, tanks: this.myTanks(), ready: false, host: true } },
+      hostTanks,
+      players: { 0: { pid: 0, name: this.myName(), tank: sel, tanks: hostTanks, ready: false, host: true } },
       slots: [[0, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1]],
       settings: { ai: true, diff: Save.data.settings.difficulty || 'regular', era }, inBattle: false,
     };
@@ -5645,18 +5650,25 @@ const Lobby = {
   onLinkUp(link) {
     link.onmsg = m => this.hostMsg(link, m);
     link.onclose = () => this.dropLink(link);
+    this.sendPreview(link);
   },
+  // what a not-yet-admitted player sees: the tanks they may pick and the match settings
+  sendPreview(link) { const S = this.state; if (S) link.send({ t: 'preview', tanks: S.hostTanks, settings: S.settings, host: S.players[0].name, count: this.humanCount() }); },
   humanCount() { return Object.keys(this.state.players).length; },
   hostMsg(link, m) {
     const S = this.state;
     if (m.t === 'hello') {
+      if (link.pid >= 0 || link.pendingReq) return;
+      const now = performance.now();
+      if (now - (link.lastAsk || -1e9) < 4800) { link.send({ t: 'slow' }); return; } // one request per 5 s
+      link.lastAsk = now;
       if (this.humanCount() >= MAX_PLAYERS) { link.send({ t: 'full' }); setTimeout(() => link.close(), 200); return; }
-      if (link.asked) return;
-      link.asked = true;
+      link.pendingReq = true;
       link.send({ t: 'pending' });
-      JoinReq.ask(link, m, ok => {
+      JoinReq.ask(link, m, (ok, why) => {
+        link.pendingReq = false;
         if (!link.alive) return;
-        if (!ok) { link.send({ t: 'declined' }); setTimeout(() => link.close(), 300); return; }
+        if (!ok) { link.send({ t: 'declined', why }); return; }
         if (this.humanCount() >= MAX_PLAYERS) { link.send({ t: 'full' }); setTimeout(() => link.close(), 200); return; }
         this.admit(link, m);
       });
@@ -5669,9 +5681,8 @@ const Lobby = {
     const S = this.state;
     {
       const pid = this.nextPid++; link.pid = pid; this.links[pid] = link;
-      const tanks = (m.tanks || []).filter(id => TANKS[id] && TANKS[id].rp >= 0);
-      if (!tanks.length) tanks.push('m4a1');
-      S.players[pid] = { pid, name: cleanName(m.name), tank: tanks.includes(m.tank) ? m.tank : tanks[0], tanks, ready: false, waiting: S.inBattle };
+      const tanks = S.hostTanks.slice();
+      S.players[pid] = { pid, name: cleanName(m.name), tank: this.pickAllowed(m.tank, S.settings.era, tanks), tanks, ready: false, waiting: S.inBattle };
       const c0 = S.slots[0].filter(p => p >= 0).length, c1 = S.slots[1].filter(p => p >= 0).length;
       const order = c0 <= c1 ? [0, 1] : [1, 0];
       for (const t of order) { const i = S.slots[t].indexOf(-1); if (i >= 0) { S.slots[t][i] = pid; break; } }
@@ -5732,7 +5743,8 @@ const Lobby = {
   setSetting(k, v) {
     if (!this.isHost) return;
     this.state.settings[k] = v;
-    if (k === 'era') { const me = this.state.players[0]; me.tank = this.pickAllowed(me.tank, v); }
+    if (k === 'era') for (const P of Object.values(this.state.players)) P.tank = this.pickAllowed(P.tank, v, this.state.hostTanks);
+    for (const l of Net.links) if (l.alive && !(l.pid >= 0)) this.sendPreview(l);
     if (k === 'diff') { Save.data.settings.difficulty = v; Save.save(); }
     this.broadcast();
   },
@@ -5745,7 +5757,7 @@ const Lobby = {
     if (!S.settings.ai && (!S.slots[0].some(p => p >= 0) || !S.slots[1].some(p => p >= 0))) { UI.toast('With AI off, both teams need at least one player', true); return; }
     S.inBattle = true;
     for (const P of Object.values(S.players)) { P.waiting = !slotted.has(P.pid); P.ready = false; }
-    S.players[0].tank = this.pickAllowed(S.players[0].tank, S.settings.era);
+    for (const P of Object.values(S.players)) P.tank = this.pickAllowed(P.tank, S.settings.era, S.hostTanks);
     const players = {};
     for (const P of Object.values(S.players)) if (slotted.has(P.pid)) players[P.pid] = { name: P.name, tank: P.tank, tanks: P.tanks };
     const mp = { slots: S.slots.map(s => s.slice()), players, settings: Object.assign({}, S.settings) };
@@ -5757,7 +5769,7 @@ const Lobby = {
         const P = S.players[pid];
         if (!P || P.waiting) { l.send({ t: 'inprogress' }); continue; }
         const team = S.slots[0].includes(+pid) ? 0 : 1;
-        l.send({ t: 'start', mapCfg: B.mapCfg, pid: +pid, team, settings: mp.settings, tank: P.tank });
+        l.send({ t: 'start', mapCfg: B.mapCfg, pid: +pid, team, settings: mp.settings, tank: P.tank, tanks: P.tanks, name: P.name });
       }
       this.broadcast();
     });
@@ -5769,27 +5781,46 @@ const Lobby = {
   // ------------------------------------------------------------ client
   joinRoom(code) {
     this.isHost = false; this.myPid = -1; this.state = null; this.joined = false; this.inBattleWait = false; this.declined = false; this.joinCode = code;
+    this.preview = null; this.pending = false; this.lastAsk = -1e9; this.preTank = null; this.connected = false;
     this.status = 'Connecting to host…';
     UI.showLobby(); this.render();
     Net.join(code, link => {
       link.onmsg = m => this.clientMsg(m);
       link.onclose = () => this.hostGone();
-      this.status = 'Connected — asking the host to let you in…';
-      link.send({ t: 'hello', name: this.myName(), tanks: this.myTanks(), tank: Save.data.selected, v: NET_VER });
+      this.connected = true; setTimeout(() => link.flush(), 0);
+      this.status = 'Connected — pick your name and tank, then press Ask to join';
       this.render();
     }, e => { this.status = `Could not connect (${netErrText(e)})`; this.render(); });
   },
+  askCooldown() { return Math.max(0, 5000 - (performance.now() - this.lastAsk)); },
+  askJoin() {
+    if (!this.connected || !this.preview || this.pending || this.joined) return;
+    const cd = this.askCooldown();
+    if (cd > 0) { UI.toast(`You can ask again in ${Math.ceil(cd / 1000)} s`, true); return; }
+    const name = cleanName($('lbName').value); Save.data.name = name; Save.save();
+    this.lastAsk = performance.now(); this.pending = true;
+    this.status = 'Request sent — waiting for the host to let you in…';
+    Net.toHost({ t: 'hello', name, tank: this.preTank, v: NET_VER });
+    this.render();
+  },
   clientMsg(m) {
     switch (m.t) {
-      case 'welcome': this.myPid = m.pid; this.joined = true; this.status = 'Connected'; this.render(); break;
-      case 'pending': this.status = 'Waiting for the host to let you in…'; this.render(); break;
-      case 'declined': this.declined = true; Net.shutdown(); UI.hide('lobby'); UI.showMenu(); UI.toast('The host declined your request to join', true); history.replaceState(null, '', location.href.split('#')[0]); break;
+      case 'preview': this.preview = m; if (!this.preTank || !m.tanks.includes(this.preTank)) this.preTank = this.pickAllowed(Save.data.selected, m.settings.era, m.tanks); this.render(); break;
+      case 'welcome': this.myPid = m.pid; this.joined = true; this.pending = false; this.status = 'You are in! Ready up when you are set'; this.render(); break;
+      case 'pending': this.status = 'Request sent — waiting for the host to let you in…'; this.render(); break;
+      case 'slow': this.pending = false; UI.toast('Wait a few seconds before asking again', true); this.render(); break;
+      case 'declined': {
+        this.pending = false;
+        this.status = m.why === 'timeout' ? 'The host did not answer — you can ask again' : 'The host declined your request — you can ask again';
+        UI.toast(m.why === 'timeout' ? 'The host did not answer your request' : 'The host declined your request to join', true);
+        this.render(); const tick = () => { if (!this.joined && this.askCooldown() > 0) { this.render(); setTimeout(tick, 500); } else this.render(); }; setTimeout(tick, 500);
+        break; }
       case 'full': this.status = 'This room is full (12 players)'; this.render(); Net.shutdown(); break;
       case 'inprogress': this.inBattleWait = true; this.status = 'A battle is in progress — you will join the next round'; this.render(); break;
       case 'lobby': {
         this.state = m.L;
         const me = this.state.players[this.myPid];
-        if (me) { const want = this.pickAllowed(me.tank, this.state.settings.era); if (want !== me.tank) Net.toHost({ t: 'tank', tank: want }); }
+        if (me) { const want = this.pickAllowed(me.tank, this.state.settings.era, this.state.hostTanks); if (want !== me.tank) Net.toHost({ t: 'tank', tank: want }); }
         if (!this.state.inBattle) this.inBattleWait = false;
         this.render(); break; }
       case 'start': this.inBattleWait = false; App.startClientBattle(m); break;
@@ -5838,6 +5869,7 @@ const Lobby = {
     $('lobby').classList.toggle('host', host);
     const go = $('lbStart');
     go.style.display = host ? '' : 'none';
+    if (!host && !this.joined) { this.renderPrejoin(); return; }
     if (!S) { $('lbT0').innerHTML = $('lbT1').innerHTML = ''; $('lbSettings').innerHTML = ''; $('lbTanks').innerHTML = ''; $('lbWait').innerHTML = ''; $('lbHint').textContent = ''; return; }
     go.disabled = S.inBattle || !Net.room;
     { const sl = S.slots.flat().filter(p => p >= 0 && S.players[p]), nr = sl.filter(p => S.players[p].ready).length;
@@ -5895,8 +5927,8 @@ const Lobby = {
     const nm = $('lbName');
     if (document.activeElement !== nm) nm.value = me ? me.name : this.myName();
     const tl = $('lbTanks'); tl.innerHTML = '';
-    for (const id of this.myTanks()) {
-      const d = TANKS[id], allowed = d.era <= st.era;
+    for (const id of S.hostTanks || this.myTanks()) {
+      const d = TANKS[id]; if (!d) continue; const allowed = d.era <= st.era;
       const el = document.createElement('div');
       el.className = 'tcard' + (me && me.tank === id ? ' sel' : '') + (allowed ? '' : ' locked');
       el.innerHTML = `<canvas></canvas><div class="n">${d.name}</div><div class="s">${ERA_NAMES[d.era]}${allowed ? '' : ' · above era limit'}</div>`;
@@ -5905,19 +5937,47 @@ const Lobby = {
       previewInto(el.querySelector('canvas'), d, { w: 150, h: 44 });
     }
     const rb = $('lbReady');
+    rb.disabled = false; rb.style.display = '';
     rb.textContent = me && me.ready ? 'Ready ✓' : 'Ready up';
     rb.classList.toggle('primary', !!(me && me.ready));
   },
+  renderPrejoin() {
+    const pv = this.preview, eras = ['I · Early WWII', 'II · Late WWII', 'III · Cold War', 'IV · Modern'];
+    $('lbCount').textContent = pv ? `${pv.count} / ${MAX_PLAYERS} players` : '';
+    $('lbT0').innerHTML = $('lbT1').innerHTML = '<div class="dim" style="padding:14px 4px">Teams appear once the host lets you in.</div>';
+    $('lbWait').innerHTML = '';
+    $('lbHint').textContent = pv ? `Pick your name and tank, then press Ask to join — ${pv.host} will see your request.` : '';
+    $('lbSettings').innerHTML = pv ? `<div class="row"><span>Host</span><b>${esc(pv.host)}</b></div><div class="row"><span>AI fill</span><b>${pv.settings.ai ? 'On' : 'Off'}</b></div><div class="row"><span>AI difficulty</span><b>${DIFF[pv.settings.diff].name}</b></div><div class="row"><span>Highest era</span><b>${eras[pv.settings.era - 1]}</b></div>` : '';
+    const nm = $('lbName'); if (document.activeElement !== nm) nm.value = this.myName();
+    const tl = $('lbTanks'); tl.innerHTML = pv ? '' : '<div class="dim">Connecting to the host…</div>';
+    if (pv) for (const id of pv.tanks) {
+      const d = TANKS[id]; if (!d) continue; const allowed = d.era <= pv.settings.era;
+      const el = document.createElement('div');
+      el.className = 'tcard' + (this.preTank === id ? ' sel' : '') + (allowed ? '' : ' locked');
+      el.innerHTML = `<canvas></canvas><div class="n">${d.name}</div><div class="s">${ERA_NAMES[d.era]}${allowed ? '' : ' · above era limit'}</div>`;
+      if (allowed) el.onclick = () => { this.preTank = id; this.render(); };
+      tl.appendChild(el);
+      previewInto(el.querySelector('canvas'), d, { w: 150, h: 44 });
+    }
+    const rb = $('lbReady'), cd = this.askCooldown();
+    rb.style.display = this.connected ? '' : 'none';
+    rb.disabled = !pv || this.pending || cd > 0;
+    rb.textContent = this.pending ? 'Request sent…' : cd > 0 ? `Ask again in ${Math.ceil(cd / 1000)} s` : 'Ask to join';
+    rb.classList.toggle('primary', !rb.disabled);
+  },
+  nameInput(v) { clearTimeout(this._nt); this._nt = setTimeout(() => this.setName(v), 450); },
   pickTank(id) {
-    Save.data.selected = id; Save.save();
-    if (this.isHost) { this.state.players[0].tank = id; this.broadcast(); }
+    if (this.isHost) { Save.data.selected = id; Save.save(); this.state.players[0].tank = id; this.broadcast(); }
     else { const me = this.state && this.state.players[this.myPid]; if (me) me.tank = id; Net.toHost({ t: 'tank', tank: id }); this.render(); }
   },
   setName(n) {
     n = cleanName(n); Save.data.name = n; Save.save();
-    if (this.isHost) { this.state.players[0].name = n; this.broadcast(); } else Net.toHost({ t: 'name', name: n });
+    if (!this.state) return;
+    if (this.isHost) { this.state.players[0].name = n; this.broadcast(); }
+    else if (this.joined) { const me = this.state.players[this.myPid]; if (me) me.name = n; Net.toHost({ t: 'name', name: n }); }
   },
   toggleReady() {
+    if (!this.isHost && !this.joined) { this.askJoin(); return; }
     if (!this.state) return;
     if (this.isHost) { const me = this.state.players[0]; me.ready = !me.ready; this.broadcast(); this.render(); return; }
     const me = this.state.players[this.myPid]; if (!me) return;
@@ -5953,26 +6013,27 @@ const JoinReq = {
     const el = document.createElement('div');
     el.className = 'jr';
     const tank = TANKS[m.tank] ? TANKS[m.tank].name : 'a tank';
-    el.innerHTML = `<div class="jr-t">Join request</div><div class="jr-n">${esc(cleanName(m.name))}</div><div class="jr-s">wants to join · ${esc(tank)} · ${(m.tanks || []).length} tanks researched</div>
+    el.innerHTML = `<div class="jr-t">Join request</div><div class="jr-n">${esc(cleanName(m.name))}</div><div class="jr-s">wants to join · ${esc(tank)}</div>
       <div class="jr-b"><button class="btn small" data-snd="exit">Decline</button><button class="btn small primary">Accept</button></div><div class="jr-bar"><i></i></div>`;
     const item = { link, el, cb, done: false };
-    const finish = ok => { if (item.done) return; item.done = true; clearTimeout(item.to); el.remove(); this.list = this.list.filter(x => x !== item); cb(ok); };
+    const finish = (ok, why) => { if (item.done) return; item.done = true; clearTimeout(item.to); this.out(el); this.list = this.list.filter(x => x !== item); cb(ok, why); };
     el.querySelectorAll('button')[0].onclick = () => finish(false);
     el.querySelectorAll('button')[1].onclick = () => finish(true);
-    item.to = setTimeout(() => finish(false), 60000);
+    item.to = setTimeout(() => finish(false, 'timeout'), 60000);
     item.finish = finish;
-    $('joinReqs').appendChild(el); this.list.push(item);
+    $('joinReqs').prepend(el); this.list.push(item); // newest on top, older ones stack below
     uiSnd('purchase');
     if (document.hidden) try { document.title = '(!) Join request — Steel Horizon'; setTimeout(() => document.title = 'Steel Horizon — Armored Warfare', 8000); } catch (e) { }
   },
-  cancel(link) { for (const it of this.list.slice()) if (it.link === link) { it.done = true; clearTimeout(it.to); it.el.remove(); this.list = this.list.filter(x => x !== it); } },
+  out(el) { el.classList.add('out'); setTimeout(() => el.remove(), 380); }, // slide out
+  cancel(link) { for (const it of this.list.slice()) if (it.link === link) { it.done = true; clearTimeout(it.to); this.out(it.el); this.list = this.list.filter(x => x !== it); } },
 };
 
 // ---------------------------------------------------------------- connection test
 const NetTest = {
   async run(out) {
     const lines = [];
-    const show = () => { out.innerHTML = lines.map(l => `<div class="nt-row"><span class="nt-${l[0]}">${l[0] === 'ok' ? '✓' : l[0] === 'bad' ? '✕' : '…'}</span>${l[1]}</div>`).join(''); };
+    const show = () => { out.innerHTML = lines.map(l => `<div class="nt-row"><span class="nt-${l[0]}">${l[0] === 'ok' ? '✓' : l[0] === 'bad' ? '✕' : l[0] === 'info' ? '–' : '…'}</span>${l[1]}</div>`).join(''); };
     const step = (txt) => { const l = ['wait', txt]; lines.push(l); show(); return (st, t2) => { l[0] = st; if (t2) l[1] = t2; show(); }; };
     let s = step('Page address');
     s(/^https?:$/.test(location.protocol) ? 'ok' : 'bad', /^https?:$/.test(location.protocol) ? `Page address OK (${location.host})` : `Not a web address (${location.protocol}) — open the game from your GitHub Pages link`);
@@ -5981,13 +6042,14 @@ const NetTest = {
     // same-page loopback data channel
     try {
       const a = new RTCPeerConnection(), b = new RTCPeerConnection();
-      a.onicecandidate = e => e.candidate && b.addIceCandidate(e.candidate).catch(() => { });
-      b.onicecandidate = e => e.candidate && a.addIceCandidate(e.candidate).catch(() => { });
       const ch = a.createDataChannel('t');
-      const got = new Promise(r => { b.ondatachannel = e => { e.channel.onmessage = () => r(true); }; setTimeout(() => r(false), 6000); });
+      const got = new Promise(r => { b.ondatachannel = e => { e.channel.onmessage = () => r(true); }; setTimeout(() => r(false), 8000); });
       ch.onopen = () => ch.send('x');
-      await a.setLocalDescription(await a.createOffer()); await b.setRemoteDescription(a.localDescription);
-      await b.setLocalDescription(await b.createAnswer()); await a.setRemoteDescription(b.localDescription);
+      // same way the game connects: gather everything first, then swap descriptions
+      await a.setLocalDescription(await a.createOffer()); await rtcWaitIce(a, 3000);
+      await b.setRemoteDescription(a.localDescription);
+      await b.setLocalDescription(await b.createAnswer()); await rtcWaitIce(b, 3000);
+      await a.setRemoteDescription(b.localDescription);
       const ok = await got; a.close(); b.close();
       s(ok ? 'ok' : 'bad', ok ? 'Browser WebRTC works' : 'Browser WebRTC failed even inside this page (blocked by an extension or setting)');
     } catch (e) { s('bad', 'Browser WebRTC error: ' + e.message); }
@@ -6002,7 +6064,7 @@ const NetTest = {
       sa = new Signal(idA, { open: go, error: () => fin('unreachable') }, [cfg]);
       sb = new Signal(idB, { open: go, error: () => fin('unreachable'), msg: m => { if (m.payload && m.payload.test) fin('ok'); } }, [cfg]);
     });
-    const res = await Promise.all(SIG_ROUTES.map(async cfg => { const l = step(cfg.name); const r = await testRoute(cfg); l(r === 'ok' ? 'ok' : 'bad', `${cfg.name}: ${r === 'ok' ? 'works' : r === 'nopass' ? 'reachable but did not pass messages' : 'unreachable (down or blocked)'}`); return r === 'ok'; }));
+    const res = await Promise.all(SIG_ROUTES.map(async cfg => { const l = step(cfg.name); const r = await testRoute(cfg); l(r === 'ok' ? 'ok' : 'info', `${cfg.name}: ${r === 'ok' ? 'works' : r === 'nopass' ? 'reachable but did not pass messages' : 'unreachable (down or blocked)'}`); return r === 'ok'; }));
     const nOk = res.filter(Boolean).length;
     s(nOk ? 'ok' : 'bad', nOk ? `Matchmaking: ${nOk} of ${res.length} servers work — enough to connect` : 'Matchmaking: no server works — an ad-blocker, VPN or network filter may be blocking them');
     // what kinds of routes this network offers
@@ -6017,7 +6079,7 @@ const NetTest = {
     s(t1.has('srflx') ? 'ok' : 'bad', t1.has('srflx') ? 'Your public address was found (direct connections possible)' : 'Could not find your public address — STUN servers blocked');
     s = step('Relay server (fallback for strict networks)');
     const t2 = await gather([ICE[1]]);
-    s(t2.has('relay') ? 'ok' : 'bad', t2.has('relay') ? 'Relay server available' : 'Relay server unavailable (only matters on strict networks)');
+    s(t2.has('relay') ? 'ok' : 'info', t2.has('relay') ? 'Relay server available' : 'Relay server unavailable — optional, only needed on very strict networks');
   },
   open() {
     UI.show('netTest');
