@@ -199,14 +199,28 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 #resBoard{max-width:620px;margin:0 auto 6px}
 .lb-spin{display:inline-block;width:12px;height:12px;margin-left:8px;vertical-align:-1px;border:2px solid rgba(242,179,61,.25);border-top-color:var(--amber);border-radius:50%;animation:lbSpin .8s linear infinite}@keyframes lbSpin{to{transform:rotate(360deg)}}
 .tut-banner{display:flex;gap:16px;align-items:center;border:1px solid var(--amber);background:rgba(242,179,61,.08);padding:14px 16px;margin-bottom:14px}.tut-banner div{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--dim)}.tut-banner b{color:#fff;font-size:17px;letter-spacing:.04em}
-#tutPanel{position:fixed;left:16px;top:96px;width:340px;z-index:40;background:rgba(14,15,11,.9);border:1px solid rgba(242,179,61,.55);box-shadow:0 10px 40px rgba(0,0,0,.5);padding:14px 16px;display:none;animation:jrIn .35s}
-#tutPanel.on{display:block}#tutPanel .tp-part{font-size:11px;letter-spacing:.32em;color:var(--amber);text-transform:uppercase}
+#tutPanel{position:fixed;left:16px;top:96px;width:340px;z-index:80;background:rgba(14,15,11,.9);border:1px solid rgba(242,179,61,.55);box-shadow:0 10px 40px rgba(0,0,0,.5);padding:14px 16px;display:none;animation:jrIn .35s}
+#tutPanel.on{display:block}#tutPanel.low{top:330px;left:calc(50% + 28px);width:min(440px,calc(50% - 60px))}#tutPanel.cine{opacity:.35}
+#tutCine{position:fixed;inset:0;pointer-events:none;z-index:70;display:none}#tutCine.on{display:block}
+#tutCine:before,#tutCine:after{content:'';position:absolute;left:0;right:0;height:9vh;background:#000;animation:cineBar .5s ease-out}#tutCine:before{top:0}#tutCine:after{bottom:0}
+#tutCine .sk{position:absolute;right:24px;bottom:calc(9vh + 12px);font-size:13px;letter-spacing:.25em;color:#e8dfc3;text-transform:uppercase;animation:skBlink 1.4s infinite}
+@keyframes cineBar{from{height:0}}@keyframes skBlink{50%{opacity:.4}}#tutPanel .tp-part{font-size:11px;letter-spacing:.32em;color:var(--amber);text-transform:uppercase}
 #tutPanel .tp-title{display:flex;justify-content:space-between;align-items:baseline;font-size:21px;font-weight:800;margin:4px 0 8px}#tutPanel .tp-n{font-size:12px;color:var(--dim);font-weight:600;letter-spacing:.1em}
 #tutPanel .tp-bar{height:3px;background:rgba(255,255,255,.1);margin-bottom:10px}#tutPanel .tp-bar i{display:block;height:100%;background:var(--amber);transition:width .4s}
 #tutPanel .tp-text{font-size:15px;line-height:1.45;color:#eee6cc}#tutPanel .tp-hint{font-size:12.5px;color:var(--dim);margin-top:8px;padding-left:10px;border-left:2px solid rgba(242,179,61,.4)}
 #tutPanel kbd{display:inline-block;min-width:20px;padding:1px 6px;border:1px solid rgba(255,255,255,.35);border-bottom-width:3px;border-radius:3px;font-family:var(--font);font-size:12px;font-weight:700;text-align:center;background:rgba(255,255,255,.06);color:#fff}
 #tutPanel .tp-ok{display:none;margin-top:10px;color:var(--green);font-weight:800;letter-spacing:.3em}#tutPanel.done .tp-ok{display:block;animation:jrIn .3s}#tutPanel.done{border-color:var(--green)}
 #tutPanel .tp-b{display:flex;justify-content:space-between;margin-top:12px}
+#lbMaps{margin:2px 0 14px}.lbm-row{display:flex;gap:10px}
+.lbm{position:relative;flex:1;min-width:0;height:96px;overflow:hidden;border:1px solid var(--line);background:#111;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .2s,filter .3s;filter:brightness(.7) saturate(.7)}
+.lbm canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.lbm::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.85))}
+.lbm-t,.lbm-s,.lbm-badge{position:absolute;z-index:2;left:10px;right:10px}.lbm-t{bottom:20px;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase}.lbm-s{bottom:6px;font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lbm-badge{top:6px;left:auto;right:6px;font-size:10px;letter-spacing:.2em;font-weight:800;color:#1b1a14;background:var(--amber);padding:2px 6px;display:none}
+.lbm.sel{filter:none;border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 0 30px -8px var(--amber)}.lbm.sel .lbm-badge{display:block}
+#lbMaps.host .lbm{cursor:pointer}#lbMaps.host .lbm:hover{transform:translateY(-3px) scale(1.04);filter:none;border-color:rgba(242,179,61,.7);box-shadow:0 10px 30px -8px rgba(242,179,61,.6);z-index:3}#lbMaps.host .lbm:hover canvas{transform:scale(1.1)}
+#askBox{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}#askBox.on{display:flex}
+.ask-win{width:min(460px,90vw);background:#15160f;border:1px solid var(--amber);box-shadow:0 20px 60px rgba(0,0,0,.6);padding:22px 24px;animation:jrIn .25s}#askMsg{font-size:16px;line-height:1.45;color:#eee6cc}.ask-b{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
 .slot.grab{cursor:grab}.slot.dragging{opacity:.35}.slot.drop,.lb-wait.drop{border-color:var(--amber)!important;background:rgba(242,179,61,.14)!important;box-shadow:inset 0 0 0 1px var(--amber)}
 .lb-wait.zone{min-height:44px;border:1px dashed rgba(233,226,200,.15);padding:4px}
 .slot.acting{grid-template-columns:22px 1fr auto!important}.slot.acting .tk{display:none}#lbWait .slot.acting{grid-template-columns:1fr auto!important}.slot-acts{display:flex;gap:4px;margin-left:auto}.slot-acts .btn{padding:3px 8px;font-size:11px}
@@ -372,6 +386,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
   <div class="body" style="flex:1">
     <div id="lbInvite"></div>
     <div id="lbBattle" class="lb-battle" style="display:none"></div>
+    <div id="lbMaps"></div>
     <div class="lb-grid">
       <div class="lb-team blue"><h3>Blue team · west</h3><div id="lbT0"></div></div>
       <div class="lb-mid">
@@ -392,6 +407,8 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 <div id="loading">PREPARING BATTLEFIELD…</div>
 <div id="toast"></div>
 <div id="joinReqs"></div>
+<div id="askBox"><div class="ask-win"><div id="askMsg"></div><div class="ask-b"><button class="btn" id="askNo" data-snd="exit">Cancel</button><button class="btn primary" id="askYes">Yes</button></div></div></div>
+<div id="tutCine"><div class="sk">Press <b>Space</b> to skip</div></div>
 <div id="tutPanel"><div class="tp-part" id="tpPart"></div><div class="tp-title"><span id="tpTitle"></span><span class="tp-n" id="tpN"></span></div><div class="tp-bar"><i id="tpBar"></i></div><div class="tp-text" id="tpText"></div><div class="tp-hint" id="tpHint"></div><div class="tp-ok" id="tpOk">✓ DONE</div><div class="tp-b"><button class="btn small" id="tpExit" data-snd="exit">Exit tutorial</button><button class="btn small" id="tpSkip">Skip step</button></div></div>
 <div id="netTest" class="screen overlay"><div class="win" style="width:640px">
   <h2>Connection test</h2>
@@ -407,6 +424,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber)}
 // =====================================================================
 const CAP_SLOW = 2.8;
 const MATCH_MINUTES = 10;         // point-capture battles always run to this clock           // capture-time multiplier (higher = slower captures)
+const GAME_BUILD = '2230679f6c25';  // stamped by the build; changing it resets saved progress
 const DEBUG = false;            // debug/test flag — keep false for release
 const VERSION = '1.0';
 
@@ -535,10 +553,14 @@ const Save = {
     let d = null;
     try { const s = localStorage.getItem(SAVE_KEY); if (s) d = JSON.parse(s); } catch (e) { d = null; }
     const def = this.defaults();
+    // a new game version wipes all progress (research, tanks, stats, high scores); only name and settings carry over
+    if (d && d.build !== GAME_BUILD) { d = { name: d.name, settings: d.settings, devId: d.devId }; }
     this.data = Object.assign(def, d || {});
+    this.data.build = GAME_BUILD;
     this.data.stats = Object.assign(def.stats, (d && d.stats) || {});
     this.data.settings = Object.assign(this.defaults().settings, (d && d.settings) || {});
     if (DEBUG) this.data.rp = Math.max(this.data.rp, 99999);
+    this.save();
   },
   save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.data)); } catch (e) { } },
 };
@@ -627,6 +649,7 @@ const Sfx = {
       case 'nonpen': this.tone(out, t, 0.5, 900, 700, 0.25, 'triangle'); this.tone(out, t, 0.7, 1370, 1300, 0.18, 'sine'); this.noiseBurst(out, t, 0.12, 6000, 2000, 0.5, 'highpass'); break;
       case 'ricochet': { this.noiseBurst(out, t, 0.12, 7000, 3000, 0.4, 'highpass'); const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(2600, t); o.frequency.exponentialRampToValueAtTime(700, t + 0.5); const g = c.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.6); break; }
       case 'explosion': { const k = clamp(p, 0.4, 2.5); this.noiseBurst(out, t, 1.2 * k, 2200 * lp, 50, 1.0); this.tone(out, t, 0.7 * k, 60, 20, 1.0); this.noiseBurst(out, t + 0.1, 2.2 * k, 400, 40, 0.5); break; }
+      case 'cookoff': { const k = clamp(p, 0.2, 1); this.noiseBurst(out, t, 0.5 * k + 0.15, 1900 * lp, 60, 0.45 * k + 0.12); this.tone(out, t, 0.3 * k + 0.05, 70, 26, 0.45 * k); this.noiseBurst(out, t + 0.06, 0.8 * k, 380, 40, 0.2 * k); break; }
       case 'ammo': this.play('explosion', x, y, 2.4); this.noiseBurst(out, t + 0.25, 2.5, 3000, 80, 0.7); this.tone(out, t + 0.05, 1.4, 45, 18, 1.0); break;
       case 'ground': this.noiseBurst(out, t, 0.5, 1400 * lp, 90, 0.55); this.tone(out, t, 0.2, 90, 40, 0.4); break;
       case 'building': this.noiseBurst(out, t, 0.9, 1800 * lp, 80, 0.7); this.noiseBurst(out, t + 0.15, 1.4, 900, 60, 0.4, 'bandpass', 0.8); break;
@@ -673,6 +696,12 @@ const Sfx = {
     this.engine = null;
   },
 };
+
+// is a vehicle sitting in heavy woods? (cached; cheap to call every frame)
+function vWoods(v) {
+  if (!v._wT || B.time - v._wT > 0.4 || B.time < v._wT || v._wx !== Math.round(v.x / 3)) { v._wT = B.time; v._wx = Math.round(v.x / 3); v._woods = B.map.heavyWoods(v.x, v.y); }
+  return v._woods;
+}
 
 // =====================================================================
 //  DATA — shells, vehicles, module layouts
@@ -1398,9 +1427,9 @@ const GC = 4;              // ground grid cell (m)
 const NC = 5;              // nav grid cell (m)
 const G_GRASS = 0, G_FIELD = 1, G_ROAD = 2, G_FOREST = 3, G_WATER = 4, G_MUD = 5, G_BRIDGE = 6;
 const G_STONE = 7, G_SAND = 8, G_SALT = 9, G_SNOW = 10, G_TRENCH = 11, G_CRATER = 12, G_CLIFF = 13, G_RUBBLE = 14, G_CONCRETE = 15, G_EARTH = 16;
-const GROUND_SPEED = [0.88, 0.75, 1.0, 0.62, 0, 0.55, 1.0, 0.95, 0.72, 1.0, 0.74, 0.92, 0.55, 0, 0.58, 1.0, 0.8];
+const GROUND_SPEED = [0.88, 0.75, 1.0, 0.62, 0, 0.55, 1.0, 0.95, 0.72, 1.0, 0.74, 0.28, 0.55, 0, 0.58, 1.0, 0.8];
 const GROUND_NAME = ['Grass', 'Field', 'Road', 'Forest', 'Water', 'Mud', 'Bridge', 'Paving', 'Sand', 'Salt flat', 'Snow', 'Trench', 'Crater', 'Cliff', 'Rubble', 'Concrete', 'Churned earth'];
-const GROUND_COST = [1, 1.15, 0.75, 2.2, 1, 2.0, 0.75, 0.85, 1.25, 0.8, 1.3, 0.9, 1.9, 1, 1.9, 0.75, 1.1];
+const GROUND_COST = [1, 1.15, 0.75, 2.2, 1, 2.0, 0.75, 0.85, 1.25, 0.8, 1.3, 4.0, 1.9, 1, 1.9, 0.75, 1.1];
 // how close an enemy must be to spot a vehicle sitting in this ground (concealment)
 const GROUND_CONCEAL = { [G_FOREST]: 170, [G_TRENCH]: 220, [G_CRATER]: 300, [G_RUBBLE]: 420 };
 const BIOMES = {
@@ -1625,7 +1654,7 @@ class GameMap {
     if (!this.addBuilding(x, y, a, w, h, roof, force)) return null;
     const b = this.buildings[this.buildings.length - 1]; if (kind) b.kind = kind;
     if (kind === 'ruin') { b.h = 3 + this.R() * 2; b.max = b.hp = b.hp * 0.6; }
-    if (kind === 'bunker' || kind === 'hangar' || kind === 'concrete') { b.max = b.hp = b.hp * 2.5; }
+    if (kind === 'bunker' || kind === 'hangar' || kind === 'concrete' || kind === 'tower') { b.max = b.hp = b.hp * 2.5; }
     return b;
   }
   // obstacles created during battle (fallen trees, rubble mounds): spatial hash + navigation
@@ -1702,7 +1731,7 @@ class GameMap {
 
   // ------------------------------------------------------------ line of sight
   // returns visibility factor 0..1 (1 clear). Tanks see over walls/berms/rubble.
-  los(ax, ay, bx, by, smokes) {
+  los(ax, ay, bx, by, smokes, noTrees) {
     const L = dist(ax, ay, bx, by); if (L < 1) return 1;
     const dx = (bx - ax) / L, dy = (by - ay) / L;
     const tmp = this._tmp || (this._tmp = []);
@@ -1712,7 +1741,7 @@ class GameMap {
     }
     for (const k of this.segObjects(ax, ay, bx, by, 'k', tmp)) if (k.r > 2.6 && segCircle(ax, ay, dx, dy, L, k.x, k.y, k.r * 0.8) >= 0) return 0;
     let vis = 1;
-    for (const t of this.segObjects(ax, ay, bx, by, 't', tmp)) {
+    if (!noTrees) for (const t of this.segObjects(ax, ay, bx, by, 't', tmp)) {
       if (!t.alive) continue;
       if (dist(ax, ay, t.x, t.y) < t.r || dist(bx, by, t.x, t.y) < t.r * 0.5) continue; // own cover is handled by concealment
       if (segCircle(ax, ay, dx, dy, L, t.x, t.y, t.r * 0.75) >= 0) {
@@ -1986,7 +2015,7 @@ class GameMap {
     this.treeSpr = [];
     const R = mulberry32(this.seed + 404);
     for (let kind = 0; kind < 4; kind++) for (let v = 0; v < 4; v++) {
-      const s = 10, rad = 5.2, cv = document.createElement('canvas'); cv.width = cv.height = Math.ceil(rad * 2 * s + 4);
+      const s = 10, rad = 5.2, cv = document.createElement('canvas'); cv.width = cv.height = Math.ceil(rad * 2.5 * s + 4);
       const c = cv.getContext('2d'); c.translate(cv.width / 2, cv.height / 2); c.scale(s, s);
       const col = this.biome.tree[(v + kind) % this.biome.tree.length];
       if (kind === 2) { // palm: radiating fronds
@@ -2006,24 +2035,42 @@ class GameMap {
         for (let i = 0; i < 4; i++) { const a = R() * TAU, L = rad * (0.4 + R() * 0.5); c.lineWidth = 0.35; c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(a) * L, Math.sin(a) * L); c.stroke(); }
         const g = c.createRadialGradient(-0.3, -0.3, 0.1, 0, 0, rad * 0.32); g.addColorStop(0, '#8a7458'); g.addColorStop(1, '#2e2620');
         c.fillStyle = g; c.beginPath(); for (let i = 0; i < 10; i++) { const a = i / 10 * TAU, rr = rad * 0.3 * (i % 2 ? 0.65 : 1); c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } c.fill();
-      } else if (kind === 0) { // deciduous: lumpy blobs
-        for (let i = 0; i < 26; i++) {
-          const a = R() * TAU, d = R() * rad * 0.55, r = rad * (0.25 + R() * 0.3);
-          const x = Math.cos(a) * d, y = Math.sin(a) * d;
-          const g = c.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
-          const k = 0.8 + R() * 0.35;
-          g.addColorStop(0, `rgb(${col[0] * k * 1.35 | 0},${col[1] * k * 1.35 | 0},${col[2] * k * 1.2 | 0})`);
-          g.addColorStop(0.7, `rgb(${col[0] * k | 0},${col[1] * k | 0},${col[2] * k | 0})`);
-          g.addColorStop(1, `rgba(${col[0] * 0.5 | 0},${col[1] * 0.5 | 0},${col[2] * 0.5 | 0},0.9)`);
-          c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+      } else if (kind === 0) { // deciduous: irregular crown built from leafy polygon clumps
+        const form = v % 4, lobes = 4 + Math.floor(R() * 5), ph = R() * TAU, ph2 = R() * TAU;
+        const sx = form === 1 ? 1.12 : 1, sy = form === 1 ? 0.84 : 1, lean = form === 2 ? 0.17 : 0.05;
+        const crown = a => rad * 0.72 * (1 + 0.13 * Math.sin(lobes * a + ph) + 0.07 * Math.sin((lobes + 3) * a + ph2) + lean * Math.cos(a - ph));
+        const tone = (k, al = 1) => `rgba(${Math.min(255, col[0] * k) | 0},${Math.min(255, col[1] * k) | 0},${Math.min(255, col[2] * k) | 0},${al})`;
+        const leafPoly = (x, y, r, jag) => { const n = 9 + Math.floor(R() * 6), rot = R() * TAU; c.beginPath(); for (let i = 0; i < n; i++) { const a = rot + i / n * TAU, rr = r * (0.78 + R() * 0.3) * (i % 2 ? 1 - jag : 1); c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); };
+        // bare branches peeking out of thinner crowns
+        if (form === 3) { c.strokeStyle = 'rgba(58,44,30,0.9)'; c.lineCap = 'round'; for (let i = 0; i < 6; i++) { const a = R() * TAU, L = crown(a) * (0.7 + R() * 0.25); c.lineWidth = 0.28; c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(a) * L * 0.5 + (R() - 0.5) * 0.6, Math.sin(a) * L * 0.5 + (R() - 0.5) * 0.6); c.lineTo(Math.cos(a) * L, Math.sin(a) * L); c.stroke(); } }
+        // dark underside silhouette with a serrated leafy edge
+        c.fillStyle = tone(0.48, form === 3 ? 0.75 : 0.95); c.beginPath();
+        for (let i = 0; i <= 80; i++) { const a = i / 80 * TAU, rr = crown(a) * (i % 2 ? 0.93 : 1.02) * (0.95 + R() * 0.08); c.lineTo(Math.cos(a) * rr * sx, Math.sin(a) * rr * sy); }
+        c.fill();
+        // leaf clumps, shaded side first, sunlit (upper-left) clumps on top
+        const cl = [], n = form === 3 ? 13 : 20 + Math.floor(R() * 6);
+        for (let i = 0; i < n; i++) { const a = R() * TAU, d = Math.sqrt(R()) * 0.66, rr = crown(a); cl.push({ x: Math.cos(a) * rr * d * sx, y: Math.sin(a) * rr * d * sy, r: rad * (0.17 + R() * 0.17) }); }
+        cl.sort((p, q) => (q.x + q.y) - (p.x + p.y));
+        for (const q of cl) {
+          const k = 0.78 + R() * 0.3, lit = clamp(0.5 - (q.x + q.y) / (rad * 2.4), 0, 1);
+          const g = c.createLinearGradient(q.x - q.r, q.y - q.r, q.x + q.r, q.y + q.r);
+          g.addColorStop(0, tone(k * (1.12 + lit * 0.35))); g.addColorStop(0.55, tone(k * (0.9 + lit * 0.15))); g.addColorStop(1, tone(k * 0.58));
+          c.fillStyle = g; leafPoly(q.x, q.y, q.r, 0.16); c.fill();
+          c.strokeStyle = tone(0.4, 0.35); c.lineWidth = 0.06; c.stroke();
+          // sunlit leaf flecks
+          c.fillStyle = tone(1.5 + lit * 0.3, 0.5);
+          for (let f = 0; f < 4; f++) { const fx = q.x - q.r * 0.35 + (R() - 0.5) * q.r, fy = q.y - q.r * 0.35 + (R() - 0.5) * q.r, fr = 0.12 + R() * 0.16; c.beginPath(); c.moveTo(fx, fy - fr); c.lineTo(fx + fr * 0.8, fy + fr * 0.5); c.lineTo(fx - fr * 0.8, fy + fr * 0.6); c.fill(); }
         }
+        // deep gaps in the foliage
+        c.fillStyle = tone(0.32, 0.5);
+        for (let i = 0; i < 5; i++) { const a = R() * TAU, d = R() * 0.5 * crown(a); leafPoly(Math.cos(a) * d * sx, Math.sin(a) * d * sy, rad * (0.05 + R() * 0.05), 0.3); c.fill(); }
       } else { // conifer: dense needle layers seen from above
         for (let layer = 0; layer < 5; layer++) {
-          const r = rad * (1 - layer * 0.19), k = 0.62 + layer * 0.13;
+          const r = rad * (0.92 - layer * 0.17) * (0.9 + R() * 0.15), k = 0.62 + layer * 0.13, ox = (R() - 0.5) * 0.5, oy = (R() - 0.5) * 0.5;
           c.fillStyle = `rgb(${col[0] * 0.62 * k | 0},${col[1] * 0.82 * k | 0},${col[2] * 0.7 * k | 0})`;
           c.beginPath();
           const sp = 26 + layer * 4;
-          for (let i = 0; i <= sp; i++) { const a = i / sp * TAU + layer * 0.4, rr = r * (0.82 + R() * 0.18) * (i % 2 ? 0.9 : 1); c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+          for (let i = 0; i <= sp; i++) { const a = i / sp * TAU + layer * 0.4, rr = r * (0.78 + R() * 0.24) * (i % 2 ? 0.84 : 1); c.lineTo(ox + Math.cos(a) * rr, oy + Math.sin(a) * rr); }
           c.fill();
         }
         const g = c.createRadialGradient(-rad * 0.25, -rad * 0.25, 0.2, 0, 0, rad);
@@ -2043,11 +2090,14 @@ function segDist(px, py, ax, ay, bx, by) {
   return Math.hypot(px - ax - dx * t, py - ay - dy * t);
 }
 function craterDecal(c, x, y, r, R = Math.random) {
-  const g = c.createRadialGradient(x, y, 0, x, y, r * 1.6);
+  // small scorched shell scar with a ragged, non-circular edge
+  const p0 = R() * TAU, p1 = R() * TAU, g = c.createRadialGradient(x, y, 0, x, y, r * 1.6);
   g.addColorStop(0, 'rgba(40,32,22,0.55)'); g.addColorStop(0.45, 'rgba(70,56,38,0.45)'); g.addColorStop(0.7, 'rgba(110,92,64,0.25)'); g.addColorStop(1, 'rgba(90,80,50,0)');
-  c.fillStyle = g; c.beginPath(); c.arc(x, y, r * 1.6, 0, TAU); c.fill();
+  c.fillStyle = g; c.beginPath();
+  for (let i = 0; i < 18; i++) { const a = i / 18 * TAU, rr = r * 1.6 * (1 + 0.18 * Math.sin(3 * a + p0) + 0.1 * Math.sin(5 * a + p1) + (R() - 0.5) * 0.12); c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  c.closePath(); c.fill();
   c.fillStyle = 'rgba(30,24,16,0.35)';
-  for (let i = 0; i < 6; i++) { const a = R() * TAU, d = r * (1 + R() * 0.8); c.beginPath(); c.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, 0.2 + R() * 0.4, 0, TAU); c.fill(); }
+  for (let i = 0; i < 6; i++) { const a = R() * TAU, d = r * (1 + R() * 0.8), s = 0.2 + R() * 0.4; c.beginPath(); c.moveTo(x + Math.cos(a) * d, y + Math.sin(a) * d - s); c.lineTo(x + Math.cos(a) * d + s, y + Math.sin(a) * d + s * 0.6); c.lineTo(x + Math.cos(a) * d - s * 0.9, y + Math.sin(a) * d + s * 0.4); c.fill(); }
 }
 function renderBuilding(b, rubble) {
   const s = 8, w = b.hx * 2, h = b.hy * 2;
@@ -2119,27 +2169,96 @@ const BUILDING_STYLES = {
     if (w > 10 && R() < 0.6) seg(0, -hy, 0, hy * (0.2 + R() * 0.6));
     c.strokeStyle = 'rgba(0,0,0,0.5)'; c.lineWidth = 0.1; c.strokeRect(-hx, -hy, w, h);
   },
-  // flat mudbrick roof with parapet
+  // flat mudbrick roof: plastered parapet, protruding roof beams, hatch, jars, the odd dome or awning
   mud(c, b, w, h, R) {
     const hx = b.hx, hy = b.hy, col = b.roof || '#b89a6a';
+    const sh = (k, a = 1) => { const m = col.match(/\w\w/g).map(v => parseInt(v, 16)); return `rgba(${Math.min(255, m[0] * k) | 0},${Math.min(255, m[1] * k) | 0},${Math.min(255, m[2] * k) | 0},${a})`; };
+    // roof beams (vigas) poking out of the walls
+    c.fillStyle = '#5a4026';
+    for (let x = -hx + 1; x < hx - 0.5; x += 1.6 + R() * 0.6) for (const sd of [-1, 1]) if (R() < 0.7) c.fillRect(x, sd > 0 ? hy - 0.1 : -hy - 0.35, 0.28, 0.45);
     c.fillStyle = col; c.fillRect(-hx, -hy, w, h);
-    const g = c.createLinearGradient(-hx, -hy, hx, hy); g.addColorStop(0, 'rgba(255,240,200,0.18)'); g.addColorStop(1, 'rgba(60,40,20,0.22)'); c.fillStyle = g; c.fillRect(-hx, -hy, w, h);
-    for (let i = 0; i < w * h * 0.6; i++) { c.fillStyle = R() < 0.5 ? 'rgba(90,60,30,0.12)' : 'rgba(255,240,210,0.1)'; c.fillRect(-hx + R() * w, -hy + R() * h, 0.3 + R() * 0.8, 0.3 + R() * 0.5); }
-    c.strokeStyle = 'rgba(120,90,55,0.95)'; c.lineWidth = 0.55; c.strokeRect(-hx + 0.3, -hy + 0.3, w - 0.6, h - 0.6);
-    if (R() < 0.6) { c.fillStyle = 'rgba(60,40,25,0.55)'; c.fillRect(-hx + w * 0.15, -hy + h * 0.2, 1.2, 1.2); }
-    if (R() < 0.5) { c.fillStyle = '#7a5a3a'; c.beginPath(); c.arc((R() - 0.5) * w * 0.5, (R() - 0.5) * h * 0.5, 0.7, 0, TAU); c.fill(); }
+    const g = c.createLinearGradient(-hx, -hy, hx, hy); g.addColorStop(0, 'rgba(255,240,200,0.2)'); g.addColorStop(1, 'rgba(60,40,20,0.25)'); c.fillStyle = g; c.fillRect(-hx, -hy, w, h);
+    // plaster texture, patches and hairline cracks
+    for (let i = 0; i < w * h * 0.7; i++) { c.fillStyle = R() < 0.5 ? 'rgba(90,60,30,0.12)' : 'rgba(255,240,210,0.1)'; c.fillRect(-hx + R() * w, -hy + R() * h, 0.3 + R() * 0.8, 0.3 + R() * 0.5); }
+    for (let i = 0; i < 3; i++) { c.fillStyle = sh(0.86, 0.6); c.beginPath(); const px = (R() - 0.5) * w * 0.7, py = (R() - 0.5) * h * 0.7; for (let k = 0; k < 7; k++) { const a = k / 7 * TAU; c.lineTo(px + Math.cos(a) * (0.8 + R() * 1.2), py + Math.sin(a) * (0.6 + R())); } c.fill(); }
+    c.strokeStyle = 'rgba(80,56,32,0.45)'; c.lineWidth = 0.06;
+    for (let i = 0; i < 4; i++) { let x = (R() - 0.5) * w, y = (R() - 0.5) * h; c.beginPath(); c.moveTo(x, y); for (let k = 0; k < 4; k++) { x += (R() - 0.5) * 1.6; y += (R() - 0.5) * 1.6; c.lineTo(x, y); } c.stroke(); }
+    // parapet with rounded crenellations
+    c.strokeStyle = sh(0.8); c.lineWidth = 0.55; c.strokeRect(-hx + 0.3, -hy + 0.3, w - 0.6, h - 0.6);
+    c.fillStyle = sh(1.12); for (let x = -hx + 0.7; x < hx - 0.5; x += 1.3) { c.fillRect(x, -hy + 0.08, 0.6, 0.44); c.fillRect(x, hy - 0.52, 0.6, 0.44); }
+    for (let y = -hy + 0.7; y < hy - 0.5; y += 1.3) { c.fillRect(-hx + 0.08, y, 0.44, 0.6); c.fillRect(hx - 0.52, y, 0.44, 0.6); }
+    // rain stains running from the parapet
+    for (let i = 0; i < 5; i++) { const x = -hx + 0.6 + R() * (w - 1.2); const sg = c.createLinearGradient(0, -hy + 0.5, 0, -hy + 2.5); sg.addColorStop(0, 'rgba(70,50,30,0.25)'); sg.addColorStop(1, 'rgba(70,50,30,0)'); c.fillStyle = sg; c.fillRect(x, -hy + 0.5, 0.3, 2); }
+    // a roof divider wall on bigger houses
+    if (w > 12 && R() < 0.6) { c.fillStyle = sh(0.82); c.fillRect((R() - 0.5) * w * 0.3, -hy + 0.4, 0.4, h - 0.8); }
+    // dome over the main room
+    if (R() < 0.3) { const dx = (R() - 0.5) * w * 0.35, dy = (R() - 0.5) * h * 0.3, dr = Math.min(hx, hy) * 0.5; const dg = c.createRadialGradient(dx - dr * 0.35, dy - dr * 0.35, dr * 0.1, dx, dy, dr); dg.addColorStop(0, sh(1.35)); dg.addColorStop(0.7, sh(1)); dg.addColorStop(1, sh(0.62)); c.fillStyle = dg; c.beginPath(); c.arc(dx, dy, dr, 0, TAU); c.fill(); c.strokeStyle = 'rgba(70,50,30,0.4)'; c.lineWidth = 0.08; c.stroke(); }
+    // stair hatch with ladder
+    if (R() < 0.7) { const x = -hx + 1 + R() * (w - 3.2), y = -hy + 1 + R() * (h - 3); c.fillStyle = 'rgba(40,28,16,0.75)'; c.fillRect(x, y, 1.3, 1.1); c.strokeStyle = '#6e5232'; c.lineWidth = 0.1; c.beginPath(); c.moveTo(x + 0.3, y); c.lineTo(x + 0.3, y + 1.1); c.moveTo(x + 1, y); c.lineTo(x + 1, y + 1.1); for (let k = 0.2; k < 1.1; k += 0.3) { c.moveTo(x + 0.3, y + k); c.lineTo(x + 1, y + k); } c.stroke(); }
+    // water jars and baskets
+    for (let i = 0; i < 1 + Math.floor(R() * 3); i++) { const x = (R() - 0.5) * (w - 2), y = (R() - 0.5) * (h - 2); c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.arc(x + 0.12, y + 0.15, 0.36, 0, TAU); c.fill(); c.fillStyle = R() < 0.5 ? '#8a5a3a' : '#a07850'; c.beginPath(); c.arc(x, y, 0.34, 0, TAU); c.fill(); c.fillStyle = 'rgba(30,20,12,0.8)'; c.beginPath(); c.arc(x, y, 0.13, 0, TAU); c.fill(); }
+    // striped cloth awning over one edge
+    if (R() < 0.35) { const sd = R() < 0.5 ? -1 : 1, aw = Math.min(w * 0.5, 5), ax = (R() - 0.5) * (w - aw); const cols = pick(['#a83a2a', '#3a5a8a', '#4a7a4a', '#c8a040']); for (let k = 0; k < aw; k += 0.6) { c.fillStyle = (k / 0.6) % 2 < 1 ? cols : '#e8dcc0'; c.fillRect(ax + k, sd > 0 ? hy - 1.6 : -hy + 0.2, 0.6, 1.4); } }
     c.strokeStyle = 'rgba(0,0,0,0.55)'; c.lineWidth = 0.15; c.strokeRect(-hx, -hy, w, h);
   },
-  // half-buried concrete hangar: barrel-vault roof, sand drifts on the edges
+  // abandoned aircraft hangar: corrugated barrel-vault roof with ribs, rust, holes, sand banked against it, sliding doors
   hangar(c, b, w, h, R) {
     const hx = b.hx, hy = b.hy;
-    const g = c.createLinearGradient(0, -hy, 0, hy); g.addColorStop(0, '#9c9a92'); g.addColorStop(0.45, '#c8c5bb'); g.addColorStop(0.55, '#8e8b84'); g.addColorStop(1, '#5c5a55');
+    const g = c.createLinearGradient(0, -hy, 0, hy);
+    g.addColorStop(0, '#8e8a80'); g.addColorStop(0.3, '#c9c5b9'); g.addColorStop(0.42, '#d6d2c6'); g.addColorStop(0.6, '#9a968c'); g.addColorStop(1, '#5a5751');
     c.fillStyle = g; c.fillRect(-hx, -hy, w, h);
-    c.strokeStyle = 'rgba(40,38,34,0.35)'; c.lineWidth = 0.12; for (let x = -hx; x < hx; x += 1.6) { c.beginPath(); c.moveTo(x, -hy); c.lineTo(x, hy); c.stroke(); }
-    for (let i = 0; i < 4; i++) { c.fillStyle = 'rgba(30,26,22,0.6)'; const x = (R() - 0.5) * w * 0.8, y = (R() - 0.5) * h * 0.6; c.beginPath(); c.arc(x, y, 0.8 + R() * 1.6, 0, TAU); c.fill(); }
-    const sd = c.createLinearGradient(0, hy - h * 0.35, 0, hy); sd.addColorStop(0, 'rgba(206,176,122,0)'); sd.addColorStop(1, 'rgba(206,176,122,0.95)');
-    c.fillStyle = sd; c.fillRect(-hx, hy - h * 0.35, w, h * 0.35);
+    // corrugations across the vault
+    for (let x = -hx; x < hx; x += 0.35) { c.fillStyle = (Math.round((x + hx) / 0.35) % 2) ? 'rgba(255,255,245,0.08)' : 'rgba(30,28,24,0.12)'; c.fillRect(x, -hy, 0.18, h); }
+    // structural ribs
+    c.strokeStyle = 'rgba(50,46,40,0.55)'; c.lineWidth = 0.22; for (let x = -hx + 4; x < hx; x += 4) { c.beginPath(); c.moveTo(x, -hy); c.lineTo(x, hy); c.stroke(); }
+    // rust streaks and patches
+    for (let i = 0; i < w * 0.9; i++) { const x = -hx + R() * w, y = -hy + R() * h, L = 1 + R() * 4; const rg = c.createLinearGradient(0, y, 0, y + L); rg.addColorStop(0, 'rgba(140,70,34,0.45)'); rg.addColorStop(1, 'rgba(140,70,34,0)'); c.fillStyle = rg; c.fillRect(x, y, 0.25 + R() * 0.5, L); }
+    // roof skylights along the crest
+    c.fillStyle = 'rgba(60,80,86,0.6)'; for (let x = -hx + 3; x < hx - 3; x += 8) if (R() < 0.8) c.fillRect(x, -hy * 0.18 - 0.5, 2, 1);
+    // collapsed panels: dark interior visible, ribs crossing the hole
+    for (let i = 0; i < 3 + Math.floor(R() * 3); i++) {
+      const x = (R() - 0.5) * w * 0.75, y = (R() - 0.5) * h * 0.6, r = 1 + R() * 2.4;
+      c.fillStyle = '#1b1915'; c.beginPath(); for (let k = 0; k < 9; k++) { const a = k / 9 * TAU, rr = r * (0.55 + R() * 0.6); c.lineTo(x + Math.cos(a) * rr * 1.3, y + Math.sin(a) * rr); } c.closePath(); c.fill();
+      c.strokeStyle = 'rgba(160,150,130,0.5)'; c.lineWidth = 0.08; c.stroke();
+      c.strokeStyle = 'rgba(110,104,92,0.8)'; c.lineWidth = 0.18; const rx = Math.round(x / 4) * 4; if (Math.abs(rx - x) < r) { c.beginPath(); c.moveTo(rx, y - r); c.lineTo(rx, y + r); c.stroke(); }
+      c.fillStyle = 'rgba(206,176,122,0.5)'; c.beginPath(); c.ellipse(x + r * 0.2, y + r * 0.3, r * 0.5, r * 0.3, 0, 0, TAU); c.fill(); // sand blown inside
+    }
+    // sliding doors on the apron end (+x)
+    c.fillStyle = '#4a4740'; c.fillRect(hx - 1.4, -hy, 1.4, h);
+    for (let y = -hy + 0.2; y < hy - 0.2; y += h / 6) { c.fillStyle = R() < 0.5 ? '#6a665c' : '#5c5850'; c.fillRect(hx - 1.2, y, 1, h / 6 - 0.2); c.fillStyle = 'rgba(140,70,34,0.4)'; c.fillRect(hx - 1.2, y + h / 12, 1, 0.2); }
+    c.fillStyle = '#121110'; c.fillRect(hx - 1.3, -hy * 0.15, 1.2, h * 0.22);   // a door left ajar
+    // sand banked against the north side and the closed end
+    const sd = c.createLinearGradient(0, -hy, 0, -hy + h * 0.32); sd.addColorStop(0, 'rgba(214,184,128,0.95)'); sd.addColorStop(1, 'rgba(206,176,122,0)');
+    c.fillStyle = sd; c.beginPath(); c.moveTo(-hx, -hy); for (let x = -hx; x <= hx; x += 2) c.lineTo(x, -hy + h * (0.1 + R() * 0.22)); c.lineTo(hx, -hy); c.fill();
+    const se = c.createLinearGradient(-hx, 0, -hx + w * 0.18, 0); se.addColorStop(0, 'rgba(214,184,128,0.9)'); se.addColorStop(1, 'rgba(206,176,122,0)'); c.fillStyle = se; c.fillRect(-hx, -hy, w * 0.18, h);
     c.strokeStyle = 'rgba(0,0,0,0.5)'; c.lineWidth = 0.18; c.strokeRect(-hx, -hy, w, h);
+  },
+  // airfield control tower: square block with a glazed cab, railing and mast
+  tower(c, b, w, h, R) {
+    const hx = b.hx, hy = b.hy;
+    c.fillStyle = '#b4ab98'; c.fillRect(-hx, -hy, w, h);
+    const g = c.createLinearGradient(-hx, -hy, hx, hy); g.addColorStop(0, 'rgba(255,250,235,0.25)'); g.addColorStop(1, 'rgba(40,30,20,0.3)'); c.fillStyle = g; c.fillRect(-hx, -hy, w, h);
+    c.strokeStyle = '#8a8270'; c.lineWidth = 0.35; c.strokeRect(-hx + 0.4, -hy + 0.4, w - 0.8, h - 0.8);
+    const r = Math.min(hx, hy) * 0.62; c.fillStyle = '#2c3c40'; c.beginPath(); for (let k = 0; k < 8; k++) { const a = k / 8 * TAU + TAU / 16; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill();
+    const gl = c.createLinearGradient(-r, -r, r, r); gl.addColorStop(0, 'rgba(160,200,210,0.55)'); gl.addColorStop(0.5, 'rgba(60,90,100,0.2)'); gl.addColorStop(1, 'rgba(20,30,34,0.4)'); c.fillStyle = gl; c.fill();
+    c.strokeStyle = '#d6cfbc'; c.lineWidth = 0.14; c.stroke();
+    c.beginPath(); for (let k = 0; k < 8; k++) { const a = k / 8 * TAU + TAU / 16; c.moveTo(0, 0); c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.stroke();
+    c.fillStyle = '#e0d8c4'; c.beginPath(); c.arc(0, 0, r * 0.35, 0, TAU); c.fill();
+    c.strokeStyle = '#3a3630'; c.lineWidth = 0.12; c.beginPath(); c.moveTo(0, 0); c.lineTo(r * 0.9, -r * 1.1); c.stroke(); c.fillStyle = '#a83a2a'; c.beginPath(); c.arc(r * 0.9, -r * 1.1, 0.22, 0, TAU); c.fill();
+    c.fillStyle = 'rgba(30,26,20,0.6)'; for (let i = 0; i < 3; i++) c.fillRect((R() - 0.5) * w * 0.8, (R() - 0.5) * h * 0.8, 0.5, 0.5); // shell pocks
+    c.fillStyle = 'rgba(214,184,128,0.7)'; c.fillRect(-hx, hy - 1, w, 1);
+    c.strokeStyle = 'rgba(0,0,0,0.6)'; c.lineWidth = 0.16; c.strokeRect(-hx, -hy, w, h);
+  },
+  // round fuel storage tank
+  fueltank(c, b, w, h, R) {
+    const r = Math.min(b.hx, b.hy) - 0.1;
+    const g = c.createRadialGradient(-r * 0.35, -r * 0.35, r * 0.1, 0, 0, r); g.addColorStop(0, '#d8d4c8'); g.addColorStop(0.7, '#a8a294'); g.addColorStop(1, '#6a665c');
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, r, 0, TAU); c.fill();
+    c.strokeStyle = 'rgba(60,56,48,0.5)'; c.lineWidth = 0.1; for (let k = 0.35; k < 1; k += 0.22) { c.beginPath(); c.arc(0, 0, r * k, 0, TAU); c.stroke(); }
+    for (let i = 0; i < 8; i++) { const a = R() * TAU, d = R() * r * 0.9; c.fillStyle = 'rgba(140,70,34,0.35)'; c.beginPath(); c.ellipse(Math.cos(a) * d, Math.sin(a) * d, 0.3 + R() * 0.7, 0.2 + R() * 0.4, a, 0, TAU); c.fill(); }
+    c.fillStyle = '#4a463e'; c.beginPath(); c.arc(0, 0, 0.6, 0, TAU); c.fill();
+    c.strokeStyle = '#3a362e'; c.lineWidth = 0.12; c.beginPath(); c.moveTo(r * 0.7, -0.3); c.lineTo(r, -0.3); c.moveTo(r * 0.7, 0.3); c.lineTo(r, 0.3); c.stroke();
+    c.strokeStyle = 'rgba(0,0,0,0.55)'; c.lineWidth = 0.15; c.beginPath(); c.arc(0, 0, r, 0, TAU); c.stroke();
   },
   // concrete redoubt / bunker with firing slit
   bunker(c, b, w, h, R) {
@@ -2318,13 +2437,27 @@ const MAP_THEMES = {
     ],
     terrain(m, R) {
       const W = m.W, H = m.H;
-      m.paintEllipse(W / 2, H * 0.84, W * 0.36, H * 0.15, G_SALT, null, 0.25);       // dry salt lake
-      m.runway = { x: W / 2, y: H * 0.665, a: (R() - 0.5) * 0.06, hx: W * 0.36, hy: 17 };
-      m.forOBBCells(m.runway, i => { m.ground[i] = G_CONCRETE; });
-      m.taxi = { x: W * 0.3, y: H * 0.61, a: 0, hx: 40, hy: 9 }; m.forOBBCells(m.taxi, i => { m.ground[i] = G_CONCRETE; });
+      m.paintEllipse(W / 2, H * 0.86, W * 0.36, H * 0.13, G_SALT, null, 0.25);       // dry salt lake
+      // small regional airstrip: runway, parallel taxiway with link stubs, apron, all half-buried in sand
+      const ra = (R() - 0.5) * 0.04, ry = H * 0.7;
+      m.runway = { x: W / 2, y: ry, a: ra, hx: W * 0.37, hy: 14 };
+      m.taxi = { x: W / 2 - 50, y: ry - 14 - 17, a: ra, hx: W * 0.25, hy: 5 };
+      m.links = [-0.8, -0.05, 0.75].map(f => ({ x: m.taxi.x + f * m.taxi.hx, y: (ry - 14 + m.taxi.y + 5) / 2, a: ra, hx: 5, hy: 8 }));
+      m.apron = { x: W * 0.36, y: m.taxi.y - 5 - 15, a: ra, hx: 40, hy: 15 };
+      for (const o of [m.runway, m.taxi, m.apron, ...m.links]) m.forOBBCells(o, i => { m.ground[i] = G_CONCRETE; });
+      // drifting sand has buried parts of the tarmac
+      m.drifts = [];
+      for (let i = 0; i < 16; i++) {
+        const o = pick2(R, [m.runway, m.runway, m.taxi, m.apron]), t = (R() - 0.5) * 2 * o.hx * 0.9;
+        const d = { x: o.x + Math.cos(o.a) * t, y: o.y + Math.sin(o.a) * t + (R() - 0.5) * o.hy * 1.6, rx: 6 + R() * 16, ry: 3 + R() * 6, a: -0.35 + (R() - 0.5) * 0.4, seed: Math.floor(R() * 1e6) };
+        m.drifts.push(d);
+        m.paintEllipse(d.x, d.y, d.rx * 0.7, d.ry * 0.7, G_SAND, g => g === G_CONCRETE);
+      }
       // bomb craters across the strip
       m.rwCraters = [];
-      for (let i = 0; i < 9; i++) { const t = (R() - 0.5) * 2 * m.runway.hx * 0.9, cx = m.runway.x + t, cy = m.runway.y + (R() - 0.5) * 20, r = 4 + R() * 4; m.paintDisc(cx, cy, r, G_CRATER); m.rwCraters.push([cx, cy, r]); }
+      for (let i = 0; i < 8; i++) { const t = (R() - 0.5) * 2 * m.runway.hx * 0.9, cr = { x: m.runway.x + t, y: m.runway.y + (R() - 0.5) * 18, r: 3.5 + R() * 4, p: [R() * TAU, R() * TAU, R() * TAU], seed: Math.floor(R() * 1e6) }; paintCrater(m, cr, G_CRATER); m.rwCraters.push(cr); }
+      // rubble heaps from the bombed terminal and service buildings
+      for (let i = 0; i < 9; i++) m.paintEllipse(m.apron.x + (R() - 0.5) * 120, m.apron.y - 22 - R() * 30, 4 + R() * 8, 3 + R() * 6, G_RUBBLE, g => g === G_SAND, 0.4);
       // oasis pond
       m.oasis = { x: W / 2 + 55 + R() * 20, y: H * 0.43 + R() * 15 };
       m.paintEllipse(m.oasis.x, m.oasis.y, 22, 14, G_WATER, null, 0.2);
@@ -2333,12 +2466,20 @@ const MAP_THEMES = {
       for (let i = 0; i < 30; i++) m.paintDisc(W / 2 + (R() - 0.5) * 220, H / 2 + (R() - 0.5) * 200, 4 + R() * 7, G_RUBBLE, g => g === G_SAND);
     },
     build(m, R) {
-      const W = m.W, H = m.H, b = m.points[1];
+      const W = m.W, H = m.H, b = m.points[1], ap = m.apron;
+      // abandoned hangar right beside the apron, doors facing the taxiway; control tower, wrecked terminal, fuel tanks
+      const hg = m.addB(ap.x - ap.hx - 22, ap.y - 2, ap.a, 40, 26, 'hangar', null, true); if (hg) hg.seed2 = Math.floor(R() * 1e6);
+      m.addB(ap.x + ap.hx - 6, ap.y - ap.hy - 7, ap.a, 9, 9, 'tower', null, true);
+      m.addB(ap.x - 4, ap.y - ap.hy - 10, ap.a, 24, 10, 'ruin', null, true);
+      for (let i = 0; i < 2; i++) m.addB(ap.x - ap.hx - 50, ap.y - 14 + i * 13, 0, 9, 9, 'fueltank', null, true);
+      // heaps of rubble from the bombed terminal and outbuildings
+      for (let i = 0; i < 14; i++) { const x = ap.x + (R() - 0.5) * 150, y = ap.y - 22 - R() * 38; if (m.collidesStatic(x, y, 4) || m.inClear(x, y, 3)) continue; m.walls.push({ kind: 'rubble', x, y, a: R() * 3, hx: 1.8 + R() * 2.6, hy: 1.2 + R() * 1.6, hp: 9999, seed: Math.floor(R() * 1e6), tone: ['#d2b688', '#a88a60', '#6e5638'] }); }
+      for (let i = 0; i < 10; i++) { const x = ap.x + (R() - 0.5) * 150, y = ap.y - 20 - R() * 40; if (m.collidesStatic(x, y, 3) || m.inClear(x, y, 3)) continue; m.rocks.push({ x, y, r: 0.6 + R() * 0.8, seed: Math.floor(R() * 1e6), scrap: true }); }
       // mudbrick village with alleyways around point B
       let n = 0;
       for (let k = 0; k < 2400 && n < 80; k++) {
         const a = R() * TAU, d = 30 + R() * 175, x = b.x + Math.cos(a) * d, y = b.y + Math.sin(a) * d * 0.85;
-        if (m.groundAt(x, y) === G_WATER || m.roadDirAt(x, y).d < 12) continue;
+        if (m.groundAt(x, y) === G_WATER || m.groundAt(x, y) === G_CONCRETE || m.roadDirAt(x, y).d < 12 || dist(x, y, m.apron.x, m.apron.y) < 80) continue;
         const ang = Math.round(R() * 3) * Math.PI / 2 + (R() - 0.5) * 0.08;
         const bb = m.addB(x, y, ang, 9 + R() * 9, 8 + R() * 7, R() < 0.3 ? 'ruin' : 'mud', pick2(R, m.biome.roof)); if (bb) { bb.tint = 'sand'; n++; }
       }
@@ -2347,8 +2488,7 @@ const MAP_THEMES = {
         if (m.collidesStatic(x, y, 7) || m.roadDirAt(x, y).d < 8 || m.inClear(x, y, 3)) continue;
         m.walls.push({ kind: 'mudwall', x, y, a: Math.round(R() * 3) * Math.PI / 2, hx: 3 + R() * 6, hy: 0.5, hp: 9999 });
       }
-      // half-buried hangar (west) and rocky plateau (east) overlooking the airstrip
-      m.addB(W * 0.29, H * 0.565, 0, 42, 24, 'hangar', null, true);
+      // rocky plateau (east) overlooking the airstrip
       const pc = { x: W * 0.72, y: H * 0.58 };
       for (let i = 0; i < 26; i++) { const a = R() * TAU, d = R() * 48; m.rocks.push({ x: pc.x + Math.cos(a) * d, y: pc.y + Math.sin(a) * d * 0.7, r: 2.2 + R() * 3.4, seed: Math.floor(R() * 1e6), tint: 'desert' }); }
       m.paintEllipse(pc.x, pc.y, 60, 42, G_RUBBLE, g => g === G_SAND, 0.3);
@@ -2363,7 +2503,7 @@ const MAP_THEMES = {
       m.planes = [];
       // wrecked aircraft: raised fuselage (stops shells) and broken wings (low cover), all solid
       for (let i = 0, k = 0; i < 4 && k < 40; k++) {
-        const x = m.runway.x + (R() - 0.5) * m.runway.hx * 1.6, y = m.runway.y + (R() < 0.5 ? -1 : 1) * (28 + R() * 14), a = R() * TAU;
+        const x = m.runway.x + (R() - 0.5) * m.runway.hx * 1.6, y = m.runway.y + (R() < 0.5 ? -1 : 1) * (26 + R() * 16), a = R() * TAU;
         if (m.collidesStatic(x, y, 9) || m.inClear(x, y, 8)) continue;
         const pl = { x, y, a, seed: Math.floor(R() * 1e6), wingLost: R() < 0.5 ? 1 : -1, burnt: R() < 0.6 };
         m.planes.push(pl);
@@ -2391,22 +2531,74 @@ const MAP_THEMES = {
       c.strokeStyle = 'rgba(160,150,130,0.35)'; c.lineWidth = 0.2;
       for (let i = 0; i < 900; i++) { const x = R() * m.W, y = R() * m.H; if (m.groundAt(x, y) !== G_SALT) continue; c.beginPath(); c.moveTo(x, y); for (let k = 0; k < 3; k++) c.lineTo(x + (R() - 0.5) * 9, y + (R() - 0.5) * 9); c.stroke(); }
       const o = m.oasis; c.strokeStyle = 'rgba(200,230,230,0.25)'; c.lineWidth = 0.3; for (let i = 0; i < 12; i++) { c.beginPath(); c.ellipse(o.x, o.y, 6 + i * 1.3, 4 + i * 0.8, 0, R() * 3, R() * 3 + 1.5); c.stroke(); }
+      // pebbles, dry camel-thorn scrub and old wheel tracks across the sand
+      for (let i = 0; i < 9000; i++) { const x = R() * m.W, y = R() * m.H, g = m.groundAt(x, y); if (g !== G_SAND && g !== G_RUBBLE) continue; c.fillStyle = pick2(R, ['rgba(140,110,74,0.5)', 'rgba(230,206,160,0.5)', 'rgba(110,86,58,0.45)']); c.fillRect(x, y, 0.2 + R() * 0.4, 0.15 + R() * 0.3); }
+      for (let i = 0; i < 700; i++) {
+        const x = R() * m.W, y = R() * m.H; if (m.groundAt(x, y) !== G_SAND) continue;
+        const sz = 0.5 + R() * 1.1; c.fillStyle = 'rgba(80,60,36,0.25)'; c.beginPath(); c.ellipse(x + 0.3, y + 0.4, sz, sz * 0.7, 0, 0, TAU); c.fill();
+        c.strokeStyle = R() < 0.5 ? 'rgba(120,108,62,0.85)' : 'rgba(96,84,52,0.85)'; c.lineWidth = 0.09; c.beginPath();
+        for (let k = 0; k < 9; k++) { const a = R() * TAU, L = sz * (0.6 + R() * 0.6); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * L, y + Math.sin(a) * L); c.lineTo(x + Math.cos(a + 0.4) * L * 1.1, y + Math.sin(a + 0.4) * L * 1.1); } c.stroke();
+      }
+      c.strokeStyle = 'rgba(130,100,64,0.22)'; c.lineWidth = 0.5;
+      for (let i = 0; i < 10; i++) { let px = R() * m.W, py = R() * m.H, pa = R() * TAU; const P = []; for (let k = 0; k < 30; k++) { P.push([px, py, pa]); pa += (R() - 0.5) * 0.15; px += Math.cos(pa) * 5; py += Math.sin(pa) * 5; } for (const off of [-1.2, 1.2]) { c.beginPath(); P.forEach(([x, y, a], k) => { const X = x - Math.sin(a) * off, Y = y + Math.cos(a) * off; k ? c.lineTo(X, Y) : c.moveTo(X, Y); }); c.stroke(); } }
     },
     paintTop(c, m, R) {
-      // runway slabs, markings and scorch
-      const rw = m.runway;
-      for (const o of [rw, m.taxi]) {
+      // tarmac: weathered concrete slabs, cracks, oil stains and faded paint
+      const rw = m.runway, slab = (o, isRw) => {
         c.save(); c.translate(o.x, o.y); c.rotate(o.a);
-        c.fillStyle = '#9a958a'; c.fillRect(-o.hx, -o.hy, o.hx * 2, o.hy * 2);
-        c.strokeStyle = 'rgba(60,56,50,0.4)'; c.lineWidth = 0.18;
-        for (let x = -o.hx; x < o.hx; x += 6) { c.beginPath(); c.moveTo(x, -o.hy); c.lineTo(x, o.hy); c.stroke(); }
-        c.beginPath(); c.moveTo(-o.hx, 0); c.lineTo(o.hx, 0); c.stroke();
-        if (o === rw) { c.fillStyle = 'rgba(240,236,220,0.6)'; for (let x = -o.hx + 12; x < o.hx - 12; x += 16) c.fillRect(x, -0.4, 8, 0.8); for (const s of [-1, 1]) for (let k = 0; k < 5; k++) c.fillRect(s * (o.hx - 8) - 1, -o.hy + 3 + k * 6.4, 2.2, 3.4); }
-        const sd = c.createLinearGradient(0, -o.hy, 0, o.hy); sd.addColorStop(0, 'rgba(206,176,122,0.5)'); sd.addColorStop(0.2, 'rgba(206,176,122,0)'); sd.addColorStop(0.8, 'rgba(206,176,122,0)'); sd.addColorStop(1, 'rgba(206,176,122,0.5)');
-        c.fillStyle = sd; c.fillRect(-o.hx, -o.hy, o.hx * 2, o.hy * 2);
+        c.fillStyle = '#9d978a'; c.fillRect(-o.hx, -o.hy, o.hx * 2, o.hy * 2);
+        for (let x = -o.hx; x < o.hx; x += 5) for (let y = -o.hy; y < o.hy; y += 5) { c.fillStyle = `rgba(${R() < 0.5 ? '255,250,235' : '60,54,44'},${0.03 + R() * 0.06})`; c.fillRect(x, y, Math.min(5, o.hx - x), Math.min(5, o.hy - y)); }
+        c.strokeStyle = 'rgba(60,56,50,0.42)'; c.lineWidth = 0.14;
+        for (let x = -o.hx; x < o.hx; x += 5) { c.beginPath(); c.moveTo(x, -o.hy); c.lineTo(x, o.hy); c.stroke(); }
+        for (let y = -o.hy; y <= o.hy; y += 5) { c.beginPath(); c.moveTo(-o.hx, y); c.lineTo(o.hx, y); c.stroke(); }
+        c.strokeStyle = 'rgba(40,36,30,0.45)'; c.lineWidth = 0.1;
+        for (let i = 0; i < o.hx * o.hy * 0.06; i++) { let x = (R() - 0.5) * o.hx * 2, y = (R() - 0.5) * o.hy * 2; c.beginPath(); c.moveTo(x, y); for (let k = 0; k < 4; k++) { x += (R() - 0.5) * 3; y += (R() - 0.5) * 3; c.lineTo(x, y); } c.stroke(); }
+        for (let i = 0; i < o.hx * 0.15; i++) { const g = c.createRadialGradient(0, 0, 0, 0, 0, 1); c.save(); c.translate((R() - 0.5) * o.hx * 1.8, (R() - 0.5) * o.hy * 1.6); c.scale(1 + R() * 2.5, 0.6 + R()); g.addColorStop(0, 'rgba(30,26,22,0.45)'); g.addColorStop(1, 'rgba(30,26,22,0)'); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 1, 0, TAU); c.fill(); c.restore(); }
+        if (isRw) {
+          c.fillStyle = 'rgba(236,232,216,0.5)';
+          for (let x = -o.hx + 22; x < o.hx - 22; x += 16) if (R() > 0.15) c.fillRect(x, -0.35, 8, 0.7);            // centreline (worn away in places)
+          for (const sd of [-1, 1]) { for (let k = 0; k < 6; k++) c.fillRect(sd * (o.hx - 6) - 1.1, -o.hy + 2.2 + k * 4.4, 2.2, 3); c.fillRect(sd * (o.hx - 14) - 0.5, -o.hy + 1.5, 1, o.hy * 2 - 3); }
+          c.fillStyle = 'rgba(236,232,216,0.35)'; c.fillRect(-o.hx, -o.hy + 0.6, o.hx * 2, 0.35); c.fillRect(-o.hx, o.hy - 0.95, o.hx * 2, 0.35); // edge lines
+          c.fillStyle = 'rgba(40,36,30,0.8)'; for (let x = -o.hx + 4; x < o.hx; x += 10) for (const sd of [-1, 1]) c.fillRect(x, sd * (o.hy + 0.9) - 0.3, 0.6, 0.6);     // broken edge-light stubs
+        } else if (o === m.taxi || m.links.includes(o)) {
+          c.strokeStyle = 'rgba(214,170,60,0.45)'; c.lineWidth = 0.3; c.setLineDash([3, 1.5]); c.beginPath(); if (o === m.taxi) { c.moveTo(-o.hx, 0); c.lineTo(o.hx, 0); } else { c.moveTo(0, -o.hy); c.lineTo(0, o.hy); } c.stroke(); c.setLineDash([]);
+        } else {
+          c.strokeStyle = 'rgba(214,170,60,0.4)'; c.lineWidth = 0.3; for (let x = -o.hx + 12; x < o.hx - 6; x += 22) { c.beginPath(); c.arc(x, 0, 7, -0.6, 0.6); c.stroke(); c.strokeRect(x - 1.5, -o.hy + 2, 3, 3); } // parking stands
+        }
+        c.strokeStyle = 'rgba(70,64,54,0.6)'; c.lineWidth = 0.25; c.strokeRect(-o.hx, -o.hy, o.hx * 2, o.hy * 2);
+        c.restore();
+      };
+      for (const o of m.links) slab(o, false);
+      slab(m.apron, false); slab(m.taxi, false); slab(rw, true);
+      // bomb craters (irregular, sand-coloured lips)
+      for (const cr of m.rwCraters) drawCraterBowl(c, cr, { lip: [176, 150, 110], clodL: 'rgba(160,150,132,0.9)', clodD: 'rgba(110,96,74,0.85)', bowl: [86, 70, 50], deep: [46, 36, 26] });
+      // sand drifts creeping over the tarmac, rippled by the wind
+      for (const d of m.drifts) {
+        const Rd = mulberry32(d.seed);
+        c.save(); c.translate(d.x, d.y); c.rotate(d.a);
+        for (let l = 0; l < 3; l++) {
+          const k = 1 - l * 0.25; c.fillStyle = `rgba(${206 + l * 6},${176 + l * 6},${122 + l * 6},${0.35 + l * 0.2})`; c.beginPath();
+          for (let i = 0; i < 24; i++) { const a = i / 24 * TAU, rr = (0.8 + Rd() * 0.35) * k; c.lineTo(Math.cos(a) * d.rx * rr * (a > Math.PI / 2 && a < Math.PI * 1.5 ? 1.25 : 1), Math.sin(a) * d.ry * rr); }
+          c.closePath(); c.fill();
+        }
+        c.strokeStyle = 'rgba(150,118,74,0.3)'; c.lineWidth = 0.18; for (let x = -d.rx * 0.6; x < d.rx * 0.6; x += 1.4) { c.beginPath(); c.moveTo(x, -d.ry * 0.5); c.quadraticCurveTo(x + 0.6, 0, x, d.ry * 0.5); c.stroke(); }
         c.restore();
       }
-      for (const [x, y, r] of m.rwCraters) { const g = c.createRadialGradient(x, y, 0.5, x, y, r * 1.3); g.addColorStop(0, 'rgba(40,30,20,0.9)'); g.addColorStop(0.7, 'rgba(110,90,60,0.7)'); g.addColorStop(1, 'rgba(150,140,120,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y, r * 1.3, 0, TAU); c.fill(); for (let k = 0; k < 8; k++) { const a = R() * TAU; c.fillStyle = '#8a8478'; c.fillRect(x + Math.cos(a) * r * (1 + R() * 0.6), y + Math.sin(a) * r * (1 + R() * 0.6), 0.8, 0.6); } }
+      // broken perimeter fence south of the runway
+      c.save(); c.translate(rw.x, rw.y); c.rotate(rw.a);
+      c.strokeStyle = 'rgba(70,64,56,0.55)'; c.lineWidth = 0.1;
+      for (let x = -rw.hx; x < rw.hx; x += 3) { if (R() < 0.18) { x += 6; continue; } c.fillStyle = '#5a554c'; c.fillRect(x - 0.12, rw.hy + 26 - 0.12, 0.24, 0.24); if (R() < 0.8) { c.beginPath(); c.moveTo(x, rw.hy + 26); c.lineTo(x + 3, rw.hy + 26 + (R() - 0.5) * 0.4); c.stroke(); } }
+      // windsock
+      const wx = rw.hx * 0.55, wy = -rw.hy - 9; c.fillStyle = '#4a4640'; c.beginPath(); c.arc(wx, wy, 0.35, 0, TAU); c.fill();
+      c.fillStyle = '#d8743a'; c.beginPath(); c.moveTo(wx, wy - 0.5); c.lineTo(wx + 3.2, wy - 0.15); c.lineTo(wx + 3.2, wy + 0.15); c.lineTo(wx, wy + 0.5); c.fill(); c.fillStyle = 'rgba(240,236,220,0.9)'; c.fillRect(wx + 1, wy - 0.4, 0.5, 0.8); c.fillRect(wx + 2.2, wy - 0.3, 0.5, 0.6);
+      c.restore();
+      // oil drums and crates scattered round the apron and hangar
+      const ap = m.apron;
+      for (let i = 0; i < 26; i++) {
+        const x = ap.x + (R() - 0.5) * ap.hx * 3.2, y = ap.y - ap.hy - 2 - R() * 22; if (m.groundAt(x, y) === G_WATER) continue;
+        if (R() < 0.6) { const n = 1 + Math.floor(R() * 4); for (let k = 0; k < n; k++) { const dx = x + (k % 2) * 0.9, dy = y + (k >> 1) * 0.9; c.fillStyle = 'rgba(0,0,0,0.3)'; c.beginPath(); c.arc(dx + 0.2, dy + 0.3, 0.45, 0, TAU); c.fill(); c.fillStyle = pick2(R, ['#5a6a3a', '#7a3a2a', '#4a4a44', '#8a6a3a']); c.beginPath(); c.arc(dx, dy, 0.42, 0, TAU); c.fill(); c.strokeStyle = 'rgba(0,0,0,0.4)'; c.lineWidth = 0.06; c.stroke(); c.fillStyle = 'rgba(255,255,255,0.25)'; c.beginPath(); c.arc(dx - 0.12, dy - 0.12, 0.12, 0, TAU); c.fill(); } }
+        else { c.save(); c.translate(x, y); c.rotate(R() * 3); c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(-0.6, -0.4, 1.4, 1.1); c.fillStyle = R() < 0.5 ? '#8a6a44' : '#6e5434'; c.fillRect(-0.8, -0.6, 1.4, 1.1); c.strokeStyle = 'rgba(40,28,16,0.7)'; c.lineWidth = 0.08; c.strokeRect(-0.8, -0.6, 1.4, 1.1); c.beginPath(); c.moveTo(-0.8, -0.6); c.lineTo(0.6, 0.5); c.stroke(); c.restore(); }
+      }
       for (const p of m.planes || []) { const g = c.createRadialGradient(p.x, p.y, 1, p.x, p.y, 10); g.addColorStop(0, 'rgba(30,24,18,0.55)'); g.addColorStop(1, 'rgba(30,24,18,0)'); c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, 10, 0, TAU); c.fill(); }
     },
   },
@@ -2474,7 +2666,8 @@ const MAP_THEMES = {
       // powerhouse at the spillway base
       m.addB(m.ph.x, m.ph.y, 0, 34, 14, 'concrete', null, true);
       // dam parapets (low walls, gaps for the road)
-      for (const s of [-1, 1]) for (let x = -m.dam.hx + 10; x < m.dam.hx - 10; x += 26) m.walls.push({ kind: 'parapet', x: m.dam.x + x + 8, y: m.dam.y + s * 8.2, a: 0, hx: 8, hy: 0.45, hp: 9999 });
+      // continuous guard walls along both edges of the dam crest — nothing drives off into the reservoir or the gorge
+      for (const s of [-1, 1]) for (let x = -m.dam.hx + 2; x < m.dam.hx - 2; x += 16) { const L = Math.min(16, m.dam.hx - 2 - x); m.walls.push({ kind: 'parapet', x: m.dam.x + x + L / 2, y: m.dam.y + s * 8.4, a: 0, hx: L / 2 + 0.3, hy: 0.55, hp: 9999 }); }
       // ridge-top boulders (sniper perches)
       for (let i = 0; i < 40; i++) { const x = R() < 0.5 ? 120 + R() * 170 : W - 120 - R() * 170, y = 140 + R() * 420; if (m.collidesStatic(x, y, 6) || m.inClear(x, y, 6) || m.blocksVehicle(x, y)) continue; m.rocks.push({ x, y, r: 2.4 + R() * 3, seed: Math.floor(R() * 1e6), tint: 'granite' }); }
       addWrecks(m, R, 3, 0.3);
@@ -2494,13 +2687,58 @@ const MAP_THEMES = {
     },
     paintTop(c, m, R) {
       const d = m.dam, gz = m.gorge;
-      // spillway: white water down the gorge
-      c.save(); c.translate(gz.x, gz.y);
-      const sp = c.createLinearGradient(0, -gz.hy, 0, gz.hy); sp.addColorStop(0, 'rgba(230,240,245,0.95)'); sp.addColorStop(1, 'rgba(90,140,150,0.9)');
-      c.fillStyle = sp; c.fillRect(-14, -gz.hy, 28, gz.hy * 2 + 8);
-      c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 0.3; for (let i = 0; i < 40; i++) { const x = (R() - 0.5) * 26, y = (R() - 0.5) * gz.hy * 2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + (R() - 0.5), y + 3); c.stroke(); }
-      const sh = c.createLinearGradient(0, -gz.hy, 0, -gz.hy + 30); sh.addColorStop(0, 'rgba(0,0,0,0.55)'); sh.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = sh; c.fillRect(-gz.hx, -gz.hy, gz.hx * 2, 30);
-      c.restore();
+      // the gorge below the dam: a deep, sheer canyon. Rock spurs run from the rim down to a far-away floor
+      // (the perspective sells the drop), walls facing the light are lit, everything darkens and hazes with depth.
+      {
+        const Rg = mulberry32(m.seed + 515), x0 = gz.x - gz.hx, x1 = gz.x + gz.hx, y0 = gz.y - gz.hy, y1 = gz.y + gz.hy;
+        const NX = 110, NY = 40;
+        const outline = (ix, iy, iyTop, jit) => { // clockwise: north edge, east edge, south edge, west edge
+          const P = [];
+          for (let i = 0; i < NX; i++) P.push([lerp(x0 + ix, x1 - ix, i / NX), y0 + iyTop + jit()]);
+          for (let i = 0; i < NY; i++) P.push([x1 - ix + jit(), lerp(y0 + iyTop, y1 - iy, i / NY)]);
+          for (let i = 0; i < NX; i++) P.push([lerp(x1 - ix, x0 + ix, i / NX), y1 - iy + jit()]);
+          for (let i = 0; i < NY; i++) P.push([x0 + ix + jit(), lerp(y1 - iy, y0 + iyTop, i / NY)]);
+          return P;
+        };
+        const poly = P => { c.beginPath(); P.forEach(([x, y], k) => k ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); };
+        const rim = outline(0, 0, 0, () => (Rg() - 0.5) * 1.6);
+        const floor = outline(gz.hx * 0.62, gz.hy * 0.55, gz.hy * 0.42, () => (Rg() - 0.5) * 5);
+        // floor far below
+        poly(rim); const fg = c.createLinearGradient(0, y0, 0, y1); fg.addColorStop(0, '#15181d'); fg.addColorStop(1, '#22272d'); c.fillStyle = fg; c.fill();
+        // wall spurs: quads between rim and floor; brightness from which way the wall faces (light from the north-west)
+        const N = rim.length, Lx = -0.6, Ly = -0.8;
+        for (let i = 0; i < N; i++) {
+          const a = rim[i], b = rim[(i + 1) % N], fa = floor[i], fb = floor[(i + 1) % N];
+          const ex = b[0] - a[0], ey = b[1] - a[1], el = Math.hypot(ex, ey) || 1, nx = ey / el, ny = -ex / el; // inward-facing wall normal
+          const lit = clamp(0.5 + (nx * -Lx + ny * -Ly) * 0.5, 0, 1), v = 50 + lit * 70 + (Rg() - 0.5) * 26;
+          const g = c.createLinearGradient((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (fa[0] + fb[0]) / 2, (fa[1] + fb[1]) / 2);
+          g.addColorStop(0, `rgb(${v + 30 | 0},${v + 32 | 0},${v + 38 | 0})`); g.addColorStop(0.45, `rgb(${v * 0.62 | 0},${v * 0.64 | 0},${v * 0.7 | 0})`); g.addColorStop(1, `rgb(${v * 0.25 | 0},${v * 0.27 | 0},${v * 0.32 | 0})`);
+          c.fillStyle = g; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(fb[0], fb[1]); c.lineTo(fa[0], fa[1]); c.closePath(); c.fill();
+          if (Rg() < 0.35) { c.strokeStyle = 'rgba(0,0,0,0.35)'; c.lineWidth = 0.35; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(fa[0], fa[1]); c.stroke(); }     // gullies
+          if (Rg() < 0.25) { c.strokeStyle = 'rgba(235,240,248,0.35)'; c.lineWidth = 0.5; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(lerp(a[0], fa[0], 0.25), lerp(a[1], fa[1], 0.25)); c.stroke(); } // snow in the gullies
+        }
+        // horizontal strata / ledges across the walls
+        for (let l = 1; l < 6; l++) { const k = l / 6, P = rim.map((p, i) => [lerp(p[0], floor[i][0], k), lerp(p[1], floor[i][1], k)]); poly(P); c.strokeStyle = `rgba(210,220,232,${0.16 * (1 - k)})`; c.lineWidth = 0.4; c.stroke(); c.strokeStyle = `rgba(0,0,0,${0.15 + k * 0.1})`; c.lineWidth = 0.8; c.save(); c.translate(0.6, 0.8); c.stroke(); c.restore(); }
+        poly(rim); c.save(); c.clip();
+        // the torrent: the spillway plunges from the dam and runs out along the canyon floor
+        const fl = c.createLinearGradient(0, y0, 0, y1); fl.addColorStop(0, 'rgba(240,246,250,0.97)'); fl.addColorStop(0.45, 'rgba(180,210,218,0.9)'); fl.addColorStop(1, 'rgba(60,104,114,0.9)');
+        c.fillStyle = fl; c.beginPath(); c.moveTo(gz.x - 11, y0); c.lineTo(gz.x + 11, y0); c.lineTo(gz.x + 5, y0 + gz.hy * 0.45); c.lineTo(gz.x + 4, y1); c.lineTo(gz.x - 4, y1); c.lineTo(gz.x - 5, y0 + gz.hy * 0.45); c.closePath(); c.fill();
+        c.strokeStyle = 'rgba(255,255,255,0.6)'; c.lineWidth = 0.3; for (let i = 0; i < 70; i++) { const y = y0 + Rg() * gz.hy * 2, half = y < y0 + gz.hy * 0.45 ? lerp(10, 5, (y - y0) / (gz.hy * 0.45)) : 4, x = gz.x + (Rg() - 0.5) * half * 2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + (Rg() - 0.5), y + 2.5); c.stroke(); }
+        // plunge pool foam where it hits the floor
+        const pp = c.createRadialGradient(gz.x, y0 + gz.hy * 0.5, 0, gz.x, y0 + gz.hy * 0.5, 14); pp.addColorStop(0, 'rgba(240,248,252,0.8)'); pp.addColorStop(1, 'rgba(240,248,252,0)'); c.fillStyle = pp; c.beginPath(); c.arc(gz.x, y0 + gz.hy * 0.5, 14, 0, TAU); c.fill();
+        // tiny boulders and dwarfed pines on the floor (scale cue: it's a long way down)
+        for (let i = 0; i < 50; i++) { const x = lerp(floor[0][0], floor[NX - 1][0], Rg()), y = lerp(y0 + gz.hy * 0.42, y1 - gz.hy * 0.55, Rg()); c.fillStyle = Rg() < 0.5 ? '#3a3e44' : '#2a2d32'; c.beginPath(); c.arc(x, y, 0.2 + Rg() * 0.45, 0, TAU); c.fill(); }
+        for (let i = 0; i < 30; i++) { const x = lerp(floor[0][0], floor[NX - 1][0], Rg()), y = lerp(y0 + gz.hy * 0.42, y1 - gz.hy * 0.55, Rg()); if (Math.abs(x - gz.x) < 8) continue; c.fillStyle = '#1e2c24'; c.beginPath(); for (let k = 0; k < 8; k++) { const a = k / 8 * TAU, r = (k % 2 ? 0.35 : 0.7); c.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } c.fill(); }
+        // haze filling the depths and spray drifting up
+        const hz = c.createRadialGradient(gz.x, gz.y + gz.hy * 0.1, gz.hy * 0.2, gz.x, gz.y, gz.hx * 0.9); hz.addColorStop(0, 'rgba(120,140,160,0.12)'); hz.addColorStop(1, 'rgba(150,170,190,0)'); c.fillStyle = hz; c.fillRect(x0, y0, gz.hx * 2, gz.hy * 2);
+        for (let i = 0; i < 22; i++) { const x = gz.x + (Rg() - 0.5) * 30, y = y0 + gz.hy * (0.35 + Rg() * 0.5), r = 5 + Rg() * 10; const mg = c.createRadialGradient(x, y, 0, x, y, r); mg.addColorStop(0, 'rgba(210,222,235,0.13)'); mg.addColorStop(1, 'rgba(210,222,235,0)'); c.fillStyle = mg; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); }
+        // the dam's shadow falling down the north wall
+        const sh = c.createLinearGradient(0, y0, 0, y0 + 18); sh.addColorStop(0, 'rgba(0,0,10,0.7)'); sh.addColorStop(1, 'rgba(0,0,10,0)'); c.fillStyle = sh; c.fillRect(x0, y0, gz.hx * 2, 18);
+        c.restore();
+        // crumbling rim edge: lighter lip, loose rocks and snow
+        poly(rim); c.strokeStyle = 'rgba(200,204,210,0.9)'; c.lineWidth = 0.7; c.stroke(); c.strokeStyle = 'rgba(30,32,36,0.6)'; c.lineWidth = 0.3; c.save(); c.translate(0.4, 0.6); c.stroke(); c.restore();
+        for (let i = 0; i < 160; i++) { const p0 = rim[Math.floor(Rg() * N)]; c.fillStyle = Rg() < 0.5 ? 'rgba(236,241,247,0.75)' : 'rgba(120,120,126,0.8)'; c.beginPath(); c.arc(p0[0] + (Rg() - 0.5) * 3, p0[1] + (Rg() - 0.5) * 3, 0.2 + Rg() * 0.5, 0, TAU); c.fill(); }
+      }
       // dam crest
       c.save(); c.translate(d.x, d.y);
       c.fillStyle = '#a7a7a2'; c.fillRect(-d.hx, -d.hy, d.hx * 2, d.hy * 2);
@@ -2523,19 +2761,7 @@ const MAP_THEMES = {
       const W = m.W, H = m.H;
       // mud wallows
       for (let i = 0; i < 40; i++) m.paintEllipse(R() * W, R() * H, 10 + R() * 26, 8 + R() * 18, G_MUD, g => g === G_EARTH, 0.3);
-      // crater chains through the centre
-      m.craters = [];
-      // chains: random walks of overlapping shell holes
-      const spots = [];
-      for (let ch = 0; ch < 16; ch++) { let x = 220 + R() * (W - 440), y = H / 2 + (R() - 0.5) * H * 0.36, a = R() * TAU; for (let k = 0; k < 7; k++) { spots.push([x, y]); a += (R() - 0.5) * 1.2; x += Math.cos(a) * 16; y += Math.sin(a) * 12; } }
-      for (let i = 0; i < 40; i++) spots.push([150 + R() * (W - 300), 60 + R() * (H - 120)]);
-      for (const [x, y] of spots) {
-        const r = 6 + R() * 10;
-        if (m.points.some(p => dist(x, y, p.x, p.y) < p.r + r + 4) && R() < 0.7) continue;
-        m.paintDisc(x, y, r, G_CRATER); m.craters.push({ x, y, r, wet: false });
-        if (R() < 0.3 && !m.points.some(p => dist(x, y, p.x, p.y) < p.r + 30)) { m.paintDisc(x, y, r * 0.55, G_WATER); m.craters[m.craters.length - 1].wet = true; }
-      }
-      // communication trenches: zig-zag sunken lanes along both flanks + a few connectors
+      // communication trenches: zig-zag sunken lanes along both flanks + a few connectors (deep: tanks bog down inside)
       m.trenchLines = [];
       for (const p of [m.points[0], m.points[2]]) {
         const pts = []; let x = 40, s = 1;
@@ -2548,6 +2774,39 @@ const MAP_THEMES = {
         const x = 260 + R() * (W - 520), y0 = m.points[0].y, y1 = m.points[2].y;
         const pts = [[x, y0]]; for (let y = y0 + 60; y < y1; y += 70) pts.push([x + (R() - 0.5) * 50, y]); pts.push([x + (R() - 0.5) * 30, y1]);
         if (R() < 0.6) { const half = pts.slice(0, Math.ceil(pts.length / 2)); m.trenchLines.push({ pts: half, w: 8 }); m.rasterPolyline(half, 4.2, G_TRENCH, i => m.ground[i] !== G_WATER); }
+      }
+      const nearTrench = (x, y, pad) => m.trenchLines.some(t => { for (let i = 0; i < t.pts.length - 1; i++) if (segDist(x, y, t.pts[i][0], t.pts[i][1], t.pts[i + 1][0], t.pts[i + 1][1]) < t.w / 2 + pad) return true; return false; });
+      // shell holes spread across the whole battlefield (jittered grid), mostly small, a few huge, plus short chains
+      m.craters = [];
+      const addCr = (x, y, r) => {
+        if (x < 8 || y < 8 || x > W - 8 || y > H - 8 || m.inClear(x, y, r + 4) || nearTrench(x, y, r + 2)) return;
+        if (m.points.some(p => dist(x, y, p.x, p.y) < p.r + r + 2) && R() < 0.8) return;
+        const cr = { x, y, r, p: [R() * TAU, R() * TAU, R() * TAU], wet: false, seed: Math.floor(R() * 1e6) };
+        paintCrater(m, cr, G_CRATER, 1);
+        if (r > 7 && R() < 0.3 && !m.points.some(p => dist(x, y, p.x, p.y) < p.r + 30)) { paintCrater(m, cr, G_WATER, 0.5); cr.wet = true; }
+        m.craters.push(cr);
+      };
+      const SP = 58;
+      for (let y0 = 20; y0 < H - 10; y0 += SP) for (let x0 = 20; x0 < W - 10; x0 += SP) {
+        addCr(x0 + R() * SP * 0.9, y0 + R() * SP * 0.9, 2.6 + Math.pow(R(), 2.3) * 12);
+        if (R() < 0.3) addCr(x0 + R() * SP, y0 + R() * SP, 2 + R() * 3);
+      }
+      for (let ch = 0; ch < 7; ch++) { let x = 220 + R() * (W - 440), y = H / 2 + (R() - 0.5) * H * 0.36, a = R() * TAU; for (let k = 0; k < 5; k++) { addCr(x, y, 4 + R() * 6); a += (R() - 0.5) * 1.2; x += Math.cos(a) * 15; y += Math.sin(a) * 11; } }
+      // timber bridges across the trenches so vehicles (and the AI) can cross without falling in
+      m.tBridges = [];
+      for (const t of m.trenchLines) {
+        let acc = 45 + R() * 40;
+        for (let i = 0; i < t.pts.length - 1; i++) {
+          const [ax, ay] = t.pts[i], [bx, by] = t.pts[i + 1], L = Math.hypot(bx - ax, by - ay), sa = Math.atan2(by - ay, bx - ax);
+          for (let d = 6; d < L - 6; d += 4) {
+            acc -= 4; if (acc > 0) continue;
+            const x = ax + (bx - ax) * d / L, y = ay + (by - ay) * d / L;
+            if (m.inClear(x, y, 4)) continue;
+            const br = { x, y, a: sa + Math.PI / 2, hx: t.w / 2 + 4.5, hy: 3.4, seed: Math.floor(R() * 1e6) };
+            m.forOBBCells(br, k => { m.ground[k] = G_BRIDGE; });
+            m.tBridges.push(br); acc = 105 + R() * 60;
+          }
+        }
       }
       // shattered forest at both rear edges
       for (let gy = 0; gy < m.gh; gy++) for (let gx = 0; gx < m.gw; gx++) { const x = gx * GC, y = gy * GC; const edge = Math.min(x, W - x); if (edge < 210 && m.noise(x / 70, y / 70) > -0.05 + edge / 600 && !m.inClear(x, y, 8) && m.ground[gy * m.gw + gx] === G_EARTH) m.ground[gy * m.gw + gx] = G_FOREST; }
@@ -2580,25 +2839,44 @@ const MAP_THEMES = {
       for (let i = 0; i < 14000; i++) { const x = R() * m.W, y = R() * m.H; c.fillStyle = R() < 0.5 ? 'rgba(36,26,16,0.35)' : 'rgba(150,128,96,0.25)'; c.fillRect(x, y, 0.5 + R() * 1.6, 0.4 + R()); }
       for (let i = 0; i < 400; i++) { const x = R() * m.W, y = R() * m.H; c.strokeStyle = 'rgba(30,24,18,0.5)'; c.lineWidth = 0.25; c.beginPath(); c.moveTo(x, y); c.lineTo(x + (R() - 0.5) * 8, y + (R() - 0.5) * 8); c.stroke(); } // splinters
       for (let i = 0; i < 700; i++) craterDecal(c, R() * m.W, R() * m.H, 1.5 + R() * 4, R);
-      // crater bowls
-      for (const cr of m.craters) {
-        const g = c.createRadialGradient(cr.x - cr.r * 0.2, cr.y - cr.r * 0.2, cr.r * 0.1, cr.x, cr.y, cr.r * 1.25);
-        g.addColorStop(0, 'rgba(26,20,14,0.85)'); g.addColorStop(0.65, 'rgba(56,44,30,0.7)'); g.addColorStop(0.85, 'rgba(120,100,72,0.55)'); g.addColorStop(1, 'rgba(100,84,60,0)');
-        c.fillStyle = g; c.beginPath(); c.arc(cr.x, cr.y, cr.r * 1.25, 0, TAU); c.fill();
-        if (cr.wet) { const w = c.createRadialGradient(cr.x, cr.y, 0.5, cr.x, cr.y, cr.r * 0.6); w.addColorStop(0, '#2b3330'); w.addColorStop(1, '#3d4840'); c.fillStyle = w; c.beginPath(); c.arc(cr.x, cr.y, cr.r * 0.58, 0, TAU); c.fill(); c.strokeStyle = 'rgba(160,170,150,0.25)'; c.lineWidth = 0.3; c.beginPath(); c.arc(cr.x - 1, cr.y - 1, cr.r * 0.4, 3.6, 5.2); c.stroke(); }
-      }
-      // trenches: dark sunken channel with timber revetments
+      // trenches: dark sunken channel, plank revetment walls, duckboards, timber fire-bay posts
       for (const t of m.trenchLines) {
         const path = () => { c.beginPath(); t.pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); };
         c.lineJoin = 'miter'; c.lineCap = 'butt';
         path(); c.strokeStyle = 'rgba(140,118,84,0.6)'; c.lineWidth = t.w + 6; c.stroke();          // spoil heaped on the parapet
         path(); c.strokeStyle = 'rgba(160,140,100,0.35)'; c.lineWidth = t.w + 3; c.stroke();
-        path(); c.strokeStyle = '#2c2219'; c.lineWidth = t.w; c.stroke();                          // the cut
-        path(); c.strokeStyle = 'rgba(0,0,0,0.45)'; c.lineWidth = t.w * 0.7; c.stroke();
-        path(); c.strokeStyle = 'rgba(96,74,48,0.9)'; c.lineWidth = 1.1; c.setLineDash([0.35, 0.25]); c.stroke(); c.setLineDash([]); // duckboards
-        // timber revetment posts along both walls
-        c.fillStyle = 'rgba(70,52,34,0.9)';
-        for (let i = 0; i < t.pts.length - 1; i++) { const [ax, ay] = t.pts[i], [bx, by] = t.pts[i + 1], L = Math.hypot(bx - ax, by - ay), nx = -(by - ay) / L, ny = (bx - ax) / L; for (let d = 0; d < L; d += 2.2) for (const sd of [-1, 1]) c.fillRect(ax + (bx - ax) * d / L + nx * sd * t.w * 0.46 - 0.2, ay + (by - ay) * d / L + ny * sd * t.w * 0.46 - 0.2, 0.4, 0.4); }
+        path(); c.strokeStyle = '#241b13'; c.lineWidth = t.w; c.stroke();                          // the cut
+        path(); c.strokeStyle = 'rgba(0,0,0,0.5)'; c.lineWidth = t.w * 0.62; c.stroke();
+        for (let i = 0; i < t.pts.length - 1; i++) {
+          const [ax, ay] = t.pts[i], [bx, by] = t.pts[i + 1], L = Math.hypot(bx - ax, by - ay), ux = (bx - ax) / L, uy = (by - ay) / L, nx = -uy, ny = ux, sa = Math.atan2(uy, ux);
+          // duckboard walkway down the middle
+          c.save(); c.translate(ax, ay); c.rotate(sa);
+          c.fillStyle = 'rgba(70,52,32,0.85)'; c.fillRect(0, -t.w * 0.17, L, 0.18); c.fillRect(0, t.w * 0.17 - 0.18, L, 0.18);
+          for (let d = 0.3; d < L; d += 0.62) { c.fillStyle = R() < 0.12 ? 'rgba(40,30,20,0.6)' : (R() < 0.5 ? 'rgba(112,86,56,0.9)' : 'rgba(96,72,46,0.9)'); c.fillRect(d, -t.w * 0.19, 0.42, t.w * 0.38); }
+          // plank revetment walls along both sides, with upright posts
+          for (const sd of [-1, 1]) {
+            const off = sd * t.w * 0.44;
+            for (let d = 0; d < L; d += 1.5) { c.fillStyle = pick2(R, ['#6b5034', '#5a432b', '#7a5c3c', '#4e3a26']); c.fillRect(d, off - 0.32, 1.42, 0.64); }
+            c.fillStyle = 'rgba(25,18,10,0.55)'; c.fillRect(0, off - sd * 0.4 - 0.1, L, 0.2);
+            c.fillStyle = '#3a2a1a'; for (let d = 0; d < L; d += 2.4) c.fillRect(d - 0.22, off - 0.4, 0.44, 0.8);
+          }
+          c.restore();
+          // fire-bay traverse posts at each zig-zag corner
+          if (i > 0) { const [px, py] = t.pts[i]; c.fillStyle = 'rgba(58,42,26,0.9)'; for (let k = -1; k <= 1; k++) c.fillRect(px + nx * k * 1.4 - 0.3, py + ny * k * 1.4 - 0.3, 0.6, 0.6); }
+        }
+      }
+      // shell holes: irregular bowls with thrown-up lips and clods
+      for (const cr of m.craters) drawCraterBowl(c, cr);
+      // timber bridges over the trenches
+      for (const br of m.tBridges || []) {
+        const Rb = mulberry32(br.seed);
+        c.save(); c.translate(br.x, br.y); c.rotate(br.a);
+        c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(-br.hx + 0.6, -br.hy + 0.8, br.hx * 2, br.hy * 2);
+        c.fillStyle = '#3e2c1a'; c.fillRect(-br.hx, -br.hy, br.hx * 2, 0.55); c.fillRect(-br.hx, br.hy - 0.55, br.hx * 2, 0.55); // stringers
+        for (let x = -br.hx + 0.1; x < br.hx - 0.2; x += 0.7) { c.fillStyle = pick2(Rb, ['#8a6a44', '#7a5c3a', '#95744c', '#6c5032']); c.fillRect(x, -br.hy + 0.35, 0.62, br.hy * 2 - 0.7); if (Rb() < 0.3) { c.fillStyle = 'rgba(30,20,12,0.6)'; c.fillRect(x + 0.25, -br.hy + 0.5 + Rb() * br.hy, 0.12, 0.12); } }
+        c.fillStyle = 'rgba(120,96,64,0.5)'; c.fillRect(-br.hx, -0.3, br.hx * 2, 0.15);
+        c.fillStyle = 'rgba(60,46,30,0.9)'; for (const sx of [-1, 1]) for (const sy of [-1, 1]) c.fillRect(sx * (br.hx - 0.4) - 0.3, sy * (br.hy - 0.3) - 0.3, 0.6, 0.6);
+        c.restore();
       }
     },
     paintTop(c, m, R) {
@@ -2702,6 +2980,53 @@ function drawMapArt(cv, key) {
     c.fillStyle = '#6f6d66'; c.fillRect(W * 0.08, H * 0.45, 22, 16); c.fillRect(W * 0.86, H * 0.5, 22, 16);
     tank(W * 0.45, H * 0.5, 0.3, '#4d4a3a'); fire(W * 0.6, H * 0.62); tank(W * 0.6, H * 0.62, 2.2, '#241f1a');
     const sm = c.createLinearGradient(0, 0, 0, H); sm.addColorStop(0, 'rgba(20,16,12,0.55)'); sm.addColorStop(1, 'rgba(20,16,12,0.1)'); c.fillStyle = sm; c.fillRect(0, 0, W, H);
+  }
+}
+
+// ---------------------------------------------------------------- irregular shell holes
+// crater outline radius at angle a (a lumpy, never-perfect circle)
+function craterR(cr, a) { return cr.r * (1 + 0.1 * Math.sin(2 * a + cr.p[0]) + 0.08 * Math.sin(3 * a + cr.p[1]) + 0.06 * Math.sin(5 * a + cr.p[2]) + 0.04 * Math.sin(8 * a + cr.p[0] * 2)); }
+function paintCrater(m, cr, type, k = 1, cond) {
+  const R0 = cr.r * 1.35 * k;
+  for (let gy = Math.floor((cr.y - R0) / GC); gy <= Math.ceil((cr.y + R0) / GC); gy++) for (let gx = Math.floor((cr.x - R0) / GC); gx <= Math.ceil((cr.x + R0) / GC); gx++) {
+    if (gx < 0 || gy < 0 || gx >= m.gw || gy >= m.gh) continue;
+    const x = gx * GC + GC / 2, y = gy * GC + GC / 2;
+    if (dist(x, y, cr.x, cr.y) <= craterR(cr, Math.atan2(y - cr.y, x - cr.x)) * k) { const i = gy * m.gw + gx; if (!cond || cond(m.ground[i])) m.ground[i] = type; }
+  }
+}
+function craterPath(c, cr, k, jit, R) {
+  c.beginPath();
+  for (let i = 0; i < 44; i++) { const a = i / 44 * TAU, rr = craterR(cr, a) * k * (1 + (R ? (R() - 0.5) * jit : 0)); c.lineTo(cr.x + Math.cos(a) * rr, cr.y + Math.sin(a) * rr); }
+  c.closePath();
+}
+function drawCraterBowl(c, cr, pal) {
+  const R = mulberry32(cr.seed || ((cr.x * 7 + cr.y * 13) | 0)), r = cr.r;
+  const P = pal || { lip: [128, 106, 76], clodL: 'rgba(150,126,92,0.85)', clodD: 'rgba(52,40,26,0.85)', bowl: [44, 34, 22], deep: [22, 17, 11] };
+  // thrown-out earth: lumpy clods scattered beyond the lip, thicker on one side
+  const side = R() * TAU;
+  for (let i = 0; i < 10 + r * 6; i++) {
+    const a = R() * TAU, bias = 0.6 + 0.4 * Math.cos(a - side), d = craterR(cr, a) * (1.05 + Math.pow(R(), 1.7) * 0.75 * bias), sz = (0.18 + R() * 0.45) * Math.min(2.2, 0.6 + r / 6);
+    const x = cr.x + Math.cos(a) * d, y = cr.y + Math.sin(a) * d;
+    c.fillStyle = R() < 0.55 ? P.clodL : P.clodD; c.beginPath();
+    for (let k = 0; k < 5; k++) { const q = k / 5 * TAU + R(); c.lineTo(x + Math.cos(q) * sz * (0.6 + R() * 0.6), y + Math.sin(q) * sz * (0.6 + R() * 0.6)); }
+    c.fill();
+  }
+  // raised lip
+  c.fillStyle = `rgba(${P.lip[0]},${P.lip[1]},${P.lip[2]},0.6)`; craterPath(c, cr, 1.22, 0.12, R); c.fill();
+  c.fillStyle = `rgba(${P.lip[0] + 18},${P.lip[1] + 16},${P.lip[2] + 12},0.45)`; craterPath(c, cr, 1.1, 0.1, R); c.fill();
+  // the bowl: shaded wall away from the light (upper-left), lit wall facing it
+  const g = c.createLinearGradient(cr.x - r, cr.y - r, cr.x + r, cr.y + r);
+  g.addColorStop(0, `rgb(${P.deep[0]},${P.deep[1]},${P.deep[2]})`); g.addColorStop(0.55, `rgb(${P.bowl[0]},${P.bowl[1]},${P.bowl[2]})`); g.addColorStop(1, `rgb(${P.bowl[0] + 40},${P.bowl[1] + 32},${P.bowl[2] + 22})`);
+  c.fillStyle = g; craterPath(c, cr, 1, 0.08, R); c.fill();
+  // terraced inner walls and a darker floor
+  c.strokeStyle = 'rgba(0,0,0,0.22)'; c.lineWidth = Math.max(0.08, r * 0.025); craterPath(c, cr, 0.72, 0.12, R); c.stroke();
+  c.fillStyle = `rgba(${P.deep[0]},${P.deep[1]},${P.deep[2]},0.55)`; c.save(); c.translate(-r * 0.06, -r * 0.06); craterPath(c, cr, 0.45, 0.2, R); c.fill(); c.restore();
+  // stones and splinters on the floor
+  for (let i = 0; i < r * 1.5; i++) { const a = R() * TAU, d = R() * craterR(cr, a) * 0.8; c.fillStyle = R() < 0.5 ? 'rgba(20,16,10,0.7)' : 'rgba(150,130,100,0.5)'; c.fillRect(cr.x + Math.cos(a) * d, cr.y + Math.sin(a) * d, 0.15 + R() * 0.35, 0.12 + R() * 0.2); }
+  if (cr.wet) {
+    const w = c.createRadialGradient(cr.x, cr.y, 0.5, cr.x, cr.y, r * 0.6); w.addColorStop(0, '#26302c'); w.addColorStop(1, '#3a463e');
+    c.fillStyle = w; craterPath(c, cr, 0.52, 0.15, R); c.fill();
+    c.strokeStyle = 'rgba(170,180,160,0.25)'; c.lineWidth = 0.25; c.beginPath(); c.arc(cr.x - r * 0.12, cr.y - r * 0.12, r * 0.32, 3.6, 5.0); c.stroke();
   }
 }
 
@@ -3003,6 +3328,7 @@ class Vehicle {
   }
   updateFire(dt) {
     const f = this.fire; f.t += dt;
+    if (this.tutSafe) return; // tutorial fires burn but don't hurt
     for (const m of this.mods) {
       if (m.frame !== 'hull' || m.kind === 'trackL' || m.kind === 'trackR') continue;
       const dd = dist(m.x, m.y, f.x, f.y);
@@ -3145,7 +3471,8 @@ function updateProjectiles(dt) {
       const hx = p.x + p.dx * bt, hy = p.y + p.dy * bt;
       p.trav += bt; p.x = hx; p.y = hy; p.trail.push([hx, hy]);
       // hull-down: a tank sitting in a trench or crater shows only its turret — low shots from range hit the earth lip
-      if (best.v && best.part === 'hull' && best.v.alive && map.hullDown(best.v.x, best.v.y) && p.trav > 45 && Math.random() < 0.6) { impactWorld(p, hx, hy, 'wall'); p.alive = false; }
+      if (best.v && !p.scripted && best.part === 'hull' && best.v.alive && map.hullDown(best.v.x, best.v.y) && p.trav > 45 && Math.random() < 0.6) { impactWorld(p, hx, hy, 'wall'); p.alive = false; }
+      else if (best.v && p.scripted) { p.alive = false; p.scripted(best.v, hx, hy, p); }
       else if (best.v) resolveVehicleHit(p, best.v, best.part, best.h, hx, hy);
       else if (best.b) hitBuilding(p, best.b, hx, hy);
       else if (best.w || best.k) { impactWorld(p, hx, hy, best.w ? 'wall' : 'rock'); p.alive = false; }
@@ -3266,8 +3593,11 @@ function resolveVehicleHit(p, v, part, h, wx, wy) {
     if (T.he) { B.fxExplosion(wx, wy, sh.ex / 1000, false); heSplash(p, wx, wy, v); }
     p.alive = false; finishEvent(ev, p); return;
   }
+  // tutorial: the very first shot is scripted to bounce or fail, to teach armor
+  let forced = null;
+  if (B.mode.forceHit && p.owner === B.player && v.tutTarget) { forced = B.mode.forceHit; B.mode.forceHit = null; B.mode.forcedResult = forced; }
   // ricochet
-  const ricP = T.he && !T.hesh ? 0 : overmatch ? 0 : smoothRic(impact, T.ric[0], T.ric[1]);
+  const ricP = forced === 'ricochet' ? 1 : forced ? 0 : T.he && !T.hesh ? 0 : overmatch ? 0 : smoothRic(impact, T.ric[0], T.ric[1]);
   if (Math.random() < ricP) {
     if (T.chem) { ev.result = 'fuse'; notes.push('Fuse failure at extreme angle'); p.alive = false; B.fxSparks(wx, wy, p.dx, p.dy, 6); Sfx.play('nonpen', wx, wy); finishEvent(ev, p); return; }
     const dn = p.dx * nwx + p.dy * nwy;
@@ -3297,6 +3627,7 @@ function resolveVehicleHit(p, v, part, h, wx, wy) {
     if (T.hesh) { eff = t * (impact > 60 ? 1 / Math.cos((impact - 60) * DEG) : 1) * (ce > 1 ? 2.6 : 1) + extra * 3; }
     else eff = t / Math.max(0.3, Math.cos(normAng * 0.5 * DEG)) + extra;
   }
+  if (forced === 'nonpen') eff = Math.max(eff, pen * 1.25 + 10);
   ev.eff = eff;
   const penetrated = pen >= eff;
   v.marks.push(markOn(v, part, h, penetrated));
@@ -3583,11 +3914,27 @@ class AI {
       const tol = Math.max(0.0025, Math.atan2(Math.min(e.def.W, e.def.L) * 0.35, d));
       const settled = v.disp <= v.dispTarget * (1 + (1 - D.settle) * 3) + 0.02;
       this.shortHalt = v.canFire() && off < tol * 4 && this.acqT > D.react * 0.6;
-      const friendInWay = this.friendInLine(mx, my, c.aim, d);
+      const friendInWay = this.friendInLine(mx, my, c.aim, d + 70);
       if (friendInWay) { this.ffT = (this.ffT || 0) + dt; if (this.ffT > 1.0 && !this.detour) this.sidestep(c.aim, friendInWay); }
       else this.ffT = 0;
-      if (!friendInWay && this.acqT > D.react && off < tol && settled && v.canFire()) {
+      // common sense before pulling the trigger: a clear line, a shell that can actually go through, nobody of ours nearby
+      let clear = this.shotClear(mx, my, ax, ay, c.height, e);
+      if (!clear && this.aimPart === 'hull' && e.def.turret && !e.turretOff) {
+        const [qx, qy] = e.turretPos();
+        if (this.shotClear(mx, my, qx, qy, 'turret', e)) { this.aimPart = 'turret'; clear = true; } // aim over the low cover
+      }
+      if (clear) this.blockT = 0;
+      else if (off < tol * 6) { this.blockT = (this.blockT || 0) + dt; if (this.blockT > 1.1 && !this.detour) { this.blockT = 0; this.findFiringSpot(e); } }
+      let worth = this.shotWorth(e);
+      if (!worth && e.def.turret && !e.turretOff) { const other = this.aimPart === 'turret' ? 'hull' : 'turret'; if (this.partWorth(e, other)) { this.aimPart = other; } }
+      this.cantPen = !worth;
+      if (!worth) { this.noPenT = (this.noPenT || 0) + dt; if (this.noPenT > 3 && !this.detour && this.role !== 'hold' && !v.def.soft) this.findFlank(e); }
+      else this.noPenT = 0;
+      if (!worth && this.noPenT > 12) worth = true; // out of options: a shot at the tracks is better than nothing
+      const heRisk = SHELL_TYPES[sh.type].he && B.vehicles.some(o => o !== v && o.alive && o.team === v.team && dist(o.x, o.y, ax, ay) < 9);
+      if (!friendInWay && clear && worth && !heRisk && this.acqT > D.react && off < tol && settled && v.canFire()) {
         c.fire = true; this.lastShotT = B.time; this.err = gauss() * D.aimErr;
+        if (this.noPenT > 12) this.noPenT = 6;
         if (Math.random() < D.missChance) this.err += (Math.random() < 0.5 ? -1 : 1) * rnd(0.012, 0.03); // flinch / misjudged range
         if (Math.random() < 0.35) this.aimPart = this.choosePart(e);
       }
@@ -3599,6 +3946,58 @@ class AI {
     }
     // ---------------------------------------------------- move
     this.drive(dt, e, engaging);
+  }
+  // would a shell fired from (x0,y0) toward (x1,y1) reach the target, or hit cover, a wreck or a friendly first?
+  shotClear(x0, y0, x1, y1, height, tgt) {
+    const map = B.map, L = dist(x0, y0, x1, y1); if (L < 2) return true;
+    const dx = (x1 - x0) / L, dy = (y1 - y0) / L, Lc = Math.max(0.5, L - (tgt ? Math.min(tgt.def.L, tgt.def.W) * 0.5 : 2)), tmp = this._tmp || (this._tmp = []);
+    for (const b of map.segObjects(x0, y0, x1, y1, 'b', tmp)) { if (b.destroyed && height !== 'hull') continue; const k = b.destroyed ? 0.8 : 1; if (rayOBB(x0, y0, dx, dy, Lc, b.x, b.y, b.a, b.hx * k, b.hy * k)) return false; }
+    for (const w of map.segObjects(x0, y0, x1, y1, 'w', tmp)) { if (height !== 'hull' && !w.tall) continue; const h = rayOBB(x0, y0, dx, dy, Lc, w.x, w.y, w.a, w.hx, w.hy); if (h && !h.inside) return false; }
+    for (const k of map.segObjects(x0, y0, x1, y1, 'k', tmp)) { if (k.r < 2.6 && height !== 'hull') continue; if (segCircle(x0, y0, dx, dy, Lc, k.x, k.y, k.r * 0.85) >= 0) return false; }
+    for (const t of map.segObjects(x0, y0, x1, y1, 't', tmp)) { if (t.alive && segCircle(x0, y0, dx, dy, Lc, t.x, t.y, 0.6) >= 0) return false; }
+    for (const o of B.vehicles) {
+      if (o === this.v || o === tgt || o.hidden || (o.alive && o.team !== this.v.team)) continue;
+      if (Math.abs(o.x - x0) > L + 90 || Math.abs(o.y - y0) > L + 90) continue;
+      const h = rayOBB(x0, y0, dx, dy, o.alive ? L + 70 : Lc, o.x, o.y, o.ang, o.def.L / 2 + 0.6, o.def.W / 2 + 0.6);
+      if (h && !h.inside) return false;
+    }
+    return true;
+  }
+  // can the loaded shell realistically defeat this part of the target from here?
+  partWorth(e, part) {
+    if (e.def.soft) return true;
+    const x = this.estEff(e, part), need = this.D.key === 'recruit' ? 0.6 : this.D.key === 'regular' ? 0.8 : 0.9;
+    return x.pen >= x.eff * need && x.ric < 0.75;
+  }
+  shotWorth(e) { return this.partWorth(e, this.aimPart === 'turret' && e.def.turret && !e.turretOff ? 'turret' : 'hull'); }
+  // shuffle sideways / forward to a spot with a clear shot at the target
+  findFiringSpot(e) {
+    const v = this.v, brg = Math.atan2(e.y - v.y, e.x - v.x), nx = -Math.sin(brg), ny = Math.cos(brg);
+    const first = Math.random() < 0.5 ? 1 : -1;
+    for (const s of [10, 18, 28, 40]) for (const sd of [first, -first]) for (const f of [0, 14]) {
+      const x = v.x + nx * s * sd + Math.cos(brg) * f, y = v.y + ny * s * sd + Math.sin(brg) * f;
+      if (x < 20 || y < 20 || x > B.map.W - 20 || y > B.map.H - 20 || !B.map.navFree(x, y) || B.map.collidesStatic(x, y, 3)) continue;
+      if (B.vehicles.some(q => q !== v && q.alive && dist(q.x, q.y, x, y) < 7)) continue;
+      const tx = x + Math.cos(v.ang) * v.def.tx, ty = y + Math.sin(v.ang) * v.def.tx;
+      if (!this.shotClear(tx, ty, e.x, e.y, 'hull', e) && !(e.def.turret && this.shotClear(tx, ty, ...e.turretPos(), 'turret', e))) continue;
+      if (B.map.los(tx, ty, e.x, e.y, B.smokes) < 0.3) continue;
+      this.detour = { x, y, t: B.time + 7 }; this.path = null; return true;
+    }
+    // nothing nearby: close in along the bearing
+    const x = clamp(v.x + Math.cos(brg) * 30, 20, B.map.W - 20), y = clamp(v.y + Math.sin(brg) * 30, 20, B.map.H - 20);
+    if (B.map.navFree(x, y)) { this.detour = { x, y, t: B.time + 6 }; this.path = null; }
+    return false;
+  }
+  // our gun can't beat its front: work around toward its side, or get closer
+  findFlank(e) {
+    const v = this.v, d = dist(v.x, v.y, e.x, e.y), r = clamp(d * 0.7, 90, 260);
+    const sides = [e.ang + Math.PI / 2, e.ang - Math.PI / 2].sort((a, b) => dist(v.x, v.y, e.x + Math.cos(a) * r, e.y + Math.sin(a) * r) - dist(v.x, v.y, e.x + Math.cos(b) * r, e.y + Math.sin(b) * r));
+    for (const a of sides) for (const k of [1, 0.7, 0.45]) {
+      const x = e.x + Math.cos(a) * r * k, y = e.y + Math.sin(a) * r * k;
+      if (x < 20 || y < 20 || x > B.map.W - 20 || y > B.map.H - 20 || !B.map.navFree(x, y) || B.map.collidesStatic(x, y, 3)) continue;
+      this.detour = { x, y, t: B.time + 12 }; this.path = null; this.noPenT = 0; return true;
+    }
+    return false;
   }
   // is a friendly vehicle between our gun and the target?
   friendInLine(mx, my, aim, d) {
@@ -3640,7 +4039,7 @@ class AI {
     // heading for a point we don't own: keep pushing and only stop for close threats or brief firing halts
     const pushing = this.role === 'attack' && this.pt && this.pt.owner !== v.team && this.goal && dist(v.x, v.y, this.goal[0], this.goal[1]) > 25;
     const stopD = pushing ? Math.min(D.stopDist, 240) : D.stopDist * (v.def.era >= 3 ? 1.3 : 1);
-    const wantStop = engaging && e && (this.role === 'hold' || ed < stopD || (this.shortHalt && D.stopToFire > 0.5));
+    const wantStop = engaging && e && !(this.cantPen && this.role !== 'hold' && !v.def.soft) && (this.role === 'hold' || ed < stopD || (this.shortHalt && D.stopToFire > 0.5));
     if (engaging && wantStop && this.role !== 'convoy') {
       if (D.angle && !v.def.soft) {
         // angle hull ~30° away from the threat
@@ -3797,7 +4196,7 @@ class Battle {
     return v;
   }
   spawnCost(defId, ctx = this.me) {
-    if (ctx.freeSpawn) return 0;
+    if (ctx.freeSpawn || this.mp) return 0; // hosted matches: every (re)spawn is free
     const n = ctx.spUses[defId] || 0;
     return Math.round(TANKS[defId].sp * (1 + 0.5 * n));
   }
@@ -3835,7 +4234,7 @@ class Battle {
     if (this.net === 'client') { this.clientUpdate(dt); return; }
     if (this.over && !this.demo) { FX.update(dt); return; }
     this.time += dt;
-    if (this.player && this.player.alive) playerInput(this.player, dt);
+    if (this.player && this.player.alive) { if (this.cine) { const c = this.player.ctrl; c.throttle = 0; c.steer = 0; c.brake = true; c.fire = false; c.sight = false; } else playerInput(this.player, dt); }
     for (const c of Object.values(this.humans)) if (!c.local && c.vehicle && c.vehicle.alive && c.input) applyRemoteInput(c.vehicle, c.input, dt);
     for (const v of this.vehicles) if (v.ai && v.alive) v.ai.update(dt);
     for (const v of this.vehicles) v.update(dt);
@@ -3911,6 +4310,9 @@ class Battle {
           e.seenLinger = e.seenLinger || [0, 0];
           if (seen) e.seenLinger[team] = this.time + 2; else if (this.time < e.seenLinger[team]) seen = true;
           e.seenBy[team] = seen; if (seen) { e.lastSeen = e.lastSeen || [0, 0]; e.lastSeen[team] = this.time; }
+          // not "spotted" (no tag, no minimap, AI won't target it) — but a sharp-eyed player can still make out the hull under the trees
+          e.woodsVis = e.woodsVis || [false, false];
+          e.woodsVis[team] = !seen && this.vehicles.some(a => a.alive && a.team === team && dist(a.x, a.y, e.x, e.y) < 750 && map.los(a.x, a.y, e.x, e.y, this.smokes, true) > 0.1);
           continue;
         }
         for (const a of this.vehicles) {
@@ -3980,6 +4382,7 @@ class Battle {
     const [tx, ty] = v.turretPos();
     if (reason === 'ammo') { this.fxAmmo(v); Sfx.play('ammo', v.x, v.y); this.cam.shake = Math.max(this.cam.shake, clamp(1 - dist(v.x, v.y, this.cam.x, this.cam.y) / 400, 0, 1) * 1.4); }
     else { this.fxExplosion(tx, ty, 0.6, false); Sfx.play('explosion', v.x, v.y, 0.8); }
+    if (!v.def.soft || reason === 'ammo') FX.tankDeath(v, reason); else this.fxExplosion(v.x, v.y, 1.2, false);
     if (this.net === 'host') { const t = v.turretOff; NET.rec(['vd', v.id, reason, Math.round(v.burnT), r2(v.x), r2(v.y), r3(v.ang), r3(v.turretAng), t ? [r2(t.x), r2(t.y), r2(t.vx), r2(t.vy), r2(t.vz), r3(t.a), r2(t.spin)] : 0]); }
     if (this.demo) { this.mode.onDestroyed && this.mode.onDestroyed(v, killer); return; }
     const kc = this.ctxOf(killer), vc = this.ctxOf(v);
@@ -4114,7 +4517,7 @@ function playerInput(v, dt) {
   // aim height from what is under the cursor
   c.height = 'hull'; B.aimTarget = null;
   for (const e of B.vehicles) {
-    if (e === v || (!e.seenBy[B.myTeam] && e.alive)) continue;
+    if (e === v || (e.alive && e.team !== B.myTeam && !e.seenBy[B.myTeam] && vWoods(e))) continue; // hidden in woods: no readout until spotted
     if (e.def.turret && !e.turretOff) { const [ex, ey] = e.turretPos(); if (pointInOBB(wx, wy, ex, ey, e.turretWorldAng(), e.def.tl, e.def.tw)) { c.height = 'turret'; B.aimTarget = { v: e, part: 'turret' }; break; } }
     if (pointInOBB(wx, wy, e.x, e.y, e.ang, e.def.L / 2, e.def.W / 2)) { c.height = 'hull'; B.aimTarget = { v: e, part: 'hull' }; }
   }
@@ -4175,7 +4578,11 @@ class TeamMode {
     const s = this.spawn[team];
     return { x: s.x + (team ? -1 : 1) * (i % 2) * 18, y: s.y + (i - this.teamSize / 2) * 22, a: team ? Math.PI : 0 };
   }
-  aiDef() { return poolDef(this.cfg.mp ? clamp(mixedEra(this.era), 1, this.era) : mixedEra(this.era)); }
+  aiDef() {
+    // hosted matches: AI crews also only drive tanks the host has unlocked
+    const ht = this.cfg.mp && this.cfg.mp.hostTanks;
+    if (ht) { const l = ht.filter(id => TANKS[id] && !TANKS[id].soft && TANKS[id].era <= this.cfg.mp.settings.era); if (l.length) return TANKS[pick(l)]; }
+    return poolDef(this.cfg.mp ? clamp(mixedEra(this.era), 1, this.era) : mixedEra(this.era)); }
   init() {
     if (this.cfg.mp) return this.initMP();
     const diffE = this.demo ? pick(['regular', 'veteran']) : B.diffKey;
@@ -4208,12 +4615,11 @@ class TeamMode {
     out.push({ x: s.x, y: s.y, a: team ? Math.PI : 0, name: 'Home base', ok: true });
     for (const p of B.map.points) {
       if (p.owner !== team) { out.push({ x: p.x, y: p.y, name: `Point ${p.name}`, ok: false, reason: p.owner === en ? 'Enemy held' : 'Not captured' }); continue; }
-      const threat = B.vehicles.some(v => v.alive && v.team === en && dist(v.x, v.y, p.x, p.y) < 260);
-      const ok = !threat && !p.contested;
+      const ok = true; // a captured point is always a safe spawn
       const back = team ? 22 : -22;
       let sx = p.x + back, sy = p.y;
       for (let k = 0; k < 12 && (!B.map.navFree(sx, sy) || B.map.collidesStatic(sx, sy, 6)); k++) { sx = p.x + Math.sign(back) * (15 + rnd(0, 30)); sy = p.y + rnd(-30, 30); }
-      out.push({ x: r1(sx), y: r1(sy), a: team ? Math.PI : 0, name: `Point ${p.name}`, ok, reason: ok ? '' : 'Under attack — enemies nearby' });
+      out.push({ x: r1(sx), y: r1(sy), a: team ? Math.PI : 0, name: `Point ${p.name}`, ok, reason: '' });
     }
     return out;
   }
@@ -4260,7 +4666,7 @@ class TeamMode {
   }
   respawnAI(q) {
     const opts = [this.spawn[q.team]];
-    for (const p of B.map.points) if (p.owner === q.team && !p.contested && !B.vehicles.some(v => v.alive && v.team !== q.team && dist(v.x, v.y, p.x, p.y) < 260)) opts.push({ x: p.x + (q.team ? 20 : -20), y: p.y });
+    for (const p of B.map.points) if (p.owner === q.team) opts.push({ x: p.x + (q.team ? 20 : -20), y: p.y });
     const s = pick(opts);
     const y = s.y + rnd(-40, 40), x = s.x + rnd(-15, 15);
     if (!B.map.navFree(x, y)) return B.respawnQueue.push(Object.assign(q, { t: 2 }));
@@ -4472,7 +4878,12 @@ class MissionMode {
       }
     }
   }
-  spawnPoints() { return B.safeSpots(this.start ? [this.start.x, this.start.y] : [100, 500]); }
+  spawnPoints() {
+    const l = B.safeSpots(this.start ? [this.start.x, this.start.y] : [100, 500]);
+    // captured points are always safe spawns
+    const pts = B.map.points.filter(p => p.owner === 0 && !p.noCap).map(p => { if (p._sp) return Object.assign({}, p._sp); let sx = p.x - 20, sy = p.y; for (let k = 0; k < 12 && (!B.map.navFree(sx, sy) || B.map.collidesStatic(sx, sy, 6)); k++) { sx = p.x + rnd(-35, 35); sy = p.y + rnd(-35, 35); } p._sp = { x: r1(sx), y: r1(sy), a: 0, name: `Point ${p.name}`, ok: true }; return Object.assign({}, p._sp); });
+    return pts.length ? l.concat(pts) : l;
+  }
   onDestroyed(v) { if (this.idx === 3 && v.def.soft && v.team === 1) this.killsSoft++; }
   checkEnd() {
     const enemies = B.vehicles.filter(v => v.alive && v.team === 1).length;
@@ -4505,18 +4916,20 @@ class MissionMode {
 
 // =====================================================================
 //  TUTORIAL — a guided practice range: basic controls step by step,
-//  then armor & damage control, battle skills and a very easy practice duel
+//  armor & damage control (with short cutscenes), battle skills and a
+//  very easy practice duel. Everything a step spawns is removed when
+//  the step is completed.
 // =====================================================================
 const TUT_START = { x: 100, y: 450, a: 0 };
 class TutorialMode {
   constructor(cfg) {
-    this.cfg = cfg; this.name = 'Tutorial'; this.i = -1; this.t = 0; this.f = {}; this.doneT = 0; this.dummies = {};
-    this.era = 1;
+    this.cfg = cfg; this.name = 'Tutorial'; this.i = -1; this.t = 0; this.f = {}; this.doneT = 0;
+    this.dummies = {}; this.spawned = []; this.era = 1; this.cine = null;
   }
   mapCfg() {
     return {
       w: 720, h: 600, seed: 4242, biome: 'europe', forest: 9, fields: 3, rocks: 3,
-      forests: [{ x: 120, y: 125, r: 62 }],
+      forests: [{ x: 300, y: 165, r: 60 }],
       roads: [{ pts: [[0, 452], [260, 446], [480, 452], [720, 440]], w: 7, treeLine: false }, { pts: [[500, 0], [500, 170], [470, 452], [460, 600]], w: 6 }],
       points: [{ name: 'A', x: 500, y: 175, r: 28, capTime: 3, berms: 2 }],
       buildings: [{ x: 560, y: 240, a: 0.1, w: 12, h: 9 }],
@@ -4525,21 +4938,28 @@ class TutorialMode {
   }
   init() {
     B.freeSpawn = true; B.sp = 9999;
-    B.spawnPlayer(this.cfg.tank || 'm4a1', TUT_START);
+    B.me.tanks = ['m4a1']; // a new player only owns the starting Sherman
+    B.spawnPlayer('m4a1', TUT_START);
     this.steps = TUT_STEPS;
     UI.tutShow(true);
     this.next();
   }
-  // static target tanks that never move or shoot
+  // a target tank that never moves or shoots (removed when the step ends)
   dummy(key, def, x, y, a) {
-    const old = this.dummies[key];
-    if (old && old.alive) return old;
-    if (old) { old.hidden = true; B.vehicles = B.vehicles.filter(v => v !== old); }
-    const v = B.addVehicle(def, 1, x, y, a, {}); v.name = 'Target';
+    const v = B.addVehicle(def, 1, x, y, a, {}); v.name = 'Target'; v.tutTarget = true;
     v.ammo.forEach(m => m.n = 0); v.loaded = -1;
-    this.dummies[key] = v; return v;
+    this.dummies[key] = v; this.spawned.push(v); return v;
+  }
+  clearSpawned() {
+    const gone = new Set(this.spawned);
+    for (const v of gone) { v.alive = false; v.hidden = true; }
+    B.vehicles = B.vehicles.filter(v => !gone.has(v));
+    B.projs = B.projs.filter(p => !gone.has(p.owner));
+    this.spawned = []; this.dummies = {}; this.enemy = null;
   }
   next() {
+    this.endCine(true);
+    this.clearSpawned();
     this.i++; this.t = 0; this.f = {}; this.doneT = 0;
     const s = this.steps[this.i];
     if (!s) { this.finish(); return; }
@@ -4551,14 +4971,21 @@ class TutorialMode {
   finish() { if (this.finished) return; this.finished = true; UI.tutShow(false); B.end('win'); }
   update(dt) {
     const s = this.steps[this.i], p = B.player;
-    B.sp = 9999; if (!p || !p.alive) B.me.freeSpawn = true;
+    B.sp = 9999; B.me.tanks = ['m4a1']; if (!p || !p.alive) B.me.freeSpawn = true;
+    if (this.cine) this.updateCine(dt);
+    if (p) p.tutSafe = !!s && s.part !== 'Practice round';
+    $('tutPanel').classList.toggle('low', $('spawn').classList.contains('on'));
     if (!s) return;
     this.t += dt;
-    if (p && p.alive) { if (B.cam.sight) this.f.sight = true; if (p.loaded >= 0) this.f.loaded = p.loaded; if (p.vel < -1.5) this.f.rev = true; }
+    if (p && p.alive) { if (B.cam.sight) this.f.sight = true; if (p.loaded >= 0) this.f.loaded = p.loaded; if (p.vel < -0.7) this.f.rev = true; }
+    if (s.textFn && !this.f.rendered && this.t > 0.05) { this.f.rendered = true; UI.tutRender(this); }
+    if (this.cine) return;
     if (this.doneT > 0) { this.doneT -= dt; if (this.doneT <= 0) this.next(); return; }
     if (s.check(this, p, dt)) { this.doneT = 1.3; UI.tutDone(this); }
   }
   onPlayerHit(ev, killed) { this.f.hits = this.f.hits || []; this.f.hits.push({ v: ev.victim, part: ev.part, result: ev.result, shell: this.f.loaded, killed, sight: !!B.cam.sight }); }
+  onSpawnPick(id) { this.f.picked = id; if (UI.updateSpawnBtn) UI.updateSpawnBtn(); }
+  spawnLocked() { const s = this.steps && this.steps[this.i]; return !!(s && s.title === 'Knocked out' && !this.f.picked); }
   attackGoal(v) { const p = B.player; return p && p.alive ? [p.x, p.y, 70] : [TUT_START.x + 120, TUT_START.y, 60]; }
   spawnPoints() {
     const out = [{ x: TUT_START.x, y: TUT_START.y, a: 0, name: 'Start area', ok: true }];
@@ -4567,14 +4994,88 @@ class TutorialMode {
     return out;
   }
   checkEnd() { return null; }
-  objective() { const s = this.steps[this.i]; return s ? `Tutorial · step ${this.i + 1} of ${this.steps.length} — ${s.title}` : 'Tutorial complete'; }
+  objective() { const s = this.steps[this.i]; return this.cine ? 'Watch out!  (Space to skip)' : s ? `Tutorial · step ${this.i + 1} of ${this.steps.length} — ${s.title}` : 'Tutorial complete'; }
   reward(r) { return Save.data.tutorialDone ? 0 : 430; } // ×0.7 recruit multiplier → 300 RP the first time
   onEnd() { Save.data.tutorialDone = true; }
-  // world markers for the current step
+
+  // ---------------------------------------------------------- cutscenes
+  // an enemy appears, the camera pans to it, it fires, and the shell causes the scripted damage
+  startCine(effect) {
+    const p = B.player; if (!p || !p.alive) return;
+    let best = null;
+    for (let k = 0; k < 16 && !best; k++) {
+      const a = k / 16 * TAU + 0.3, d = 115, x = p.x + Math.cos(a) * d, y = p.y + Math.sin(a) * d;
+      if (x < 30 || y < 30 || x > B.map.W - 30 || y > B.map.H - 30 || !B.map.navFree(x, y) || B.map.collidesStatic(x, y, 5)) continue;
+      if (B.map.los(x, y, p.x, p.y, B.smokes) < 0.95) continue;
+      best = [x, y];
+    }
+    if (!best) best = [clamp(p.x + 110, 30, B.map.W - 30), p.y];
+    const e = B.addVehicle('pz4f2', 1, best[0], best[1], Math.atan2(p.y - best[1], p.x - best[0]), {});
+    e.name = 'Enemy'; e.seenBy = [true, true]; this.spawned.push(e);
+    e.turretAng = 0;
+    this.cine = { t: 0, e, effect, fired: false, hitT: -1, shell: null };
+    B.cine = { x: p.x, y: p.y, z: Render.baseZoom() * 0.85 };
+    B.cam.sightOn = false; B.cam.sight = false;
+    UI.tutCine(true);
+  }
+  applyEffect(fx) {
+    const p = B.player; if (!p || !p.alive) return;
+    const c = this.cine; if (c) c.applied = true;
+    if (fx === 'fire') { p.ext = Math.max(p.ext, 2); p.startFire(p.mod('engine')); B.fxPen(p.x, p.y, 1, 0); Sfx.play('pen', p.x, p.y); B.cam.shake = 0.8; }
+    else if (fx === 'track') { const m = p.mod('trackL'); m.hp = 0; B.fxTrackBreak(p, m); B.fxSparks(p.x, p.y, 1, 0, 14); Sfx.play('nonpen', p.x, p.y); B.cam.shake = 0.7; }
+    else if (fx === 'kill') { p.destroy('ammo', c ? c.e : null); }
+  }
+  updateCine(dt) {
+    const c = this.cine, p = B.player, e = c.e;
+    c.t += dt;
+    if (e.seenBy) e.seenBy = [true, true];
+    if (Input.pressed.Space && c.t > 0.2) { if (!c.applied) this.applyEffect(c.effect); this.endCine(); return; }
+    const ease = t => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+    const ta = Math.atan2(p.y - e.y, p.x - e.x);
+    if (!c.fired) {
+      // pan from the player to the enemy, then the enemy lays its gun
+      const k = ease(c.t / 1.3);
+      B.cine.x = lerp(p.x, e.x, k); B.cine.y = lerp(p.y, e.y, k);
+      e.ctrl.aim = ta;
+      if (c.t > 1.7) {
+        e.turretAng = angDiff(e.ang, ta); e.ctrl.aim = ta; e.ctrl.height = 'hull'; e.ctrl.aimDist = dist(e.x, e.y, p.x, p.y);
+        e.ammo[0].n = Math.max(e.ammo[0].n, 1); e.loaded = 0; e.disp = 0;
+        const n0 = B.projs.length; e.fireGun(); c.fired = true; c.fireT = c.t;
+        const pr = B.projs[B.projs.length - 1];
+        if (B.projs.length > n0 && pr) { c.shell = pr; pr.scripted = (victim) => { if (victim === B.player) this.applyEffect(c.effect); c.hitT = c.t; }; }
+      }
+    } else {
+      // follow the shell back to the player, then hold on the result
+      if (c.shell && c.shell.alive) { B.cine.x = lerp(B.cine.x, c.shell.x, 0.35); B.cine.y = lerp(B.cine.y, c.shell.y, 0.35); }
+      else { if (c.hitT < 0) c.hitT = c.t; if (!c.applied) this.applyEffect(c.effect); B.cine.x = lerp(B.cine.x, p.x, Math.min(1, dt * 5)); B.cine.y = lerp(B.cine.y, p.y, Math.min(1, dt * 5)); }
+      if (c.t - c.fireT > 2.6 && !c.applied) this.applyEffect(c.effect); // safety net
+      if (c.hitT >= 0 && c.t - c.hitT > 1.5) this.endCine();
+    }
+  }
+  endCine(silent) {
+    if (!this.cine) return;
+    if (!this.cine.applied && !silent) this.applyEffect(this.cine.effect);
+    this.cine = null; B.cine = null; UI.tutCine(false);
+    if (B.player) { B.cam.x = B.player.x; B.cam.y = B.player.y; }
+  }
+
+  // ---------------------------------------------------------- world markers
   drawWorld(c, z) {
-    const s = this.steps[this.i]; if (!s || !s.marker || this.doneT > 0) return;
+    const s = this.steps[this.i]; if (!s || !s.marker || this.doneT > 0 || this.cine) return;
     const m = typeof s.marker === 'function' ? s.marker(this) : s.marker; if (!m) return;
     const pulse = 0.5 + 0.5 * Math.sin(B.time * 4), col = m.col || '255,209,102';
+    // guide chevrons from the tank toward the destination
+    const p = B.player;
+    if (m.guide && p && p.alive && dist(p.x, p.y, m.x, m.y) > m.r + 10) {
+      const a = Math.atan2(m.y - p.y, m.x - p.x), dd = dist(p.x, p.y, m.x, m.y);
+      for (let k = 0; k < 4; k++) {
+        const d = 7 + k * 5 + ((B.time * 6) % 5); if (d > dd - m.r) break;
+        const al = 0.85 * (1 - k / 4.5);
+        c.save(); c.translate(p.x + Math.cos(a) * d, p.y + Math.sin(a) * d); c.rotate(a);
+        c.strokeStyle = `rgba(${col},${al})`; c.lineWidth = 0.55; c.lineCap = 'round'; c.lineJoin = 'round';
+        c.beginPath(); c.moveTo(-1.1, -1.6); c.lineTo(0.6, 0); c.lineTo(-1.1, 1.6); c.stroke(); c.restore();
+      }
+    }
     c.save(); c.translate(m.x, m.y);
     c.strokeStyle = `rgba(${col},${0.55 + pulse * 0.4})`; c.lineWidth = 2.5 / z; c.setLineDash([8 / z, 6 / z]);
     c.beginPath(); c.arc(0, 0, m.r, 0, TAU); c.stroke(); c.setLineDash([]);
@@ -4582,6 +5083,7 @@ class TutorialMode {
     c.scale(1 / z, 1 / z);
     const yy = -m.r * z - 18 - pulse * 8;
     c.fillStyle = `rgb(${col})`; c.beginPath(); c.moveTo(-9, yy - 12); c.lineTo(9, yy - 12); c.lineTo(0, yy); c.closePath(); c.fill();
+    if (m.label) { c.font = '700 13px "Barlow Condensed", Arial, sans-serif'; c.textAlign = 'center'; c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillText(m.label, 1, yy - 17); c.fillStyle = `rgb(${col})`; c.fillText(m.label, 0, yy - 18); }
     c.restore();
     // off-screen: an arrow at the screen edge points the way
     const [sx, sy] = Render.worldToScreen(m.x, m.y), W = Render.W, H = Render.H;
@@ -4592,76 +5094,80 @@ class TutorialMode {
       c.fillStyle = `rgba(${col},${0.7 + pulse * 0.3})`; c.beginPath(); c.moveTo(16, 0); c.lineTo(-8, -12); c.lineTo(-3, 0); c.lineTo(-8, 12); c.closePath(); c.fill();
       c.restore();
     }
-    c.save(); c.translate(m.x, m.y); c.scale(1 / z, 1 / z);
-    if (m.label) { c.font = '700 13px "Barlow Condensed", Arial, sans-serif'; c.textAlign = 'center'; c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillText(m.label, 1, yy - 17); c.fillStyle = `rgb(${col})`; c.fillText(m.label, 0, yy - 18); }
-    c.restore();
   }
 }
 const near = (p, x, y, r) => p && p.alive && dist(p.x, p.y, x, y) < r;
 const hitOn = (T, test) => (T.f.hits || []).some(test);
 const D1 = [318, 402, Math.PI / 2], D2 = [480, 262, Math.PI / 2], D3 = [330, 300, 0.55];
+const TGT = (lbl) => ({ x: 0, y: 0, r: 7, label: lbl, col: '255,120,100' });
+const dMark = (key, lbl) => T => { const d = T.dummies[key]; return d && d.alive ? Object.assign(TGT(lbl), { x: d.x, y: d.y }) : null; };
 const TUT_STEPS = [
   // ---------------------------------------------------------- PART 1 · BASIC CONTROLS
   { part: 'Basic controls', title: 'Drive forward', text: 'Hold <kbd>W</kbd> to drive forward to the yellow marker. Let go and the tank rolls to a stop.',
-    hint: 'Tanks take a moment to get moving — heavier ones accelerate slower.', marker: { x: 195, y: 450, r: 8, label: 'DRIVE HERE' },
+    hint: 'Follow the arrows in front of your tank. Heavier tanks take longer to get moving.', marker: { x: 195, y: 450, r: 8, label: 'DRIVE HERE', guide: true },
     check: (T, p) => near(p, 195, 450, 9) },
   { part: 'Basic controls', title: 'Steer', text: 'Use <kbd>A</kbd> and <kbd>D</kbd> to turn the hull while driving, and reach the next marker.',
-    hint: 'Tracked tanks can also turn on the spot: hold A or D without W.', marker: { x: 240, y: 360, r: 8, label: 'DRIVE HERE' },
+    hint: 'Tracked tanks can also turn on the spot: hold A or D without W.', marker: { x: 240, y: 360, r: 8, label: 'DRIVE HERE', guide: true },
     check: (T, p) => near(p, 240, 360, 9) },
   { part: 'Basic controls', title: 'Reverse and brake', text: 'Hold <kbd>S</kbd> to reverse a few metres, then press <kbd>Space</kbd> to brake to a stop.',
     hint: 'Reversing out of a fight keeps your thick front armor pointed at the enemy.',
     check: (T, p) => p && T.f.rev && Input.keys.Space && Math.abs(p.vel) < 0.6 },
   { part: 'Basic controls', title: 'Aim the turret', text: 'Move your mouse over the <b>target tank</b>. The turret turns toward the cursor at its real speed — heavy tanks turn their turrets slowly.',
-    hint: 'Hold C to look around without moving the turret.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' },
+    hint: 'Hold C to look around without moving the turret.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: dMark('d1', 'TARGET'),
     check: (T, p, dt) => { const d = T.dummies.d1; if (!p || !d) return false; const [tx, ty] = p.turretPos(); const ok = Math.abs(angDiff(p.turretWorldAng(), Math.atan2(d.y - ty, d.x - tx))) < 0.035; T.f.aimT = ok ? (T.f.aimT || 0) + dt : 0; return T.f.aimT > 0.6; } },
   { part: 'Basic controls', title: 'Fire!', text: '<b>Left-click</b> to fire at the target. After each shot your loader needs time to reload — watch the shell cards at the bottom of the screen.',
-    hint: 'The small ring shows where the gun really points. Moving opens it up; stop for accurate shots.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' },
+    hint: 'Watch what happens when your shell reaches the target…',
+    setup: T => { T.dummy('d1', 'pz4f2', D1[0], D1[1], D1[2] - 0.95); B.mode.forceHit = Math.random() < 0.5 ? 'ricochet' : 'nonpen'; B.mode.forcedResult = null; }, marker: dMark('d1', 'TARGET'),
     check: T => hitOn(T, h => h.v === T.dummies.d1) },
-  { part: 'Basic controls', title: 'Change shells', text: 'Press <kbd>2</kbd> to choose a different shell, wait for it to load, then fire it at the target. Each card shows that shell’s penetration.',
-    hint: 'Pressing the same number twice unloads the current round and loads the new one straight away.', setup: T => T.dummy('d1', 'pz4f2', ...D1),
-    check: () => false,
-    marker: { x: D1[0], y: D1[1], r: 7, label: 'TARGET', col: '255,120,100' } },
+  { part: 'Basic controls', title: 'Penetration & ricochets', textFn: T => (T.forcedResult === 'ricochet'
+      ? '<b>Your shell ricocheted!</b> It struck the armor at too shallow an angle and glanced off — that plate was angled away from you. '
+      : '<b>No penetration!</b> The armor where you hit was effectively thicker than your shell could punch through. ') +
+      'Every shell can pierce a certain thickness (the number on its card, which drops with distance). Sloped or angled armor counts as much thicker, and shallow hits can bounce. <b>Hover over the target</b>: the readout shows <b>your penetration vs. its effective armor</b> — green goes through, red won’t. Aim at a green spot and land a <b>penetrating hit</b>.',
+    hint: 'The side of a tank is far thinner than its front. Hitting a plate straight on is always best.',
+    setup: T => { T.forcedResult = B.mode.forcedResult || 'nonpen'; B.mode.forceHit = null; T.dummy('d1', 'pz4f2', ...D1); }, marker: dMark('d1', 'TARGET'),
+    check: T => hitOn(T, h => h.result === 'pen' || h.killed) },
+  { part: 'Basic controls', title: 'Shell types', text: 'Each number key loads a different shell: <b>1 · APHEBC</b> pierces armor and explodes inside — the most damage. <b>2 · AP</b> is a solid shot that pierces a little better. <b>3 · HE</b> is high explosive: weak against armor, but it wrecks tracks, guns and soft targets. Later tanks get <b>HEAT</b> (penetration that doesn’t drop with distance) and <b>APDS/APFSDS</b> darts. Press <kbd>2</kbd> or <kbd>3</kbd>, wait for it to load, and fire it at the target.',
+    hint: 'Pressing the same number twice unloads the current round and loads the new one straight away.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: dMark('d1', 'TARGET'),
+    check: (T, p) => { if (!p) return false; const s = B.me.stats.shots; if (T.f.s0 === undefined) T.f.s0 = s; if (s > T.f.s0) { if (T.f.lastFireShell > 0) return true; T.f.s0 = s; } if (p.loaded >= 0) T.f.lastFireShell = p.loaded; return false; } },
   { part: 'Basic controls', title: 'Gunner’s sight', text: 'Scroll the mouse wheel <b>out</b> until you can see the distant target, then <b>right-click</b> to open the gunner’s sight (scroll to zoom it) and hit the target through the sight.',
-    hint: 'Right-click again to close the sight. Far targets need you to stay still and let the aim settle.', setup: T => T.dummy('d2', 'm4a1', ...D2), marker: { x: D2[0], y: D2[1], r: 7, label: 'FAR TARGET', col: '255,120,100' },
+    hint: 'Right-click again to close the sight. Far targets need you to stay still and let the aim settle.', setup: T => T.dummy('d2', 'm4a1', ...D2), marker: dMark('d2', 'FAR TARGET'),
     check: T => hitOn(T, h => h.v === T.dummies.d2 && h.sight) },
   { part: 'Basic controls', title: 'Aim high or low', text: 'Where your cursor sits decides the shot height. Put it on the target’s <b>turret</b> — the readout says <b>TURRET</b> — and hit it there.',
-    hint: 'Low shots (hull) can be stopped by walls, berms and logs; turret shots fly over them.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: { x: D1[0], y: D1[1], r: 7, label: 'HIT THE TURRET', col: '255,120,100' },
+    hint: 'Low shots (hull) can be stopped by walls, berms and logs; turret shots fly over them.', setup: T => T.dummy('d1', 'pz4f2', ...D1), marker: dMark('d1', 'HIT THE TURRET'),
     check: T => hitOn(T, h => h.part === 'turret') },
   // ---------------------------------------------------------- PART 2 · ARMOR & DAMAGE CONTROL
-  { part: 'Armor & damage control', title: 'Find the weak spot', text: 'Hover over the angled target. The readout shows <b>your penetration vs. its armor</b> — green goes through, red bounces. Aim at its <b>side</b> and knock it out.',
-    hint: 'Sloped and angled plates are much thicker in effect. Sides and rear are always weaker than the front.', setup: T => T.dummy('d3', 'pz4f2', ...D3), marker: { x: D3[0], y: D3[1], r: 7, label: 'KNOCK OUT', col: '255,120,100' },
+  { part: 'Armor & damage control', title: 'Find the weak spot', text: 'This target is angled. Hover over it and read the armor numbers: the <b>front</b> is thick and sloped, the <b>side</b> is thin. Aim at its side and knock it out.',
+    hint: 'Destroy it fast: ammo racks and fuel tanks inside can explode.', setup: T => T.dummy('d3', 'pz4f2', ...D3), marker: dMark('d3', 'KNOCK OUT'),
     check: T => T.dummies.d3 && !T.dummies.d3.alive },
-  { part: 'Armor & damage control', title: 'Fight a fire', text: 'Your engine has caught fire! Press <kbd>F</kbd> to use the extinguisher before the fire spreads and hurts your crew.',
+  { part: 'Armor & damage control', title: 'Fight a fire', text: 'An enemy shell has set your <b>engine on fire</b>! Press <kbd>F</kbd> to use the extinguisher before the fire spreads and hurts your crew.',
     hint: 'You carry a limited number of extinguishers, and a crew can only fight fires while enough of them are alive.',
-    setup: T => { const p = B.player; if (p && p.alive) { p.ext = Math.max(p.ext, 2); p.startFire(p.mod('engine')); } },
-    check: (T, p) => p && p.alive && !p.fire },
+    setup: T => T.startCine('fire'), check: (T, p) => T.cine === null && p && p.alive && !p.fire && T.t > 0.5 },
   { part: 'Armor & damage control', title: 'Repair', text: 'A shell just broke your <b>left track</b> — you can’t drive. Press <kbd>R</kbd> to start repairs and wait until they finish.',
     hint: 'You can’t move while repairing. The crew/module panel (bottom left) shows what’s damaged.',
-    setup: T => { const p = B.player; if (p && p.alive) { p.mod('trackL').hp = 0; B.fxTrackBreak && B.fxTrackBreak(p, p.mod('trackL')); } },
-    check: (T, p) => p && p.alive && p.tracksOK() && p.repairT <= 0 },
+    setup: T => T.startCine('track'), check: (T, p) => T.cine === null && p && p.alive && p.tracksOK() && p.repairT <= 0 && T.t > 0.5 },
   { part: 'Armor & damage control', title: 'Smoke screen', text: 'Press <kbd>G</kbd> to fire smoke grenades in front of your turret. Smoke blocks enemy sight — use it to escape or cross open ground.',
     hint: 'Only some tanks carry smoke launchers, and only a few grenades.', setup: T => { const p = B.player; if (p) p.smoke = Math.max(p.smoke, 2); },
     check: () => B.smokes.length > 0 },
   // ---------------------------------------------------------- PART 3 · BATTLE SKILLS
-  { part: 'Battle skills', title: 'Hide in the woods', text: 'Drive deep into the forest and stay there for <b>3 seconds</b>. In heavy woods enemies can’t spot you unless they come close — or you fire.',
-    hint: 'Tanks can push down thin trees; fallen thick trunks block the way. Enemies hidden in woods show no name tag.', marker: { x: 120, y: 125, r: 26, label: 'HIDE HERE', col: '143,209,122' },
+  { part: 'Battle skills', title: 'Hide in the woods', text: 'Follow the arrows deep into the forest and stay there for <b>3 seconds</b>. In heavy woods enemies can’t spot you unless they come close — or you fire.',
+    hint: 'Tanks can push down thin trees; fallen thick trunks block the way. Enemies hidden in woods show no name tag.', marker: { x: 300, y: 165, r: 26, label: 'HIDE HERE', col: '143,209,122', guide: true },
     check: (T, p, dt) => { const ok = p && p.alive && B.map.heavyWoods(p.x, p.y); T.f.woodsT = ok ? (T.f.woodsT || 0) + dt : 0; return T.f.woodsT > 3; } },
-  { part: 'Battle skills', title: 'Capture a point', text: 'Drive into the circle at <b>point A</b> and stay until it turns blue. In battles, the team holding the most points when the clock runs out wins.',
-    hint: 'More tanks capture faster. Enemy tanks in the circle stop the capture.', marker: () => { const p = B.map.points[0]; return { x: p.x, y: p.y, r: p.r + 4, label: 'CAPTURE', col: '95,175,255' }; },
+  { part: 'Battle skills', title: 'Capture a point', text: 'Follow the arrows to <b>point A</b>, drive into the circle and stay until it turns blue. In battles, the team holding the most points when the clock runs out wins.',
+    hint: 'More tanks capture faster. Enemy tanks in the circle stop the capture.', marker: () => { const p = B.map.points[0]; return { x: p.x, y: p.y, r: p.r + 4, label: 'CAPTURE', col: '95,175,255', guide: true }; },
     check: () => B.map.points[0].owner === 0 },
-  { part: 'Battle skills', title: 'Redeploy', text: 'Your tank has been knocked out. On the <b>spawn screen</b>, pick a spawn point — your start area or a point you hold — choose a tank and press <b>Deploy</b>.',
-    hint: 'In real battles each redeploy costs spawn points (SP), earned by fighting and capturing.',
-    setup: T => { const p = B.player; if (p && p.alive) p.destroy('fire', null); T.f.dead = true; },
-    check: (T, p) => T.t > 1 && p && p.alive },
+  { part: 'Battle skills', title: 'Knocked out', text: 'Your tank has been <b>knocked out</b>. After a moment the <b>spawn screen</b> opens. Click the <b>M4A1 Sherman</b> card to choose it.',
+    hint: 'In a new career the Sherman is your only tank. Research more in the Tech Tree.',
+    setup: T => T.startCine('kill'), check: T => !!T.f.picked && T.t > 1 },
+  { part: 'Battle skills', title: 'Spawn points', text: 'In real battles, every redeploy costs <b>spawn points (SP)</b> — the price is shown on each tank card, and it rises each time you bring the same tank back. You earn SP by destroying enemies and capturing points. Your <b>first</b> spawn in a battle is free, and so is everything here in the tutorial. Now pick a spawn point on the map and press <b>Deploy</b>.',
+    hint: 'Research points (RP) are different: they unlock new tanks in the Tech Tree.',
+    check: (T, p) => p && p.alive && T.t > 0.5 },
   // ---------------------------------------------------------- PART 4 · PRACTICE ROUND
   { part: 'Practice round', title: 'Practice battle', text: 'A <b>Recruit</b> enemy crew is coming for you. Find it, keep your front toward it, and destroy it. If you get knocked out, just redeploy.',
-    hint: 'Stop before you shoot, aim at its side if you can, and remember R, F and G.',
-    setup: T => { const e = B.addVehicle('pz4f2', 1, 650, 250, Math.PI, { ai: true, diff: 'recruit', role: 'attack' }); e.ai.diffKey = 'recruit'; e.skill = 1.6; T.enemy = e; },
+    hint: 'Stop before you shoot, aim for its side if you can, and remember R, F and G.',
+    setup: T => { const e = B.addVehicle('pz4f2', 1, 650, 250, Math.PI, { ai: true, diff: 'recruit', role: 'attack' }); e.ai.diffKey = 'recruit'; e.skill = 1.6; T.enemy = e; T.spawned.push(e); },
     marker: T => T.enemy && T.enemy.alive && T.enemy.seenBy[0] ? { x: T.enemy.x, y: T.enemy.y, r: 6, label: 'ENEMY', col: '255,90,80' } : null,
-    check: T => T.enemy && !T.enemy.alive },
+    check: T => T.enemy && !T.enemy.alive && T.t > 0.5 },
 ];
-// count shots of the non-default shell for the "Change shells" step
-TUT_STEPS[5].check = (T, p) => { if (!p) return false; const s = B.me.stats.shots; if (T.f.s0 === undefined) T.f.s0 = s; if (s > T.f.s0) { if (T.f.lastFireShell > 0) return true; T.f.s0 = s; } if (p.loaded >= 0) T.f.lastFireShell = p.loaded; return false; };
 
 // =====================================================================
 //  FX + WORLD RENDERING
@@ -4673,10 +5179,32 @@ function makeBlob(r, g, b, hard = 0.0) {
   c.fillStyle = gr; c.fillRect(0, 0, 64, 64); return cv;
 }
 const WIND = [1.6, -0.7];
+const FLAME_ROT = Math.atan2(WIND[1], WIND[0]) + Math.PI / 2;
+// soft teardrop flame tongue (base at the bottom, tip at the top), built from stacked radial glows
+function makeFlame(core, mid, edge) {
+  const cv = document.createElement('canvas'); cv.width = 48; cv.height = 96;
+  const c = cv.getContext('2d');
+  for (let i = 0; i < 12; i++) {
+    const k = i / 11, y = 78 - k * 64, R = 20 * Math.pow(1 - k, 0.75) + 2;
+    const g = c.createRadialGradient(24, y, 0, 24, y, R);
+    g.addColorStop(0, i < 4 ? core : mid); g.addColorStop(0.55, mid); g.addColorStop(1, edge);
+    c.globalAlpha = 0.32; c.fillStyle = g; c.beginPath(); c.arc(24, y, R, 0, TAU); c.fill();
+  }
+  return cv;
+}
 const FX = {
   parts: [], blobs: null, emitT: 0,
-  init() { this.blobs = { smoke: makeBlob(150, 148, 140), dark: makeBlob(32, 30, 28), dust: makeBlob(152, 132, 98), fire: makeBlob(255, 150, 50, 0.3), flash: makeBlob(255, 244, 210, 0.2), white: makeBlob(226, 226, 220), ember: makeBlob(255, 96, 24, 0.4), blue: makeBlob(160, 200, 255) }; },
-  reset() { this.parts = []; },
+  init() { this.blobs = { smoke: makeBlob(150, 148, 140), dark: makeBlob(32, 30, 28), dust: makeBlob(152, 132, 98), fire: makeBlob(255, 150, 50, 0.3), flash: makeBlob(255, 244, 210, 0.2), white: makeBlob(226, 226, 220), ember: makeBlob(255, 96, 24, 0.4), blue: makeBlob(160, 200, 255), glow: makeBlob(255, 120, 30, 0) };
+    this.flames = [makeFlame('rgba(255,250,215,1)', 'rgba(255,196,80,0.9)', 'rgba(255,120,20,0)'), makeFlame('rgba(255,214,110,1)', 'rgba(255,128,30,0.85)', 'rgba(220,60,10,0)'), makeFlame('rgba(255,140,40,0.9)', 'rgba(200,58,14,0.7)', 'rgba(120,20,5,0)')]; },
+  // one burst of a living fire: licking flame tongues that cool from white-yellow to deep red, a ground glow, embers
+  flameAt(x, y, k = 1, smoke = 0.5) {
+    for (let i = 0; i < 2; i++) this.add('flame', x + rnd(-0.7, 0.7) * k, y + rnd(-0.7, 0.7) * k, { r: rnd(0.9, 1.7) * k, gr: -0.3 * k, life: rnd(0.35, 0.8), vx: WIND[0] * rnd(0.3, 0.9), vy: WIND[1] * rnd(0.3, 0.9), wind: 0.9, rot: rnd(-0.35, 0.35), vr: rnd(-0.6, 0.6), seed: rnd(0, 9), a: rnd(0.7, 0.95) });
+    if (Math.random() < 0.5) this.add('glow', x, y, { r: rnd(2.2, 3.2) * k, life: 0.25, add: true, a: rnd(0.12, 0.22) });
+    if (Math.random() < 0.18 * k) this.add('ember', x + rnd(-0.6, 0.6), y + rnd(-0.6, 0.6), { r: rnd(0.08, 0.16), life: rnd(0.8, 2), add: true, vx: WIND[0] * rnd(1, 3) + rnd(-1.5, 1.5), vy: WIND[1] * rnd(1, 3) + rnd(-1.5, 1.5), drag: 0.6, a: 1 });
+    if (Math.random() < smoke) this.add('dark', x + WIND[0] * 0.8, y + WIND[1] * 0.8, { r: rnd(0.8, 1.5) * k, gr: rnd(1.4, 2.6), life: rnd(3, 6), a: 0.2 + smoke * 0.35, wind: 1.2 });
+  },
+  reset() { this.parts = []; this.timers = []; },
+  later(t, fn) { (this.timers = this.timers || []).push({ t, fn }); },
   add(k, x, y, o) {
     const p = { k, x, y, vx: 0, vy: 0, r: 1, gr: 0, t: 0, life: 1, a: 1, drag: 1, add: false, rot: 0, vr: 0, z: 0, vz: 0, wind: 0, hi: true };
     Object.assign(p, o);
@@ -4684,14 +5212,21 @@ const FX = {
     this.parts.push(p); return p;
   },
   update(dt) {
+    if (this.timers && this.timers.length) { for (const q of this.timers) q.t -= dt; const due = this.timers.filter(q => q.t <= 0); this.timers = this.timers.filter(q => q.t > 0); for (const q of due) try { q.fn(); } catch (e) { } }
+    const trail = [];
     for (const p of this.parts) {
       p.t += dt;
+      if (p.burn && p.t < p.burn) { p.bt = (p.bt || 0) + dt; if (p.bt > 0.07) { p.bt = 0; trail.push(p); } }
       const dr = Math.pow(p.drag, dt);
       p.vx = p.vx * dr + WIND[0] * p.wind * dt; p.vy = p.vy * dr + WIND[1] * p.wind * dt;
       p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.gr * dt; p.rot += p.vr * dt;
-      if (p.k === 'debris' || p.k === 'chunk') { p.vz -= 20 * dt; p.z += p.vz * dt; if (p.z < 0) { p.z = 0; p.vz *= -0.25; p.vx *= 0.4; p.vy *= 0.4; p.vr *= 0.5; } }
+      if (p.k === 'debris' || p.k === 'chunk' || p.k === 'wheel') { p.vz -= 20 * dt; p.z += p.vz * dt; if (p.z < 0) { p.z = 0; p.vz *= -0.25; p.vx *= 0.4; p.vy *= 0.4; p.vr *= 0.5; } }
     }
     this.parts = this.parts.filter(p => p.t < p.life);
+    for (const p of trail) { // burning fragments trail flame in the air and smoulder once landed
+      if (p.z > 0.3) this.add('flame', p.x, p.y, { r: rnd(0.25, 0.42), life: rnd(0.1, 0.2), rot: rnd(-0.3, 0.3), seed: rnd(0, 9), a: 0.85 });
+      else if (Math.random() < 0.5) this.add(Math.random() < 0.3 ? 'flame' : 'dark', p.x, p.y, Math.random() < 0.3 ? { r: rnd(0.3, 0.5), life: 0.35, rot: rnd(-0.3, 0.3), seed: rnd(0, 9), a: 0.85 } : { r: rnd(0.4, 0.8), gr: 1.2, life: rnd(2, 4), a: 0.35, wind: 1 });
+    }
   },
   draw(c, hi) {
     for (const p of this.parts) {
@@ -4702,6 +5237,23 @@ const FX = {
         c.strokeStyle = p.col || '#ffd27a'; c.lineWidth = p.w || 0.08;
         c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x - p.vx * 0.03, p.y - p.vy * 0.03); c.stroke();
         c.globalCompositeOperation = 'source-over'; continue;
+      }
+      if (p.k === 'flame') {
+        const flick = 0.72 + 0.28 * Math.sin(p.t * 34 + p.seed * 7) * Math.sin(p.t * 13 + p.seed);
+        const img = this.flames[f < 0.28 ? 0 : f < 0.62 ? 1 : 2], s = Math.max(0.05, p.r);
+        c.globalCompositeOperation = 'lighter'; c.globalAlpha = Math.max(0, p.a * (f < 0.12 ? f / 0.12 : 1 - (f - 0.12) / 0.88) * flick);
+        c.save(); c.translate(p.x, p.y); c.rotate(FLAME_ROT + p.rot); c.drawImage(img, -s * 0.6, -s * 1.85, s * 1.2, s * 2.4); c.restore();
+        c.globalCompositeOperation = 'source-over'; continue;
+      }
+      if (p.k === 'ring') { // expanding shockwave
+        c.globalAlpha = (1 - f) * p.a; c.strokeStyle = p.col || 'rgba(255,236,200,1)'; c.lineWidth = p.w * (1 - f * 0.7);
+        c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); continue;
+      }
+      if (p.k === 'wheel') {
+        c.globalAlpha = Math.min(1, (1 - f) * 3) * p.a;
+        if (p.z > 0.2) { c.fillStyle = 'rgba(0,0,0,0.3)'; c.beginPath(); c.arc(p.x + p.z * 0.4, p.y + p.z * 0.6, p.r * 0.5, 0, TAU); c.fill(); }
+        const s = 1 + p.z * 0.06; c.fillStyle = '#1e1c19'; c.beginPath(); c.arc(p.x, p.y, p.r * 0.5 * s, 0, TAU); c.fill(); c.fillStyle = '#3c3a34'; c.beginPath(); c.arc(p.x, p.y, p.r * 0.28 * s, 0, TAU); c.fill();
+        continue;
       }
       if (p.k === 'debris' || p.k === 'chunk') {
         c.globalAlpha = Math.min(1, (1 - f) * 3) * p.a;
@@ -4832,6 +5384,33 @@ Object.assign(Battle.prototype, {
 });
 // a tank shoves a tree over to one side of its path (so it can carry on); a shell drops it any way
 function treeFall(t, v) { const h = mulberry32((t.x * 97 + t.y * 31) | 0)(); return v ? v.ang + (h < 0.5 ? -1.25 : 1.25) : h * TAU; }
+// dramatic tank kill: fireball, shockwave, flying burning parts, cook-off pops and a lasting smoke plume
+FX.tankDeath = function (v, reason) {
+  const big = reason === 'ammo', [tx, ty] = v.turretPos(), x = v.x, y = v.y, L = v.def.L;
+  this.add('flash', tx, ty, { r: big ? 30 : 16, life: big ? 0.35 : 0.22, add: true });
+  this.add('ring', x, y, { r: 2, gr: big ? 70 : 42, life: big ? 0.55 : 0.45, w: big ? 1.6 : 1.1, a: 0.75 });
+  this.add('ring', x, y, { r: 1, gr: big ? 34 : 22, life: 0.7, w: 0.6, a: 0.5, col: 'rgba(255,170,90,1)' });
+  for (let i = 0; i < (big ? 70 : 40); i++) { const a = rnd(TAU), s = rnd(2, big ? 20 : 12); this.add('fire', tx + rnd(-1, 1), ty + rnd(-1, 1), { vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: rnd(1.4, big ? 4 : 3), gr: rnd(1.5, 3), life: rnd(0.5, big ? 1.6 : 1.1), add: true, drag: 0.08 }); }
+  for (let i = 0; i < (big ? 26 : 14); i++) this.add('ember', tx, ty, { vx: rnd(-14, 14), vy: rnd(-14, 14), r: rnd(0.3, 0.7), life: rnd(0.8, 1.8), add: true, drag: 0.3 });
+  // burning chunks, hatches and road wheels thrown out; they keep smouldering where they land
+  const n = big ? 14 : 8;
+  for (let i = 0; i < n; i++) { const a = rnd(TAU), s = rnd(6, big ? 22 : 14); this.add('chunk', tx, ty, { vx: Math.cos(a) * s, vy: Math.sin(a) * s, vz: rnd(5, big ? 16 : 10), r: rnd(0.5, 1.2), life: rnd(10, 18), vr: rnd(-8, 8), col: pick(['#2b2a26', '#3d3a33', '#1e1d1a', '#4b4a3e']), burn: rnd(5, 11), hi: false }); }
+  for (let i = 0; i < (big ? 4 : 2); i++) { const a = rnd(TAU), s = rnd(5, 12); this.add('wheel', x, y, { vx: Math.cos(a) * s, vy: Math.sin(a) * s, vz: rnd(4, 9), r: rnd(0.9, 1.3), life: rnd(14, 20), vr: rnd(-6, 6), burn: rnd(3, 6), hi: false }); }
+  // cook-off: stored rounds popping for several seconds after the kill
+  const pops = big ? 7 : 4 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < pops; i++) this.later(rnd(0.8, big ? 9 : 7), () => {
+    if (!B || !B.vehicles.includes(v)) return;
+    const [px, py] = toWorld(rnd(-L * 0.3, L * 0.3), rnd(-0.8, 0.8), v.x, v.y, v.ang);
+    this.add('flash', px, py, { r: rnd(4, 7), life: 0.1, add: true });
+    for (let k = 0; k < 10; k++) { const a = rnd(TAU), s = rnd(10, 30); this.add('spark', px, py, { vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: rnd(0.2, 0.5), drag: 0.1 }); }
+    for (let k = 0; k < 6; k++) this.add('fire', px, py, { vx: rnd(-6, 6), vy: rnd(-6, 6), r: rnd(0.8, 1.6), gr: 2, life: rnd(0.3, 0.6), add: true });
+    for (let k = 0; k < 3; k++) this.add('dark', px, py, { r: rnd(1, 2), gr: 2.5, life: rnd(3, 5), a: 0.5, wind: 1.2 });
+    Sfx.play('cookoff', px, py, rnd(0.35, 0.8));
+    if (B.player && B.player.alive && dist(px, py, B.player.x, B.player.y) < 80) B.cam.shake = Math.max(B.cam.shake, 0.25);
+  });
+  v.plume = big ? 80 : 55; // seconds of heavy smoke column
+  if (B && B.cam) B.cam.shake = Math.max(B.cam.shake, clamp(1 - dist(x, y, B.cam.x, B.cam.y) / 350, 0, 1) * (big ? 1.6 : 1.0));
+};
 FX.ammoExplosion = function (v) {
   const [tx, ty] = v.turretPos();
   this.explosion(tx, ty, 3.5, false);
@@ -4880,6 +5459,12 @@ const Render = {
     if (Input.wheel) {
       if (cam.sight) cam.sightMag = clamp((cam.sightMag || 3) * (Input.wheel > 0 ? 0.94 : 1.064), 2, p.def.era >= 3 ? 8 : 5);
       else cam.userZoom = clamp(cam.userZoom * (Input.wheel > 0 ? 0.95 : 1.053), 0.38, 2.4);
+    }
+    if (B.cine) {
+      cam.sightOn = false; cam.sight = false;
+      cam.x = lerp(cam.x, B.cine.x, clamp(dt * 10, 0, 1)); cam.y = lerp(cam.y, B.cine.y, clamp(dt * 10, 0, 1));
+      cam.zoom = lerp(cam.zoom, B.cine.z, clamp(dt * 4, 0, 1));
+      return;
     }
     let tx, ty, tz = this.baseZoom() * cam.userZoom;
     if (B.demo) {
@@ -4970,10 +5555,11 @@ const Render = {
     // ground FX (debris)
     FX.draw(c, false);
     // vehicles: shadows, wrecks first
-    const vis = B.vehicles.filter(v => !v.hidden && inView(v.x, v.y, 12) && (B.demo || !v.alive || v.team === B.myTeam || v.seenBy[B.myTeam]));
+    // every vehicle on screen is drawn — spotting only decides tags, range markers, the minimap and AI targeting
+    const vis = B.vehicles.filter(v => !v.hidden && inView(v.x, v.y, 12));
     for (const d of map.decor || []) if (inView(d.x, d.y, 8)) this.drawDecor(c, d);
     for (const pl of map.planes || []) if (inView(pl.x, pl.y, 12)) this.drawPlane(c, pl);
-    this.drawGhosts(c, vis, inView);
+    // (no 'last seen' outlines — a lost contact is simply gone until spotted again)
     for (const v of vis) this.drawShadow(c, v);
     for (const v of vis) if (!v.alive) this.drawVehicle(c, v);
     for (const v of B.vehicles) if (v.turretOff && v.turretOff.landed && inView(v.turretOff.x, v.turretOff.y, 6)) this.drawLooseTurret(c, v);
@@ -4995,7 +5581,7 @@ const Render = {
       const spr = map.treeSpr[t.kind * 4 + t.v];
       let a = 1;
       if (pl && dist(pl.x, pl.y, t.x, t.y) < t.r + 5) a = 0.45;
-      else for (const v of vis) if (v.alive && Math.abs(v.x - t.x) < t.r + 4 && Math.abs(v.y - t.y) < t.r + 4) { a = 0.42; break; }
+      else for (const v of vis) if (v.alive && Math.abs(v.x - t.x) < t.r + 4 && Math.abs(v.y - t.y) < t.r + 4) { a = v.team !== B.myTeam && !v.seenBy[B.myTeam] && vWoods(v) ? 0.7 : 0.42; if (a < 0.5) break; }
       c.globalAlpha = a;
       c.save(); c.translate(t.x, t.y); c.rotate(t.rot); const s = t.r / 5.2;
       c.drawImage(spr, -spr.width / 20 * s, -spr.height / 20 * s, spr.width / 10 * s, spr.height / 10 * s); c.restore();
@@ -5038,12 +5624,25 @@ const Render = {
     const mk = (fn, size = 48) => { const cv = document.createElement('canvas'); cv.width = cv.height = size; const c = cv.getContext('2d'); c.translate(size / 2, size / 2); fn(c, size / 2); return cv; };
     const R = mulberry32(99);
     const tuft = (col) => mk((c, r) => { for (let i = 0; i < 26; i++) { const a = R() * TAU, l = r * (0.4 + R() * 0.55); c.strokeStyle = `rgba(${col[0] + R() * 30},${col[1] + R() * 30},${col[2]},${0.55 + R() * 0.4})`; c.lineWidth = 1.4; c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(Math.cos(a) * l * 0.5 + R() * 4 - 2, Math.sin(a) * l * 0.5 + R() * 4 - 2, Math.cos(a) * l, Math.sin(a) * l); c.stroke(); } });
-    const bush = (col) => mk((c, r) => { c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.arc(4, 5, r * 0.75, 0, TAU); c.fill(); for (let i = 0; i < 14; i++) { const a = R() * TAU, d = R() * r * 0.4, rr = r * (0.25 + R() * 0.25); const g = c.createRadialGradient(Math.cos(a) * d - rr * .3, Math.sin(a) * d - rr * .3, 1, Math.cos(a) * d, Math.sin(a) * d, rr); g.addColorStop(0, `rgb(${col[0] * 1.4 | 0},${col[1] * 1.35 | 0},${col[2] * 1.2 | 0})`); g.addColorStop(1, `rgba(${col[0] * .6 | 0},${col[1] * .6 | 0},${col[2] * .6 | 0},.9)`); c.fillStyle = g; c.beginPath(); c.arc(Math.cos(a) * d, Math.sin(a) * d, rr, 0, TAU); c.fill(); } }, 64);
+    const bush = (col) => mk((c, r) => {
+      // leafy shrub from jagged polygon clumps (no round blobs)
+      const tone = (k, a = 1) => `rgba(${Math.min(255, col[0] * k) | 0},${Math.min(255, col[1] * k) | 0},${Math.min(255, col[2] * k) | 0},${a})`;
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); for (let i = 0; i < 12; i++) { const a = i / 12 * TAU, rr = r * (0.6 + R() * 0.25); c.lineTo(4 + Math.cos(a) * rr, 5 + Math.sin(a) * rr); } c.fill();
+      const cl = []; for (let i = 0; i < 9 + Math.floor(R() * 5); i++) { const a = R() * TAU, d = R() * r * 0.42; cl.push([Math.cos(a) * d, Math.sin(a) * d, r * (0.22 + R() * 0.2)]); }
+      cl.sort((p, q) => (q[0] + q[1]) - (p[0] + p[1]));
+      for (const [x, y, rr] of cl) {
+        const g = c.createLinearGradient(x - rr, y - rr, x + rr, y + rr); const k = 0.85 + R() * 0.3;
+        g.addColorStop(0, tone(1.4 * k)); g.addColorStop(0.6, tone(0.95 * k)); g.addColorStop(1, tone(0.55 * k, 0.95));
+        c.fillStyle = g; c.beginPath(); const n = 8 + Math.floor(R() * 5), rot = R() * TAU;
+        for (let i = 0; i < n; i++) { const a = rot + i / n * TAU, q = rr * (0.75 + R() * 0.35) * (i % 2 ? 0.82 : 1); c.lineTo(x + Math.cos(a) * q, y + Math.sin(a) * q); }
+        c.closePath(); c.fill();
+      }
+    }, 64);
     const stone = () => mk((c, r) => { c.fillStyle = 'rgba(0,0,0,0.3)'; c.beginPath(); c.ellipse(3, 4, r * 0.5, r * 0.4, 0, 0, TAU); c.fill(); const g = c.createRadialGradient(-r * .2, -r * .2, 1, 0, 0, r * .55); g.addColorStop(0, '#b4ada0'); g.addColorStop(1, '#5c574e'); c.fillStyle = g; c.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * TAU, rr = r * (0.38 + R() * 0.15); c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr * 0.8); } c.fill(); }, 32);
     const flowers = (col) => mk((c, r) => { for (let i = 0; i < 14; i++) { const a = R() * TAU, d = R() * r * 0.8; c.fillStyle = col; c.beginPath(); c.arc(Math.cos(a) * d, Math.sin(a) * d, 1.3 + R(), 0, TAU); c.fill(); } }, 40);
     const twigs = () => mk((c, r) => { c.strokeStyle = 'rgba(70,50,30,0.8)'; c.lineWidth = 2; for (let i = 0; i < 3; i++) { const a = R() * TAU, l = r * (0.6 + R() * 0.4); c.beginPath(); c.moveTo(-Math.cos(a) * l, -Math.sin(a) * l); c.lineTo(Math.cos(a) * l, Math.sin(a) * l); c.stroke(); } });
     const bc = B.map.biome.tree[0], gc = B.map.biome.grass[1];
-    this.clutter = { tuft: [tuft([70, 92, 34]), tuft([gc[0] - 20, gc[1] - 10, gc[2] - 20]), tuft([110, 110, 50])], bush: [bush(bc), bush(B.map.biome.tree[1])], stone: [stone(), stone()], flower: [flowers('rgba(240,230,120,0.9)'), flowers('rgba(235,235,240,0.9)'), flowers('rgba(200,120,170,0.85)')], twig: [twigs()], biomeOf: B.map };
+    this.clutter = { tuft: [tuft([70, 92, 34]), tuft([gc[0] - 20, gc[1] - 10, gc[2] - 20]), tuft([110, 110, 50])], bush: [bush(bc), bush(B.map.biome.tree[1]), bush(B.map.biome.tree[0])], stone: [stone(), stone()], flower: [flowers('rgba(240,230,120,0.9)'), flowers('rgba(235,235,240,0.9)'), flowers('rgba(200,120,170,0.85)')], twig: [twigs()], biomeOf: B.map };
   },
   drawClutter(c, view, map) {
     if (!this.clutter || this.clutter.biomeOf !== map) this.makeClutter();
@@ -5056,7 +5655,7 @@ const Render = {
       const x = (gx + r1) * cs, y = (gy + r2) * cs;
       const g = map.groundAt(x, y);
       let spr = null, sz = 1;
-      if (g === G_GRASS) { if (r3 < 0.42) { spr = K.tuft[(h >>> 3) % 3]; sz = 1.1 + r1; } else if (r3 < 0.5) { spr = K.bush[(h >>> 5) % 2]; sz = 1.6 + r2 * 1.4; } else if (r3 < 0.56) { spr = K.flower[(h >>> 4) % 3]; sz = 1.4; } else if (r3 < 0.6) { spr = K.stone[(h >>> 6) % 2]; sz = 0.5 + r1 * 0.6; } }
+      if (g === G_GRASS) { if (r3 < 0.42) { spr = K.tuft[(h >>> 3) % 3]; sz = 1.1 + r1; } else if (r3 < 0.5) { spr = K.bush[(h >>> 5) % 3]; sz = 1.6 + r2 * 1.4; } else if (r3 < 0.56) { spr = K.flower[(h >>> 4) % 3]; sz = 1.4; } else if (r3 < 0.6) { spr = K.stone[(h >>> 6) % 2]; sz = 0.5 + r1 * 0.6; } }
       else if (g === G_FOREST) { if (r3 < 0.3) { spr = K.twig[0]; sz = 1.4; } else if (r3 < 0.55) { spr = K.tuft[0]; sz = 1.2; } }
       else if (g === G_ROAD) { if (r3 < 0.12) { spr = K.stone[(h >>> 6) % 2]; sz = 0.3 + r1 * 0.3; } }
       else if (g === G_FIELD) { if (r3 < 0.08) { spr = K.tuft[2]; sz = 0.9; } }
@@ -5070,8 +5669,7 @@ const Render = {
     const near = (x, y) => !view || (x > view.x0 - 60 && x < view.x1 + 60 && y > view.y0 - 60 && y < view.y1 + 60);
     for (const d of map.decor || []) {
       if (!d.fire || !near(d.x, d.y)) continue;
-      FX.add('fire', d.x + rnd(-1, 1), d.y + rnd(-1, 1), { r: rnd(0.8, 1.7), gr: 0.8, life: rnd(0.3, 0.7), add: true, wind: 0.8, a: 0.9 });
-      if (Math.random() < 0.6) FX.add('dark', d.x, d.y, { r: rnd(1, 2), gr: rnd(1.5, 3), life: rnd(4, 7), a: 0.55, wind: 1.2 });
+      FX.flameAt(d.x + rnd(-0.8, 0.8), d.y + rnd(-0.8, 0.8), 1.1, 0.6);
     }
     for (const f of map.fxSources || []) if (near(f.x, f.y) && Math.random() < (f.kind === 'dark' ? 0.5 : 0.25)) FX.add(f.kind, f.x + rnd(-2, 2), f.y + rnd(-2, 2), { r: rnd(1.2, 2.4), gr: rnd(1.5, 3), life: rnd(5, 9), a: f.kind === 'dark' ? 0.4 : 0.25, wind: 1.4 });
     for (const v of B.vehicles) {
@@ -5081,11 +5679,15 @@ const Render = {
       else if (!v.alive && v.burnT > 0) fx = toWorld(-v.def.L * 0.2, 0, v.x, v.y, v.ang);
       if (fx) {
         const k = v.alive ? 1 : clamp(v.burnT / 30, 0.3, 1.4);
-        FX.add('fire', fx[0] + rnd(-0.6, 0.6), fx[1] + rnd(-0.6, 0.6), { r: rnd(0.8, 1.6) * k, gr: 0.8, life: rnd(0.3, 0.7), add: true, wind: 0.8, a: 0.9 });
-        if (Math.random() < 0.6) FX.add('dark', fx[0], fx[1], { r: rnd(1, 1.8) * k, gr: rnd(1.5, 3), life: rnd(3, 6), a: 0.55, wind: 1.2 });
+        FX.flameAt(fx[0], fx[1], k, v.alive ? 0.6 : 0.25);
       } else if (!v.alive && v.deadT < 90 && Math.random() < 0.25) {
         const [x, y] = toWorld(0, 0, v.x, v.y, v.ang);
         FX.add('smoke', x, y, { r: rnd(0.8, 1.4), gr: 1.8, life: rnd(3, 5), a: 0.3, wind: 1.2 });
+      }
+      if (!v.alive && v.plume && v.deadT < v.plume && Math.random() < 0.22 * (1 - v.deadT / v.plume) + 0.06) {
+        // a tall black column leaning with the wind
+        const [x, y] = toWorld(rnd(-1, 1), rnd(-0.6, 0.6), v.x, v.y, v.ang);
+        FX.add('dark', x, y, { r: rnd(1, 1.8), gr: rnd(2.2, 3.5), life: rnd(6, 9), a: 0.3, wind: 1.7, vx: rnd(-0.5, 0.5), vy: rnd(-0.5, 0.5) });
       }
       if (v.alive && v.ctrl.throttle !== 0 && Math.random() < 0.18 && !v.def.soft) {
         const [x, y] = toWorld(-v.def.L / 2 - 0.2, 0, v.x, v.y, v.ang);
@@ -5208,6 +5810,9 @@ const Render = {
       if (!v.alive || v.team === B.myTeam) continue;
       if (shown.has(v)) { v._ghost = { x: v.x, y: v.y, a: v.ang, ta: v.turretAng, t: B.time }; continue; }
       const g = v._ghost; if (!g) continue;
+      // no "last seen" outline for a tank that slipped into heavy woods
+      if (!v._gwT || B.time - v._gwT > 0.5 || B.time < v._gwT) { v._gwT = B.time; v._gwoods = B.map.heavyWoods(v.x, v.y) || B.map.heavyWoods(g.x, g.y); }
+      if (v._gwoods) continue;
       const age = B.time - g.t; if (age > 12 || !inView(g.x, g.y, 12)) continue;
       const al = 0.65 * (1 - age / 12), d = v.def;
       c.save(); c.translate(g.x, g.y); c.rotate(g.a); c.globalAlpha = al;
@@ -5355,10 +5960,10 @@ const Render = {
     for (const v of vis) {
       if (!v.alive || v.isPlayer) continue;
       const enemy = v.team !== B.myTeam;
+      if (enemy && !v.seenBy[B.myTeam]) continue; // seen only by eye (under trees): no marker at all
       // enemies and human players lose their name tag and range marker when hidden in heavy woods — only the tank shows
       if (enemy || (v.human != null && v.human >= 0 && B.mp)) {
-        if (!v._wT || B.time - v._wT > 0.4 || B.time < v._wT) { v._wT = B.time; v._woods = B.map.heavyWoods(v.x, v.y); }
-        if (v._woods) continue;
+        if (vWoods(v)) continue;
       }
       const col = enemy ? '255,70,60' : '95,175,255', light = enemy ? '#ffc2bd' : '#d4ebff';
       const y = v.y - Math.max(v.def.L, v.def.W) / 2 - 10 / z;
@@ -5382,7 +5987,6 @@ const Render = {
         // AI: flashing tank icon
         c.globalAlpha = flash; this.tankIcon(c, 0, ty - 5, `rgb(${col})`); c.globalAlpha = 1;
       }
-      if (v.fire) { c.font = '12px Arial'; c.fillText('🔥', 0, 18); }
       c.restore();
     }
     // player: subtle ring
@@ -5939,10 +6543,10 @@ const UI = {
     $('setupGo').onclick = () => { this.launch(); };
     $('treeBack').onclick = () => { this.hide('tree'); this.refreshMenu(); };
     $('spawnGo').onclick = () => this.deploy();
-    $('spawnLeave').onclick = () => { this.hide('spawn'); this.leaveBattle(); };
+    $('spawnLeave').onclick = () => this.leaveBattle();
     $('specLeave').onclick = () => this.leaveBattle();
     $('pResume').onclick = () => App.setPause(false);
-    $('pQuit').onclick = () => { App.setPause(false); this.leaveBattle(); };
+    $('pQuit').onclick = () => this.leaveBattle(); // the pause screen stays up if the player cancels
     $('pHow').onclick = () => this.show('howto');
     $('resMenu').onclick = () => { if (B && (B.mp || B.net)) Lobby.backToLobby(); else App.quitToMenu(); };
     $('resAgain').onclick = () => {
@@ -5952,7 +6556,7 @@ const UI = {
       else this.openSetup(mode);
     };
     $('sClose').onclick = () => this.hide('settings');
-    $('sReset').onclick = () => { if (confirm('Reset all research and progress?')) { Save.data = Save.defaults(); Save.save(); this.refreshMenu(); this.toast('Progress reset'); } };
+    $('sReset').onclick = async () => { if (await this.ask('Reset all research and progress?')) { Save.data = Save.defaults(); Save.save(); this.refreshMenu(); this.toast('Progress reset'); } };
     const vol = v => { Save.data.settings.volume = +v; Sfx.setVolume(+v); Save.save(); };
     $('sVol').oninput = e => vol(e.target.value); $('pVol').oninput = e => vol(e.target.value);
     $('sMus').onchange = e => Music.setOn(e.target.checked); $('pMus').onchange = e => Music.setOn(e.target.checked);
@@ -5965,10 +6569,10 @@ const UI = {
   },
   show(id) { $(id).classList.add('on'); this.updateBlocking(); },
   hide(id) { $(id).classList.remove('on'); this.updateBlocking(); },
-  updateBlocking() { this.blocking = ['setup', 'tree', 'spawn', 'pause', 'settings', 'results', 'howto', 'mpChoice', 'lobby', 'netTest', 'mapSel'].some(id => $(id).classList.contains('on')); },
+  updateBlocking() { this.blocking = ['setup', 'tree', 'spawn', 'pause', 'settings', 'results', 'howto', 'mpChoice', 'lobby', 'netTest', 'mapSel', 'askBox'].some(id => $(id).classList.contains('on')); },
   hideAll() { ['menu', 'setup', 'tree', 'spawn', 'pause', 'settings', 'results', 'howto', 'mpChoice', 'lobby', 'mapSel', 'netTest'].forEach(id => $(id).classList.remove('on')); $('spectate').classList.remove('on'); this.updateBlocking(); if (this.spawnTimer) { clearInterval(this.spawnTimer); this.spawnTimer = null; } },
   toast(msg, bad) { if (bad) uiSnd('denied'); const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(this._tt); this._tt = setTimeout(() => t.style.display = 'none', 2600); },
-  showMenu() { $('tutPanel').classList.remove('on'); this.hideAll(); this.show('menu'); this.refreshMenu(); requestAnimationFrame(() => this.drawArts()); },
+  showMenu() { $('tutPanel').classList.remove('on', 'cine', 'low'); $('tutCine').classList.remove('on'); this.hideAll(); this.show('menu'); this.refreshMenu(); requestAnimationFrame(() => this.drawArts()); },
   drawArts() { document.querySelectorAll('canvas[data-art]').forEach(cv => drawCardArt(cv, cv.dataset.art)); },
   refreshMenu() {
     const d = Save.data;
@@ -6149,13 +6753,13 @@ const UI = {
       const el = document.createElement('div');
       el.className = 'tcard' + (this.spawnTank === id ? ' sel' : '') + (afford ? '' : ' locked');
       el.innerHTML = `<canvas></canvas><div><div class="n">${d.name}</div><div class="s">${ERA_NAMES[d.era]} · ${d.role}</div></div><div class="cost ${afford ? '' : 'no'}">${cost === 0 ? 'FREE' : cost + ' SP'}</div>`;
-      el.onclick = () => { this.spawnTank = id; this.renderSpawnList(); this.updateSpawnBtn(); };
+      el.onclick = () => { this.spawnTank = id; this.renderSpawnList(); if (B.mode.onSpawnPick) B.mode.onSpawnPick(id); this.updateSpawnBtn(); };
       list.appendChild(el);
       previewInto(el.querySelector('canvas'), d, { w: 130, h: 52 });
     }
   },
   updateSpawnBtn() {
-    const ok = this.spawnSel && this.spawnSel.ok && this.spawnTank && (B.spawnCost(this.spawnTank) <= B.sp || DEBUG);
+    const ok = this.spawnSel && this.spawnSel.ok && this.spawnTank && (B.spawnCost(this.spawnTank) <= B.sp || DEBUG) && !(B.mode.spawnLocked && B.mode.spawnLocked());
     $('spawnGo').disabled = !ok;
     $('spawnInfo').textContent = this.spawnSel ? `Spawn: ${this.spawnSel.name}` : 'Click a green spawn marker on the map';
   },
@@ -6204,6 +6808,15 @@ const UI = {
   },
   showSpectate(on) { $('spectate').classList.toggle('on', on); },
   showLobby() { this.hideAll(); this.show('lobby'); Lobby.render(); },
+  // in-game yes/no dialog (browser confirm() boxes can be silently blocked)
+  ask(msg, yes = 'Yes', no = 'Cancel') {
+    return new Promise(res => {
+      const box = $('askBox'); $('askMsg').textContent = msg; $('askYes').textContent = yes; $('askNo').textContent = no;
+      box.classList.add('on'); this.updateBlocking();
+      const done = ok => { box.classList.remove('on'); $('askYes').onclick = $('askNo').onclick = null; this.updateBlocking(); res(ok); };
+      $('askYes').onclick = () => done(true); $('askNo').onclick = () => done(false);
+    });
+  },
   startTutorial() { this.hideAll(); App.startBattle({ mode: 'tutorial', tank: 'm4a1', diff: 'recruit' }); },
   tutShow(on) { $('tutPanel').classList.toggle('on', on); },
   tutRender(T) {
@@ -6212,16 +6825,17 @@ const UI = {
     $('tpPart').textContent = `Part ${['Basic controls', 'Armor & damage control', 'Battle skills', 'Practice round'].indexOf(s.part) + 1} · ${s.part}`;
     $('tpTitle').textContent = s.title; $('tpN').textContent = `${T.i + 1} / ${T.steps.length}`;
     $('tpBar').style.width = `${T.i / T.steps.length * 100}%`;
-    $('tpText').innerHTML = s.text; $('tpHint').textContent = s.hint || '';
+    $('tpText').innerHTML = s.textFn ? s.textFn(T) : s.text; $('tpHint').textContent = s.hint || '';
   },
+  tutCine(on) { $('tutPanel').classList.toggle('cine', on); $('tutCine').classList.toggle('on', on); },
   tutDone(T) { $('tutPanel').classList.add('done'); $('tpBar').style.width = `${(T.i + 1) / T.steps.length * 100}%`; uiSnd('click'); },
   // leaving mid-battle returns you to where you started: the setup screen offline, the lobby online
-  leaveBattle() {
+  async leaveBattle() {
     if (B && B.net === 'client') { if (B.over) { Lobby.backToLobby(); return; } Lobby.clientLeaveBattle(); return; }
     if (B && B.net === 'host') { if (B.over) { Lobby.backToLobby(); return; } Lobby.hostLeaveBattle(); return; }
     if (!B || B.over) { App.quitToMenu(); return; }
     const cfg = App.lastCfg || {};
-    if (!confirm(cfg.mode === 'tutorial' ? 'Leave the tutorial? You can restart it any time from How to Play.' : 'Leave this battle? It will not count as a win or a loss.')) return;
+    if (!await this.ask(cfg.mode === 'tutorial' ? 'Leave the tutorial? You can restart it any time from How to Play.' : 'Leave this battle? It will not count as a win or a loss.')) return;
     this.tutShow(false);
     App.quitToMenu();
     if (cfg.mode === 'tutorial') return;
@@ -6345,7 +6959,7 @@ const App = {
           else if (!B.spawnScreen && !B.over) this.setPause(!document.getElementById('pause').classList.contains('on'));
         }
         if (!this.paused) {
-          if (B.player && B.player.alive && !UI.blocking) playerActions(B.player);
+          if (B.player && B.player.alive && !UI.blocking && !B.cine) playerActions(B.player);
           // two half-steps for stable collisions
           B.update(dt / 2); B.update(dt / 2);
         }
@@ -6425,20 +7039,26 @@ class PjRoute { // PeerJS cloud server protocol
   send(p) { this.raw({ type: p.type === 'ANSWER' ? 'ANSWER' : 'OFFER', dst: p.dst, payload: { __p: p } }); }
   close() { clearInterval(this.hb); try { this.ws.close(); } catch (e) { } }
 }
-class MqttRoute { // minimal MQTT 3.1.1 over WebSocket (QoS 0)
+class MqttRoute { // minimal MQTT 3.1.1 over WebSocket (QoS 0); reconnects by itself if the socket drops
   constructor(cfg, id, cb) {
-    this.cb = cb; this.ok = false; this.topic = SIG_TOPIC + id; this.buf = new Uint8Array(0);
-    try { this.ws = new WebSocket(cfg.url, ['mqtt']); } catch (e) { setTimeout(() => cb.fail('signal'), 0); return; }
+    this.cb = cb; this.ok = false; this.cfg = cfg; this.topic = SIG_TOPIC + id; this.everOk = false; this.closed = false; this.tries = 0;
+    this.connect();
+    // pings well inside the keep-alive window, even when a background tab throttles timers to once a minute
+    this.hb = setInterval(() => { try { this.ws && this.ws.readyState === 1 && this.ws.send(new Uint8Array([0xC0, 0])); } catch (e) { } }, 20000);
+  }
+  connect() {
+    this.buf = new Uint8Array(0);
+    try { this.ws = new WebSocket(this.cfg.url, ['mqtt']); } catch (e) { if (!this.everOk) setTimeout(() => this.cb.fail('signal'), 0); else this.retry(); return; }
     this.ws.binaryType = 'arraybuffer';
     this.ws.onopen = () => {
       const cid = 'shz' + Math.random().toString(36).slice(2, 14);
-      this.pkt(0x10, [this.str('MQTT'), [4, 0x02, 0, 60], this.str(cid)]);
+      this.pkt(0x10, [this.str('MQTT'), [4, 0x02, 600 >> 8, 600 & 255], this.str(cid)]); // keep-alive 10 min
     };
     this.ws.onmessage = e => { const d = new Uint8Array(e.data), n = new Uint8Array(this.buf.length + d.length); n.set(this.buf); n.set(d, this.buf.length); this.buf = n; this.parse(); };
-    this.ws.onerror = () => { if (!this.ok) cb.fail('signal'); };
-    this.ws.onclose = () => { if (!this.ok) cb.fail('signal'); this.ok = false; clearInterval(this.hb); };
-    this.hb = setInterval(() => this.ws.readyState === 1 && this.ws.send(new Uint8Array([0xC0, 0])), 30000);
+    this.ws.onerror = () => { if (!this.everOk) this.cb.fail('signal'); };
+    this.ws.onclose = () => { const was = this.ok; this.ok = false; if (!this.everOk) { this.cb.fail('signal'); return; } if (was && this.cb.down) this.cb.down(); this.retry(); };
   }
+  retry() { if (this.closed) return; clearTimeout(this.rt); this.rt = setTimeout(() => this.connect(), Math.min(15000, 800 * Math.pow(1.6, this.tries++))); }
   str(t) { const b = new TextEncoder().encode(t); return [b.length >> 8, b.length & 255, ...b]; }
   pkt(h, parts) {
     const body = [].concat(...parts); let len = body.length; const L = [];
@@ -6454,15 +7074,15 @@ class MqttRoute { // minimal MQTT 3.1.1 over WebSocket (QoS 0)
       const h = b[0], body = b.subarray(i, i + len); this.buf = b.slice(i + len);
       const t = h >> 4;
       if (t === 2) { if (body[1] === 0) this.pkt(0x82, [[0, 1], this.str(this.topic), [0]]); else this.cb.fail('server'); }
-      else if (t === 9) { if (!this.ok) { this.ok = true; this.cb.open(); } }
+      else if (t === 9) { if (!this.ok) { this.ok = true; this.tries = 0; if (this.everOk && this.cb.up) this.cb.up(); else { this.everOk = true; this.cb.open(); } } }
       else if (t === 3) {
         const tl = (body[0] << 8) | body[1]; let o = 2 + tl; if ((h >> 1) & 3) o += 2;
         try { this.cb.msg(JSON.parse(new TextDecoder().decode(body.subarray(o)))); } catch (e) { }
       }
     }
   }
-  send(p) { if (this.ws.readyState !== 1) return; const enc = new TextEncoder().encode(JSON.stringify(p)); this.pkt(0x30, [this.str(SIG_TOPIC + p.dst), Array.from(enc)]); }
-  close() { clearInterval(this.hb); try { this.ws.send(new Uint8Array([0xE0, 0])); this.ws.close(); } catch (e) { } }
+  send(p) { if (!this.ws || this.ws.readyState !== 1 || !this.ok) return false; const enc = new TextEncoder().encode(JSON.stringify(p)); this.pkt(0x30, [this.str(SIG_TOPIC + p.dst), Array.from(enc)]); return true; }
+  close() { this.closed = true; clearTimeout(this.rt); clearInterval(this.hb); try { this.ws.send(new Uint8Array([0xE0, 0])); this.ws.close(); } catch (e) { } }
 }
 class NtfyRoute { // ntfy.sh publish/subscribe over plain HTTP (works where WebSockets are blocked)
   constructor(cfg, id, cb) {
@@ -6497,6 +7117,8 @@ class Signal { // sends every message over all routes; first copy to arrive wins
       const r = { cfg, ok: false, dead: false, q: [] };
       const cb = {
         open: () => { r.ok = true; for (const p of r.q) r.obj.send(p); r.q = []; if (!this.open) { this.open = true; h.open && h.open(); } },
+        up: () => { r.ok = true; for (const p of r.q) r.obj.send(p); r.q = []; },   // a dropped route came back
+        down: () => { r.ok = false; },
         fail: e => { if (r.dead) return; r.dead = true; r.ok = false; r.q = []; if (e === 'taken') { h.error && h.error('taken'); return; } if (++this.failed === this.routes.length && !this.open) h.error && h.error('signal'); },
         msg: p => {
           if (!p) return;
@@ -6511,7 +7133,13 @@ class Signal { // sends every message over all routes; first copy to arrive wins
   }
   send(type, dst, payload) {
     const p = { type, dst, src: this.id, payload, mid: Math.random().toString(36).slice(2) + Date.now().toString(36) };
-    for (const r of this.routes) { if (r.dead) continue; if (r.ok) r.obj.send(p); else r.q.push(p); }
+    for (const r of this.routes) { if (r.dead) continue; if (r.ok) r.obj.send(p); else { r.q.push(p); if (r.q.length > 60) r.q.shift(); } }
+  }
+  // reliable game traffic: the same message over every relay route that is up (the receiver drops duplicates)
+  sendRelayAll(type, dst, payload) {
+    let n = 0;
+    for (const r of this.routes) if (r.ok && RELAY_KINDS.includes(r.cfg.kind)) { if (r.obj.send({ type, dst, src: this.id, payload }) !== false) n++; }
+    return n;
   }
   // game traffic over one relay-capable route (prefer the one the other side last used)
   sendVia(via, type, dst, payload) {
@@ -6545,12 +7173,18 @@ class RtcLink extends Link {
   close() { this.send({ t: '__bye' }); setTimeout(() => this.drop(), 50); }
 }
 class RelayLink extends Link { // game traffic through the matchmaking (MQTT) servers when a direct link is blocked
-  constructor(id, sig, via) { super(id); this.sig = sig; this.via = via; this.lastFast = 0; this.relay = true; }
+  constructor(id, sig, via) { super(id); this.sig = sig; this.via = via; this.lastFast = 0; this.relay = true; this.seenR = new Set(); }
   send(o, fast) {
     if (!this.alive || !this.sig) return;
     const now = performance.now();
-    if (fast) { if (now - this.lastFast < 70) return; this.lastFast = now; } // ~14 msgs/s cap on unreliable traffic
-    this.sig.sendVia(this.via, 'D', this.id, o);
+    if (fast) { if (now - this.lastFast < 70) return; this.lastFast = now; this.sig.sendVia(this.via, 'D', this.id, o); return; } // ~14 msgs/s cap on unreliable traffic
+    // important messages go over every working relay server at once, so one dropped server can't lose them
+    const rid = Math.random().toString(36).slice(2, 11);
+    if (!this.sig.sendRelayAll('D', this.id, { __r: rid, m: o })) this.sig.sendVia(this.via, 'D', this.id, o);
+  }
+  recv(m) {
+    if (m && m.__r) { if (this.seenR.has(m.__r)) { this.lastRx = performance.now(); return; } this.seenR.add(m.__r); if (this.seenR.size > 2000) this.seenR = new Set([...this.seenR].slice(-500)); m = m.m; }
+    super.recv(m);
   }
   drop() { if (!this.alive) return; this.alive = false; this.onclose && this.onclose(); }
   close() { this.send({ t: '__bye' }); setTimeout(() => this.drop(), 50); }
@@ -6589,7 +7223,7 @@ const Net = {
   },
   async acceptOffer(m, reg) {
     if (typeof RTCPeerConnection === 'undefined') return;
-    const pc = new RTCPeerConnection({ iceServers: this.iceServers() });
+    let pc; try { pc = new RTCPeerConnection({ iceServers: this.iceServers() }); } catch (e) { return; } // WebRTC blocked here: the guest falls back to the relay
     const link = new RtcLink(m.src, pc);
     let up = false;
     const tryUp = () => { if (!up && link.rel && link.rel.readyState === 'open') { up = true; reg(link); } };
@@ -6638,7 +7272,7 @@ const Net = {
     };
     const to = setTimeout(relay, this.local ? 6000 : 13000);
     if (typeof RTCPeerConnection === 'undefined' || /[?&]forcerelay\b/.test(location.search)) { clearTimeout(to); relay(); return; }
-    const pc = new RTCPeerConnection({ iceServers: this.iceServers() });
+    let pc; try { pc = new RTCPeerConnection({ iceServers: this.iceServers() }); } catch (e) { clearTimeout(to); relay(); return; }
     this.pendingPc = pc;
     const link = new RtcLink(this.hostId, pc);
     const rel = pc.createDataChannel('rel', { ordered: true });
@@ -6699,7 +7333,7 @@ const Net = {
     if (this.snapT < 1 / SNAP_HZ) return;
     this.snapT = 0;
     const view = [0, 1].map(team => B.vehicles.filter(v => v.alive && !v.hidden).map(v => {
-      const fl = (v.fire ? 1 : 0) | (v.mod('trackL').hp <= 0 ? 2 : 0) | (v.mod('trackR').hp <= 0 ? 4 : 0) | (v.def.turret && (v.mod('barrel').hp <= 0 || v.modDamaged('barrel')) ? 8 : 0) | (v.team === team || v.seenBy[team] ? 16 : 0) | (v.ctrl.throttle ? 32 : 0) | (v.repairT > 0 ? 64 : 0);
+      const fl = (v.fire ? 1 : 0) | (v.mod('trackL').hp <= 0 ? 2 : 0) | (v.mod('trackR').hp <= 0 ? 4 : 0) | (v.def.turret && (v.mod('barrel').hp <= 0 || v.modDamaged('barrel')) ? 8 : 0) | (v.team === team || v.seenBy[team] ? 16 : 0) | (v.ctrl.throttle ? 32 : 0) | (v.repairT > 0 ? 64 : 0) | (v.inWoods && v.woodsVis && v.woodsVis[team] ? 128 : 0);
       return [v.id, r2(v.x), r2(v.y), r3(v.ang), r3(v.turretAng), r2(v.vel), r3(v.angVel), fl];
     }));
     const P = B.map.points.map(p => [p.owner, r3(p.prog), p.contested ? 1 : 0]);
@@ -6823,7 +7457,7 @@ Object.assign(Battle.prototype, {
         const tL = v.mod('trackL'), tR = v.mod('trackR'); tL.hp = fl & 2 ? 0 : tL.max; tR.hp = fl & 4 ? 0 : tR.max;
         if (v.def.turret) { const b = v.mod('barrel'); b.hp = fl & 8 ? Math.min(b.hp, b.max * 0.4) : b.max; }
       }
-      v.seenBy[this.myTeam] = !!(fl & 16);
+      v.seenBy[this.myTeam] = !!(fl & 16); v.woodsVis = v.woodsVis || [false, false]; v.woodsVis[this.myTeam] = !!(fl & 128); if (fl & 128) v.inWoods = true; else if (fl & 16) v.inWoods = false;
     }
     if (m.P) m.P.forEach((p, i) => { const q = this.map.points[i]; if (q) { q.owner = p[0]; q.prog = p[1]; q.contested = !!p[2]; } });
     if (m.K && this.mode.tickets) this.mode.tickets = m.K;
@@ -6868,6 +7502,7 @@ Object.assign(Battle.prototype, {
         v.alive = false; v.deathReason = e[2]; v.burnT = e[3]; v.deadT = 0; v.x = e[4]; v.y = e[5]; v.ang = e[6]; v.turretAng = e[7]; v.vel = 0;
         const t = e[8]; if (t) v.turretOff = { x: t[0], y: t[1], vx: t[2], vy: t[3], vz: t[4], a: t[5], spin: t[6], z: 0, landed: false };
         if (v.isPlayer) Sfx.stopEngine();
+        FX.tankDeath(v, e[2]);
         break; }
       case 'vrm': { const v = V(e[1]); if (v) { v.alive = false; v.hidden = true; this.vehicles = this.vehicles.filter(o => o !== v); } break; }
       case 'p+': { const [, id, x, y, dx, dy, vel, ty, rg] = e; this.projs.push({ id, x, y, dx, dy, v: vel, T: SHELL_TYPES[ty], trav: 0, range: rg }); break; }
@@ -6961,7 +7596,8 @@ const Lobby = {
     if (m.type === 'PEEK') Net.sig.send('PREVIEW', id, this.previewData());
     else if (m.type === 'BYE') { if (A.item) A.item.finish(false, 'gone'); delete this.asks[id]; this.approved.delete(id); }
     else if (m.type === 'ASK') {
-      if (A.pending || this.approved.has(id)) return;
+      if (A.pending) return;
+      if (this.approved.has(id)) { Net.sig.send('ACCEPT', id, {}); return; } // their first connection attempt got lost — let them try again
       const pay = m.payload || {};
       if ((pay.dev && this.bans.has(pay.dev)) || this.banNames.has(cleanName(pay.name).toLowerCase())) { Net.sig.send('DECLINE', id, { why: 'banned' }); return; }
       const now = performance.now();
@@ -7070,15 +7706,17 @@ const Lobby = {
     const S = this.state;
     const slotted = new Set(S.slots.flat().filter(p => p >= 0));
     if (!slotted.has(0)) { UI.toast('Put yourself in a slot first', true); return; }
-    const notReady = [...slotted].map(pid => S.players[pid]).filter(P => P && !P.ready);
+    const solo = Object.keys(S.players).length <= 1; // nobody else here: the host can play against AI straight away
+    const notReady = solo ? [] : [...slotted].map(pid => S.players[pid]).filter(P => P && !P.ready);
     if (notReady.length) { UI.toast(`Everyone must ready up first — waiting for ${notReady.map(P => P.pid === 0 ? 'you' : P.name).join(', ')}`, true); return; }
+    if (solo && !S.settings.ai) { S.settings.ai = true; UI.toast('Playing alone — AI crews fill both teams'); }
     if (!S.settings.ai && (!S.slots[0].some(p => p >= 0) || !S.slots[1].some(p => p >= 0))) { UI.toast('With AI off, both teams need at least one player', true); return; }
     S.inBattle = true;
     for (const P of Object.values(S.players)) { P.waiting = !slotted.has(P.pid); P.ready = false; }
     for (const P of Object.values(S.players)) P.tank = this.pickAllowed(P.tank, S.settings.era, S.hostTanks);
     const players = {};
     for (const P of Object.values(S.players)) if (slotted.has(P.pid)) players[P.pid] = { name: P.name, tank: P.tank, tanks: P.tanks };
-    const mp = { slots: S.slots.map(s => s.slice()), players, settings: Object.assign({}, S.settings) };
+    const mp = { slots: S.slots.map(s => s.slice()), players, settings: Object.assign({}, S.settings), hostTanks: (S.hostTanks || []).slice() };
     if (!MAP_THEMES[mp.settings.map]) mp.settings.map = MAP_LIST[Math.floor(Math.random() * MAP_LIST.length)];
     S.battleEnds = Date.now() + MATCH_MINUTES * 60000; S.battleMap = mp.settings.map; this.hostAway = false;
     const team0 = S.slots[0].includes(0) ? 0 : 1;
@@ -7131,8 +7769,20 @@ const Lobby = {
           link.onmsg = mm => this.clientMsg(mm);
           link.onclose = () => this.hostGone();
           setTimeout(() => link.flush(), 0);
-          link.send({ t: 'hello', name: this.reqName, tank: this.preTank, v: NET_VER });
-          if (link.relay) this.status = 'Connected through the relay server (direct connection was blocked)';
+          const hello = () => link.send({ t: 'hello', name: this.reqName, tank: this.preTank, v: NET_VER });
+          hello();
+          // keep saying hello until the host answers (a single message can get lost on the relay)
+          clearInterval(this._helloT); const t0 = performance.now();
+          this._helloT = setInterval(() => {
+            if (this.joined || !Net.hostLink || Net.hostLink !== link) { clearInterval(this._helloT); return; }
+            if (performance.now() - t0 > 30000) {
+              clearInterval(this._helloT); Net.hostLink = null; try { link.drop && (link.onclose = null, link.drop()); } catch (e) { }
+              this.accepted = false; this.pending = false; this.lastAsk = -1e9;
+              this.status = 'The host did not respond — press Ask to join to try again'; this.render(); return;
+            }
+            hello();
+          }, 2500);
+          this.status = link.relay ? 'Connected through the relay server — joining the room…' : 'Connected — joining the room…';
           this.render();
         }, e => { this.accepted = false; this.pending = false; this.status = `Could not connect (${netErrText(e)})`; this.render(); });
         break; }
@@ -7153,7 +7803,7 @@ const Lobby = {
   },
   clientMsg(m) {
     switch (m.t) {
-      case 'welcome': this.myPid = m.pid; this.joined = true; this.pending = false; this.status = Net.hostLink && Net.hostLink.relay ? 'You are in (via relay server)! Ready up when you are set' : 'You are in! Ready up when you are set'; this.render(); break;
+      case 'welcome': if (this.joined) break; clearInterval(this._helloT); this.myPid = m.pid; this.joined = true; this.pending = false; this.status = Net.hostLink && Net.hostLink.relay ? 'You are in (via relay server)! Ready up when you are set' : 'You are in! Ready up when you are set'; this.render(); break;
       case 'full': this.status = 'This room is full (12 players)'; this.render(); Net.shutdown(); break;
       case 'inprogress': this.inBattleWait = true; this.status = 'A battle is in progress — you will join the next round'; this.render(); break;
       case 'lobby': {
@@ -7198,7 +7848,7 @@ const Lobby = {
     $('lbStatus').innerHTML = esc(this.status) + (busy ? '<span class="lb-spin"></span>' : '');
     const inv = $('lbInvite');
     if (host && Net.room) {
-      inv.innerHTML = `<div class="lbl">Invite link — send it on KakaoTalk, WhatsApp, Messages…</div>
+      inv.innerHTML = `
         <div class="inv-row"><input id="lbLink" readonly value="${Net.inviteLink()}"><button class="btn primary" id="lbCopy">Copy link</button>${navigator.share ? '<button class="btn" id="lbShare">Share…</button>' : ''}<div class="code">ROOM <b>${Net.room}</b></div></div>
         ${Net.local ? '<div class="warn">Local test mode: this link only works in other tabs of this browser. Put the game on GitHub Pages for online play.</div>' : ''}`;
       $('lbCopy').onclick = () => copyText(Net.inviteLink());
@@ -7218,12 +7868,14 @@ const Lobby = {
     go.style.display = host ? '' : 'none';
     if (!host && !this.joined) { this.renderPrejoin(); return; }
     if (!S) { $('lbT0').innerHTML = $('lbT1').innerHTML = ''; $('lbSettings').innerHTML = ''; $('lbTanks').innerHTML = ''; $('lbWait').innerHTML = ''; $('lbHint').textContent = ''; return; }
-    go.disabled = S.inBattle || !Net.room;
-    { const sl = S.slots.flat().filter(p => p >= 0 && S.players[p]), nr = sl.filter(p => S.players[p].ready).length;
-      go.textContent = S.inBattle ? 'Battle running…' : nr === sl.length ? 'Start battle ▶' : `Waiting for ready (${nr}/${sl.length})`; go.classList.toggle('primary', nr === sl.length && !S.inBattle); }
+    const solo = Object.keys(S.players).length <= 1;
+    go.disabled = S.inBattle || (!Net.room && !solo);
+    { const sl = S.slots.flat().filter(p => p >= 0 && S.players[p]), nr = sl.filter(p => S.players[p].ready).length, ok = solo || nr === sl.length;
+      go.textContent = S.inBattle ? 'Battle running…' : solo ? 'Start solo battle ▶' : ok ? 'Start battle ▶' : `Waiting for ready (${nr}/${sl.length})`; go.classList.toggle('primary', ok && !S.inBattle); }
     const P = S.players, me = P[this.myPid];
     const count = Object.keys(P).length;
     $('lbCount').textContent = `${count} / ${MAX_PLAYERS} players`;
+    this.renderMaps(S, host);
     // battle in progress banner (host away from the battle, or guests not in it)
     const meWait = me && me.waiting;
     const bb = $('lbBattle');
@@ -7288,15 +7940,13 @@ const Lobby = {
         <div class="row"><span>Fill empty slots with AI</span><input type="checkbox" id="lbAI" ${st.ai ? 'checked' : ''}></div>
         <div class="row"><span>AI difficulty</span><select id="lbDiff">${DIFF_ORDER.map(k => `<option value="${k}" ${st.diff === k ? 'selected' : ''}>${DIFF[k].name}</option>`).join('')}</select></div>
         <div class="row"><span>Highest era allowed</span><select id="lbEra">${eras.map((n, i) => `<option value="${i + 1}" ${st.era === i + 1 ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-        <div class="row"><span>Battlefield</span><select id="lbMap"><option value="random" ${st.map === 'random' ? 'selected' : ''}>Random</option>${MAP_LIST.map(k => `<option value="${k}" ${st.map === k ? 'selected' : ''}>${MAP_THEMES[k].name}</option>`).join('')}</select></div>
         ${this.bans.size ? `<div class="row"><span>Banned players: ${this.bans.size}</span><button class="btn small" id="lbUnban">Clear bans</button></div>` : ''}`;
-      $('lbMap').onchange = e => this.setSetting('map', e.target.value);
       if ($('lbUnban')) $('lbUnban').onclick = () => { this.bans.clear(); this.banNames.clear(); this.render(); UI.toast('Bans cleared'); };
       $('lbAI').onchange = e => this.setSetting('ai', e.target.checked);
       $('lbDiff').onchange = e => this.setSetting('diff', e.target.value);
       $('lbEra').onchange = e => this.setSetting('era', +e.target.value);
     } else {
-      $('lbSettings').innerHTML = `<div class="row"><span>AI fill</span><b>${st.ai ? 'On' : 'Off'}</b></div><div class="row"><span>AI difficulty</span><b>${DIFF[st.diff].name}</b></div><div class="row"><span>Highest era</span><b>${eras[st.era - 1]}</b></div><div class="row"><span>Battlefield</span><b>${st.map && MAP_THEMES[st.map] ? MAP_THEMES[st.map].name : 'Random'}</b></div>`;
+      $('lbSettings').innerHTML = `<div class="row"><span>AI fill</span><b>${st.ai ? 'On' : 'Off'}</b></div><div class="row"><span>AI difficulty</span><b>${DIFF[st.diff].name}</b></div><div class="row"><span>Highest era</span><b>${eras[st.era - 1]}</b></div>`;
     }
     // own name & tank
     const nm = $('lbName');
@@ -7317,6 +7967,7 @@ const Lobby = {
     rb.classList.toggle('primary', !!(me && me.ready));
   },
   renderPrejoin() {
+    $('lbMaps').innerHTML = '';
     const pv = this.preview, eras = ['I · Early WWII', 'II · Late WWII', 'III · Cold War', 'IV · Modern'];
     $('lbCount').textContent = pv ? `${pv.count} / ${MAX_PLAYERS} players` : '';
     $('lbT0').innerHTML = $('lbT1').innerHTML = '<div class="dim" style="padding:14px 4px">Teams appear once the host lets you in.</div>';
@@ -7341,6 +7992,26 @@ const Lobby = {
     rb.classList.toggle('primary', !rb.disabled);
   },
   nameInput(v) { clearTimeout(this._nt); this._nt = setTimeout(() => this.setName(v), 450); },
+  // battlefield picker: the host clicks a map card, everyone sees the choice
+  renderMaps(S, host) {
+    const box = $('lbMaps'), keys = ['random', ...MAP_LIST], cur = S.settings.map || 'random';
+    if (!box.firstChild) {
+      box.innerHTML = '<div class="lbl" style="margin:0 0 6px">Battlefield</div><div class="lbm-row"></div>';
+      const row = box.querySelector('.lbm-row');
+      for (const k of keys) {
+        const el = document.createElement('div'); el.className = 'lbm'; el.dataset.k = k;
+        el.innerHTML = `<canvas width="300" height="170"></canvas><div class="lbm-t">${k === 'random' ? 'Random' : MAP_THEMES[k].name}</div><div class="lbm-s">${k === 'random' ? 'Surprise everyone' : MAP_THEMES[k].sub}</div><div class="lbm-badge">SELECTED</div>`;
+        row.appendChild(el);
+        const cv = el.querySelector('canvas');
+        if (k === 'random') { const c = cv.getContext('2d'); const g = c.createLinearGradient(0, 0, 300, 170); g.addColorStop(0, '#3a4a2c'); g.addColorStop(0.5, '#4a4f58'); g.addColorStop(1, '#8a6a40'); c.fillStyle = g; c.fillRect(0, 0, 300, 170); c.fillStyle = 'rgba(255,255,255,0.85)'; c.font = '800 96px "Barlow Condensed", Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', 150, 92); }
+        else drawMapArt(cv, k);
+        el.onclick = () => { if (this.isHost && !this.state.inBattle) { uiSnd('click'); this.setSetting('map', k); } };
+        el.addEventListener('mouseenter', () => { if (this.isHost) uiSnd('hover'); });
+      }
+    }
+    box.classList.toggle('host', host && !S.inBattle);
+    box.querySelectorAll('.lbm').forEach(el => el.classList.toggle('sel', el.dataset.k === cur));
+  },
   // inline Kick / Ban (and Bench) buttons on the selected player's row
   slotActs(row, p, slotted) {
     const box = document.createElement('span'); box.className = 'slot-acts';
@@ -7350,17 +8021,17 @@ const Lobby = {
   },
   // ---------------------------------------------------------- host moderation
   bench(pid) { const S = this.state; for (const sl of S.slots) { const i = sl.indexOf(pid); if (i >= 0) sl[i] = -1; } this.sel = null; this.broadcast(); },
-  kick(pid, ban) {
+  async kick(pid, ban) {
     const S = this.state, P = S.players[pid], link = this.links[pid]; if (!P || P.host) return;
-    if (!confirm(ban ? `Ban ${P.name}? They will be removed and can't ask to join this room again.` : `Kick ${P.name} from the room?`)) return;
+    if (!await UI.ask(ban ? `Ban ${P.name}? They will be removed and can't ask to join this room again.` : `Kick ${P.name} from the room?`)) return;
     if (ban) { if (P.dev) this.bans.add(P.dev); this.banNames.add(P.name.toLowerCase()); }
     if (link) { link.send({ t: 'kicked', ban: !!ban }); setTimeout(() => link.close(), 250); }
     this.sel = null;
     UI.toast(`${P.name} was ${ban ? 'banned' : 'kicked'}`);
   },
   // ---------------------------------------------------------- leaving / rejoining a running battle
-  hostLeaveBattle() {
-    if (!confirm('Return to the lobby? The battle keeps running for everyone else and an AI crew takes over your tank. You can come back, or end the battle from the lobby.')) return;
+  async hostLeaveBattle() {
+    if (!await UI.ask('Return to the lobby? The battle keeps running for everyone else and an AI crew takes over your tank. You can come back, or end the battle from the lobby.')) return;
     const ctx = B.me, v = ctx.vehicle;
     if (v && v.alive) { const ai = new AI(v, this.state.settings.diff, 'attack'); ai.diffKey = this.state.settings.diff; v.isPlayer = false; v.human = null; ctx.awayV = v; }
     ctx.vehicle = null; ctx.spawnScreen = false; ctx.deathT = -1;
@@ -7375,15 +8046,15 @@ const Lobby = {
     if (v && v.alive) { v.ai = null; v.isPlayer = true; v.human = ctx.pid; ctx.vehicle = v; ctx.awayV = null; B.cam.x = v.x; B.cam.y = v.y; Sfx.startEngine(); }
     else { ctx.awayV = null; B.openSpawnFor(ctx); }
   },
-  endBattleFromLobby() {
+  async endBattleFromLobby() {
     if (!B || B.net !== 'host' || B.over) return;
-    if (!confirm('End the battle for everyone now? The team holding the most points wins.')) return;
+    if (!await UI.ask('End the battle for everyone now? The team holding the most points wins.')) return;
     B.end(B.mode.verdict ? B.mode.verdict() : 'draw');
   },
   // the host's battle finished while the host was in the lobby
   awayBattleEnded() { this.hostAway = false; this.state.inBattle = false; for (const P of Object.values(this.state.players)) P.waiting = false; App.toLobby(); this.broadcast(); },
-  clientLeaveBattle() {
-    if (!confirm('Leave the battle and go back to the lobby? An AI crew takes over your tank, and you can rejoin while the battle is still running.')) return;
+  async clientLeaveBattle() {
+    if (!await UI.ask('Leave the battle and go back to the lobby? An AI crew takes over your tank, and you can rejoin while the battle is still running.')) return;
     Net.toHost({ t: 'leftbattle' });
     App.toLobby(); this.status = 'You left the battle — rejoin any time while it is running'; this.render();
   },
